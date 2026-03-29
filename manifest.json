@@ -1,0 +1,16 @@
+{
+  "name": "BetAnalytics Pro v4",
+  "short_name": "BetAnalytics",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#080C12",
+  "theme_color": "#080C12",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/33/33736.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
