@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>BetAnalytics Pro v3 — Value Betting System</title>
+<title>BetAnalytics Pro v4 — Strategic Betting System</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -348,9 +348,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--txt);min-height:10
     <div class="setup-logo">⚽</div>
     <div class="setup-title">Bet<span>Analytics</span> Pro</div>
     <div class="setup-sub">
-      Value Bet Engine · Live Analysis · AI Score v3<br>
-      Focus: <b>Value Bets · +1.5G · Elite Picks · Live</b><br>
-      Bilet zilnic ~1.40x · Top Value Bets · Elite Picks<br>
+      Strategic Engine v4 · ELITE/STRONG/NORMAL Classification<br>
+      Focus: <b>SAFE → BALANCED → VALUE → COMBO → RISK</b><br>
+      Distribuție strategică · Control risc · Profit termen lung<br>
       <span style="color:var(--grn);font-weight:700">API BSD — Gratuit · Nelimitat</span>
     </div>
     <input class="setup-input" id="setup-key" type="text" placeholder="Token API — sports.bzzoiro.com">
@@ -366,7 +366,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--txt);min-height:10
       <div class="brand-ico">⚽</div>
       <div>
         <div class="brand-name">Bet<span>Analytics</span> Pro</div>
-        <div class="brand-tag">VALUE ENGINE · LIVE · AI SCORE v3 · BSD API</div>
+        <div class="brand-tag">STRATEGIC ENGINE v4 · ELITE/STRONG/NORMAL · BSD API</div>
       </div>
     </div>
     <div class="topbar-r">
@@ -1073,76 +1073,59 @@ function processLiveMatch(ev){
 function sameLiga(a, b){ return a.liga && b.liga && a.liga === b.liga; }
 
 // ═══════════════════════════════════════
-// BILET SAFE — 2-3 selecții · prob >80% · cotă 1.25-1.50
-// Filtre: +1.5G, sub 4.5G, HT/FT · AI Score >65 · ligă A/S
+// SISTEM CLASIFICARE SELECȚII V2
+// ELITE: AI Score > 70 + probabilitate > 80%
+// STRONG: AI Score 60–70
+// NORMAL: restul
 // ═══════════════════════════════════════
-function buildBiletSafe(matches){
-  const cands = [];
-  for(const m of matches){
-    if(m.ligaRating === 'C') continue; // doar ligi A/S
-    if(m.aiScore < 65) continue;       // AI Score > 65
-    // +1.5 goluri >80%
-    if(m.p15T >= 0.80){
-      cands.push({m, mkt:'+1.5 Goluri', p:m.p15T,
-        impliedOdd: Math.max(1.05, Math.min(1.25, 0.93/m.p15T)), tip:'+1.5G'});
-    }
-    // sub 4.5 goluri (pMax4T = prob max 4 goluri total)
-    if(m.pMax4T >= 0.80){
-      cands.push({m, mkt:'Sub 4.5 Goluri', p:m.pMax4T,
-        impliedOdd: Math.max(1.05, Math.min(1.20, 0.93/m.pMax4T)), tip:'U4.5'});
-    }
-    // HT Under (scor mic la pauza)
-    if(m.pHTU25 >= 0.82){
-      cands.push({m, mkt:'HT Under 2.5', p:m.pHTU25,
-        impliedOdd: Math.max(1.05, Math.min(1.20, 0.93/m.pHTU25)), tip:'HTU'});
-    }
-  }
-  // Sortează după probabilitate desc
-  cands.sort((a,b) => b.p - a.p);
-  const picks = [], usedId = new Set(), usedLiga = new Set(), usedTip = new Set();
-  let cota = 1;
-  for(const c of cands){
-    if(usedId.has(c.m.id)) continue;                    // max 1 selecție/meci
-    if(usedLiga.has(c.m.liga)) continue;                // diversificare ligi
-    if(usedTip.has(c.tip) && picks.length > 0) continue; // nu repeta tipul
-    picks.push(c);
-    usedId.add(c.m.id);
-    usedLiga.add(c.m.liga);
-    usedTip.add(c.tip);
-    cota *= c.impliedOdd;
-    if(picks.length >= 3) break;
-  }
-  return { picks, cota: +cota.toFixed(2), tip: 'SAFE' };
+function classifyMatch(m){
+  if(m.aiScore > 70 && m.p15T > 0.80) return 'ELITE';
+  if(m.aiScore >= 60 && m.aiScore <= 70) return 'STRONG';
+  return 'NORMAL';
+}
+
+// Returnează cel mai bun candidat de selecție pentru un meci
+function getBestCandidate(m){
+  const tier = classifyMatch(m);
+  // Prioritizăm +1.5G, BTTS, +2.5G în funcție de probabilitate
+  const opts = [];
+  if(m.p15T > 0) opts.push({mkt:'+1.5 Goluri', p:m.p15T, tip:'+1.5G'});
+  if(m.probBTTS > 0) opts.push({mkt:'BTTS (Ambele Marchează)', p:m.probBTTS/100, tip:'BTTS'});
+  if(m.prob25 > 0) opts.push({mkt:'+2.5 Goluri', p:m.prob25/100, tip:'+2.5G'});
+  if(m.pMax4T > 0) opts.push({mkt:'Sub 4.5 Goluri', p:m.pMax4T, tip:'U4.5'});
+  opts.sort((a,b)=>b.p-a.p);
+  return opts.length ? {...opts[0], tier, m} : null;
 }
 
 // ═══════════════════════════════════════
-// BILET BALANCED — 5-6 selecții · prob 70-80% · cotă 1.80-2.20
-// Filtre: +1.5G, BTTS, +2.5G selectiv · AI Score >60
+// BILET SAFE V2 — DOAR ELITE · max 3 meciuri · bilet premium
+// Criterii: AI Score > 70 + prob > 80% + ligi A/S
 // ═══════════════════════════════════════
-function buildBiletBalanced(matches){
+function buildBiletSafe(matches){
   const cands = [];
+  const usedInSafe = new Set(); // track pentru interdicții globale
   for(const m of matches){
+    const tier = classifyMatch(m);
+    if(tier !== 'ELITE') continue; // DOAR ELITE în SAFE
     if(m.ligaRating === 'C') continue;
-    if(m.aiScore < 60) continue;
-    // +1.5 goluri 70-80%
-    if(m.p15T >= 0.70 && m.p15T < 0.85){
+    // +1.5 goluri >80%
+    if(m.p15T >= 0.80){
       cands.push({m, mkt:'+1.5 Goluri', p:m.p15T,
-        impliedOdd: Math.max(1.10, Math.min(1.35, 0.93/m.p15T)), tip:'+1.5G'});
+        impliedOdd: Math.max(1.05, Math.min(1.25, 0.93/m.p15T)), tip:'+1.5G', tier});
     }
-    // BTTS 70%+
-    if(m.probBTTS && m.probBTTS/100 >= 0.70){
-      const pb = m.probBTTS/100;
-      cands.push({m, mkt:'BTTS (Ambele Marchează)', p:pb,
-        impliedOdd: Math.max(1.15, Math.min(1.50, 0.93/pb)), tip:'BTTS'});
+    // Sub 4.5 goluri >80%
+    if(m.pMax4T >= 0.80){
+      cands.push({m, mkt:'Sub 4.5 Goluri', p:m.pMax4T,
+        impliedOdd: Math.max(1.05, Math.min(1.20, 0.93/m.pMax4T)), tip:'U4.5', tier});
     }
-    // +2.5 goluri selectiv (>72%)
-    if(m.prob25 && m.prob25/100 >= 0.72){
-      const p25 = m.prob25/100;
-      cands.push({m, mkt:'+2.5 Goluri', p:p25,
-        impliedOdd: Math.max(1.10, Math.min(1.40, 0.93/p25)), tip:'+2.5G'});
+    // HT Under 2.5 >82%
+    if(m.pHTU25 >= 0.82){
+      cands.push({m, mkt:'HT Under 2.5', p:m.pHTU25,
+        impliedOdd: Math.max(1.05, Math.min(1.20, 0.93/m.pHTU25)), tip:'HTU', tier});
     }
   }
-  cands.sort((a,b) => b.p - a.p);
+  // Sortează după AI Score desc, apoi probabilitate
+  cands.sort((a,b) => b.m.aiScore - a.m.aiScore || b.p - a.p);
   const picks = [], usedId = new Set(), usedLiga = new Set();
   let cota = 1;
   for(const c of cands){
@@ -1151,6 +1134,60 @@ function buildBiletBalanced(matches){
     picks.push(c);
     usedId.add(c.m.id);
     usedLiga.add(c.m.liga);
+    usedInSafe.add(c.m.id);
+    cota *= c.impliedOdd;
+    if(picks.length >= 3) break;
+  }
+  return { picks, cota: +cota.toFixed(2), tip: 'SAFE', usedIds: usedInSafe };
+}
+
+// ═══════════════════════════════════════
+// BILET BALANCED V2 — STRONG + max 1 ELITE
+// Exclud selecțiile deja folosite în SAFE
+// ═══════════════════════════════════════
+function buildBiletBalanced(matches, safeUsedIds){
+  const safeIds = safeUsedIds || new Set();
+  const cands = [];
+  for(const m of matches){
+    const tier = classifyMatch(m);
+    if(tier === 'NORMAL') continue; // doar STRONG + ELITE
+    if(m.ligaRating === 'C') continue;
+    if(m.aiScore < 60) continue;
+    // +1.5 goluri 70-85%
+    if(m.p15T >= 0.70){
+      cands.push({m, mkt:'+1.5 Goluri', p:m.p15T,
+        impliedOdd: Math.max(1.10, Math.min(1.35, 0.93/m.p15T)), tip:'+1.5G', tier});
+    }
+    // BTTS 70%+
+    if(m.probBTTS && m.probBTTS/100 >= 0.70){
+      const pb = m.probBTTS/100;
+      cands.push({m, mkt:'BTTS (Ambele Marchează)', p:pb,
+        impliedOdd: Math.max(1.15, Math.min(1.50, 0.93/pb)), tip:'BTTS', tier});
+    }
+    // +2.5 goluri selectiv (>72%)
+    if(m.prob25 && m.prob25/100 >= 0.72){
+      const p25 = m.prob25/100;
+      cands.push({m, mkt:'+2.5 Goluri', p:p25,
+        impliedOdd: Math.max(1.10, Math.min(1.40, 0.93/p25)), tip:'+2.5G', tier});
+    }
+  }
+  // Sortează: STRONG primul, ELITE max 1
+  cands.sort((a,b) => {
+    if(a.tier === 'STRONG' && b.tier !== 'STRONG') return -1;
+    if(b.tier === 'STRONG' && a.tier !== 'STRONG') return 1;
+    return b.p - a.p;
+  });
+  const picks = [], usedId = new Set(), usedLiga = new Set();
+  let cota = 1, eliteCount = 0;
+  for(const c of cands){
+    if(usedId.has(c.m.id)) continue;
+    if(usedLiga.has(c.m.liga)) continue;
+    if(safeIds.has(c.m.id)) continue; // exclud selecțiile din SAFE
+    if(c.tier === 'ELITE' && eliteCount >= 1) continue; // max 1 ELITE
+    picks.push(c);
+    usedId.add(c.m.id);
+    usedLiga.add(c.m.liga);
+    if(c.tier === 'ELITE') eliteCount++;
     cota *= c.impliedOdd;
     if(picks.length >= 6) break;
     if(cota >= 1.80 && picks.length >= 5) break;
@@ -1159,13 +1196,17 @@ function buildBiletBalanced(matches){
 }
 
 // ═══════════════════════════════════════
-// BILET VALUE — 2-4 selecții · cele mai bune VALUE Score
-// Profit pe termen lung · AI Score + cotă dorită
+// BILET VALUE V2 — STRONG prioritizat · cote mai mari
+// Exclud selecțiile din SAFE · prob decentă
 // ═══════════════════════════════════════
-function buildBiletValue(matches){
+function buildBiletValue(matches, safeUsedIds){
+  const safeIds = safeUsedIds || new Set();
   const cands = [];
   for(const m of matches){
     if(!m.hasValue) continue;
+    if(safeIds.has(m.id)) continue; // NU include selecții din SAFE
+    const tier = classifyMatch(m);
+    if(tier === 'ELITE') continue; // VALUE e pentru STRONG, nu ELITE
     for(const vb of (m.positiveValueBets||[])){
       let prob = 0;
       if(vb.mkt==='+1.5G') prob = m.p15T;
@@ -1173,13 +1214,14 @@ function buildBiletValue(matches){
       else if(vb.mkt==='+3.5G') prob = m.prob35/100;
       else if(vb.mkt==='1 (Acasă)') prob = m.probH/100;
       else if(vb.mkt==='2 (Deplasare)') prob = m.probA/100;
-      if(prob < 0.70) continue; // prob minimă 70%
-      const impliedOdd = Math.max(1.10, Math.min(1.60, 0.93/prob));
-      cands.push({m, mkt:vb.mkt, p:prob, value:vb.value, impliedOdd, tip:'VALUE'});
+      if(prob < 0.65) continue; // prob minimă 65% (VALUE e pentru cote mai mari)
+      const impliedOdd = Math.max(1.15, Math.min(1.80, 0.93/prob));
+      const tier = classifyMatch(m);
+      cands.push({m, mkt:vb.mkt, p:prob, value:vb.value, impliedOdd, tip:'VALUE', tier});
     }
   }
-  // Sortează după VALUE Score desc (cel mai mare profit potențial)
-  cands.sort((a,b) => b.value - a.value);
+  // Sortează după VALUE Score desc (cel mai mare profit potențial) + cotă mai mare
+  cands.sort((a,b) => b.value - a.value || b.impliedOdd - a.impliedOdd);
   const picks = [], usedId = new Set(), usedLiga = new Set();
   let cota = 1;
   for(const c of cands){
@@ -1195,25 +1237,34 @@ function buildBiletValue(matches){
 }
 
 // ═══════════════════════════════════════
-// BILET RISK (OPȚIONAL) — 3-4 selecții · cotă 3.00-6.00+
-// Prob 60-70% · +1.5G, BTTS · risc ridicat
+// BILET RISK V2 — DOAR NORMAL · exclude complet ELITE
+// Prob 55-72% · +1.5G, BTTS · risc ridicat
 // ═══════════════════════════════════════
 function buildBiletRisk(matches){
   const cands = [];
   for(const m of matches){
-    // +1.5 goluri 60-70%
-    if(m.p15T >= 0.60 && m.p15T < 0.72){
+    const tier = classifyMatch(m);
+    if(tier === 'ELITE') continue; // exclud complet ELITE din RISK
+    if(tier !== 'NORMAL') continue; // DOAR NORMAL în RISK
+    // +1.5 goluri 55-72%
+    if(m.p15T >= 0.55 && m.p15T < 0.72){
       cands.push({m, mkt:'+1.5 Goluri', p:m.p15T,
-        impliedOdd: Math.max(1.30, Math.min(1.55, 0.93/m.p15T)), tip:'+1.5G'});
+        impliedOdd: Math.max(1.30, Math.min(1.60, 0.93/m.p15T)), tip:'+1.5G', tier});
     }
-    // BTTS 60-70%
-    if(m.probBTTS && m.probBTTS/100 >= 0.60 && m.probBTTS/100 < 0.72){
+    // BTTS 55-72%
+    if(m.probBTTS && m.probBTTS/100 >= 0.55 && m.probBTTS/100 < 0.72){
       const pb = m.probBTTS/100;
       cands.push({m, mkt:'BTTS (Ambele Marchează)', p:pb,
-        impliedOdd: Math.max(1.35, Math.min(1.65, 0.93/pb)), tip:'BTTS'});
+        impliedOdd: Math.max(1.35, Math.min(1.70, 0.93/pb)), tip:'BTTS', tier});
+    }
+    // +2.5 goluri 55-70%
+    if(m.prob25 && m.prob25/100 >= 0.55 && m.prob25/100 < 0.70){
+      const p25 = m.prob25/100;
+      cands.push({m, mkt:'+2.5 Goluri', p:p25,
+        impliedOdd: Math.max(1.40, Math.min(1.75, 0.93/p25)), tip:'+2.5G', tier});
     }
   }
-  cands.sort((a,b) => b.aiScore - a.aiScore || b.p - a.p);
+  cands.sort((a,b) => b.m.aiScore - a.m.aiScore || b.p - a.p);
   const picks = [], usedId = new Set(), usedLiga = new Set();
   let cota = 1;
   for(const c of cands){
@@ -1230,41 +1281,47 @@ function buildBiletRisk(matches){
 }
 
 // ═══════════════════════════════════════
-// BILET COMBO EXTRA — 10-20 selecții · prob >70%
-// Portofoliu maxim diversificat · BTTS, +1.5G, U4.5
+// BILET COMBO V2 — FILTRU ULTRA STRICT
+// DOAR ELITE · prob > 80% · max 2/ligă · xG 2.0-3.5
+// 10-15 selecții strategice
 // ═══════════════════════════════════════
 function buildBiletCombo(matches){
   const cands = [];
   for(const m of matches){
-    // +1.5 goluri >70%
-    if(m.p15T >= 0.70){
+    const tier = classifyMatch(m);
+    if(tier !== 'ELITE') continue; // DOAR ELITE în COMBO
+    // Filtru xG total între 2.0 și 3.5
+    const xgTotal = m.lh + m.la;
+    if(xgTotal < 2.0 || xgTotal > 3.5) continue;
+    // Prob > 80%
+    if(m.p15T >= 0.80){
       cands.push({m, mkt:'+1.5 Goluri', p:m.p15T,
-        impliedOdd: Math.max(1.05, Math.min(1.35, 0.93/m.p15T)), tip:'+1.5G'});
+        impliedOdd: Math.max(1.05, Math.min(1.30, 0.93/m.p15T)), tip:'+1.5G', tier});
     }
-    // Sub 4.5 goluri >70%
-    if(m.pMax4T >= 0.70){
+    if(m.pMax4T >= 0.80){
       cands.push({m, mkt:'Sub 4.5 Goluri', p:m.pMax4T,
-        impliedOdd: Math.max(1.05, Math.min(1.25, 0.93/m.pMax4T)), tip:'U4.5'});
+        impliedOdd: Math.max(1.05, Math.min(1.25, 0.93/m.pMax4T)), tip:'U4.5', tier});
     }
-    // BTTS >70%
-    if(m.probBTTS && m.probBTTS/100 >= 0.70){
+    if(m.probBTTS && m.probBTTS/100 >= 0.80){
       const pb = m.probBTTS/100;
       cands.push({m, mkt:'BTTS (Ambele Marchează)', p:pb,
-        impliedOdd: Math.max(1.10, Math.min(1.45, 0.93/pb)), tip:'BTTS'});
+        impliedOdd: Math.max(1.10, Math.min(1.45, 0.93/pb)), tip:'BTTS', tier});
     }
   }
-  cands.sort((a,b) => b.p - a.p);
-  // Regulă COMBO: max 1 selecție/meci, diversificare ligi, max 2 din același tip
-  const picks = [], usedId = new Set(), usedLiga = new Set();
+  // Sortează după AI Score desc, apoi prob
+  cands.sort((a,b) => b.m.aiScore - a.m.aiScore || b.p - a.p);
+  // Regulă COMBO STRICT: max 1 selecție/meci, max 2/ligă, 10-15 selecții
+  const picks = [], usedId = new Set();
+  const ligaCount = {};
   const tipCount = {};
   let cota = 1;
   for(const c of cands){
     if(usedId.has(c.m.id)) continue;
-    if(usedLiga.has(c.m.liga)) continue;
-    if((tipCount[c.tip]||0) >= 3) continue; // max 3 din același tip
+    if((ligaCount[c.m.liga]||0) >= 2) continue; // max 2/ligă
+    if((tipCount[c.tip]||0) >= 5) continue; // max 5 din același tip
     picks.push(c);
     usedId.add(c.m.id);
-    usedLiga.add(c.m.liga);
+    ligaCount[c.m.liga] = (ligaCount[c.m.liga]||0) + 1;
     tipCount[c.tip] = (tipCount[c.tip]||0) + 1;
     cota *= c.impliedOdd;
     if(picks.length >= 15) break;
@@ -1585,10 +1642,16 @@ function renderCard(m){
   // Card class bazat pe tip (cerința 8)
   const cardCls = m.isElitePick ? 'card card-elite' : m.hasValue ? 'card card-value' : 'card';
 
-  // Badge-uri (cerința 8)
+  // Badge-uri (cerința 8) + nivel V2
+  const tierV2 = classifyMatch(m);
+  const tierV2Color = tierV2==='ELITE'?'#FFD700':tierV2==='STRONG'?'var(--acc)':'var(--muted)';
+  const tierV2Bg = tierV2==='ELITE'?'rgba(255,215,0,.12)':tierV2==='STRONG'?'rgba(59,130,246,.12)':'rgba(107,122,153,.08)';
+  const tierV2Icon = tierV2==='ELITE'?'⭐ ELITE':tierV2==='STRONG'?'⭐⭐ STRONG':'⭐ NORMAL';
+  const tierV2Badge = `<span class="vb-badge" style="color:${tierV2Color};background:${tierV2Bg};border-color:${tierV2Color}40;font-size:9px">${tierV2Icon}</span>`;
   const badges = [];
+  badges.push(tierV2Badge);
   if(m.hasValue) badges.push(renderValueBadge(m));
-  if(m.isElitePick) badges.push(`<span class="vb-badge" style="color:#FFD700;background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.4)">⭐ ELITE</span>`);
+  if(m.isElitePick && tierV2 !== 'ELITE') badges.push(`<span class="vb-badge" style="color:#FFD700;background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.4)">⭐ ELITE PICK</span>`);
   const badgesHtml = badges.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${badges.join('')}</div>` : '';
 
   return`<div class="${cardCls}" data-value="${m.hasValue?1:0}" data-elite="${m.isElitePick?1:0}" data-ai="${m.aiScore}">
@@ -1650,13 +1713,21 @@ function renderBiletGeneric(b, cfg){
   }
   const picksH = b.picks.map(c=>{
     const m = c.m;
+    const tierLabel = c.tier || classifyMatch(m);
+    const tierColor = tierLabel==='ELITE'?'#FFD700':tierLabel==='STRONG'?'var(--acc)':'var(--muted)';
+    const tierBg = tierLabel==='ELITE'?'rgba(255,215,0,.12)':tierLabel==='STRONG'?'rgba(59,130,246,.12)':'rgba(107,122,153,.1)';
     return`<div class="pick">
       <div class="pick-l">
         <div style="font-size:11px;font-weight:700;margin-bottom:2px">${m.home} vs ${m.away}</div>
-        <div style="font-size:10px;color:var(--muted)">${m.liga||''} · ${c.mkt}</div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:3px">${m.liga||''} · ${c.mkt}</div>
+        <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:8px;font-weight:800;padding:2px 6px;border-radius:4px;background:${tierBg};color:${tierColor};border:1px solid ${tierColor}40">${tierLabel}</span>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--muted)">AI ${m.aiScore}</span>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--muted)">📅 ${m.dataShort} · 🕐 ${m.ora}</span>
+        </div>
       </div>
       <div style="text-align:right">
-        <div style="font-family:var(--mono);font-size:12px;font-weight:800;color:${pC(c.p)}">${pct(c.p)}</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:900;color:${pC(c.p)}">${pct(c.p)}</div>
         <div style="font-family:var(--mono);font-size:10px;color:var(--muted)">${c.impliedOdd.toFixed(2)}x</div>
       </div>
     </div>`;
@@ -1700,11 +1771,21 @@ function renderBiletCombo(b){
   const picksH = b.picks.map((c,i)=>{
     const m = c.m;
     const tipColor = c.tip==='+1.5G'?'var(--grn)':c.tip==='BTTS'?'var(--acc)':'var(--cyan)';
+    const tierLabel = c.tier || classifyMatch(m);
+    const tierColor = tierLabel==='ELITE'?'#FFD700':tierLabel==='STRONG'?'var(--acc)':'var(--muted)';
+    const tierBg = tierLabel==='ELITE'?'rgba(255,215,0,.12)':tierLabel==='STRONG'?'rgba(59,130,246,.12)':'rgba(107,122,153,.1)';
     return`<div class="pick" style="padding:7px 10px">
-      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:1px">#${i+1} · ${m.liga||''}</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+        <span style="font-family:var(--mono);font-size:9px;color:var(--muted)">#${i+1} · ${m.liga||''}</span>
+        <span style="font-family:var(--mono);font-size:8px;font-weight:800;padding:1px 5px;border-radius:3px;background:${tierBg};color:${tierColor};border:1px solid ${tierColor}40">${tierLabel}</span>
+        <span style="font-family:var(--mono);font-size:8px;color:var(--muted)">AI ${m.aiScore}</span>
+      </div>
       <div class="pick-l">
         <div style="font-size:10px;font-weight:700">${m.home} vs ${m.away}</div>
-        <div style="font-size:9px;color:${tipColor};font-weight:700">${c.mkt}</div>
+        <div style="display:flex;gap:6px;align-items:center;margin-top:2px">
+          <span style="font-size:9px;color:${tipColor};font-weight:700">${c.mkt}</span>
+          <span style="font-family:var(--mono);font-size:8px;color:var(--muted)">📅 ${m.dataShort} · 🕐 ${m.ora}</span>
+        </div>
       </div>
       <div style="text-align:right">
         <div style="font-family:var(--mono);font-size:11px;font-weight:800;color:${pC(c.p)}">${pct(c.p)}</div>
@@ -1831,13 +1912,47 @@ function renderAll(){
   const eliteCnt = matches.filter(m=>m.isElitePick).length;
   const aiHighCnt = matches.filter(m=>m.aiScore>=65).length;
 
-  // Construiește toate biletele
+  // Construiește toate biletele în ordinea de prioritate
+  // 1. SAFE primul (cel mai important) — returnează și ID-urile folosite
   const biletSafe     = buildBiletSafe(matches);
-  const biletBalanced = buildBiletBalanced(matches);
-  const biletValue    = buildBiletValue(matches);
-  const biletRisk     = buildBiletRisk(matches);
+  const safeUsedIds   = biletSafe.usedIds || new Set();
+  // 2. BALANCED — exclude selecțiile din SAFE
+  const biletBalanced = buildBiletBalanced(matches, safeUsedIds);
+  // 3. VALUE — exclude selecțiile din SAFE
+  const biletValue    = buildBiletValue(matches, safeUsedIds);
+  // 4. COMBO — filtru ULTRA STRICT ELITE
   const biletCombo    = buildBiletCombo(matches);
+  // 5. RISK — doar NORMAL
+  const biletRisk     = buildBiletRisk(matches);
   const biletClasic   = buildBiletClasic(matches);
+
+  // INTERDICȚII GLOBALE: max 2 apariții totale / meci
+  // Numărăm aparițiile fiecărui meci în toate biletele
+  const globalMatchCount = {};
+  const allBilets = [biletSafe, biletBalanced, biletValue, biletCombo, biletRisk];
+  for(const b of allBilets){
+    for(const c of (b.picks||[])){
+      const id = c.m.id;
+      globalMatchCount[id] = (globalMatchCount[id]||0) + 1;
+    }
+  }
+  // Filtrăm selecțiile care depășesc limita de 2 apariții
+  // Prioritate: SAFE > BALANCED > VALUE > COMBO > RISK
+  const seenCount = {};
+  for(const b of allBilets){
+    if(!b.picks) continue;
+    b.picks = b.picks.filter(c=>{
+      const id = c.m.id;
+      seenCount[id] = (seenCount[id]||0) + 1;
+      return seenCount[id] <= 2; // max 2 apariții totale
+    });
+    // Recalculează cota după filtrare
+    if(b.picks.length > 0){
+      let newCota = 1;
+      for(const c of b.picks) newCota *= c.impliedOdd;
+      b.cota = +newCota.toFixed(2);
+    }
+  }
   let html = '';
 
   // ── LIVE (cerința 2) ──
@@ -1847,53 +1962,56 @@ function renderAll(){
   }
 
   if(ACTIVE_FILTER === 'all' || ACTIVE_FILTER === 'safe'){
-    // ── BILET SAFE ──
-    html+=`<div class="sec-hdr">🛡️ BILET SAFE · 2-3 SELECȚII · COTĂ 1.25–1.50x</div>`;
+    // ── 1. BILET SAFE (CEL MAI IMPORTANT) ──
+    html+=`<div class="sec-hdr">🛡️ BILET SAFE · ELITE PICKS · MAX 3 SELECȚII · BILET PREMIUM</div>`;
     html+=renderBiletGeneric(biletSafe, {
       icon:'🛡️', label:'SAFE', color:'var(--grn)',
-      colorRgb:'34,197,94', desc:'Prob >80% · AI Score >65 · Ligi A/S · Diversificat'
+      colorRgb:'34,197,94', desc:'DOAR ELITE · AI Score >70 + Prob >80% · Ligi A/S · Cele mai bune 3 din zi'
     });
   }
 
   if(ACTIVE_FILTER === 'all'){
-    // ── BILET BALANCED ──
-    html+=`<div class="sec-hdr">⚖️ BILET BALANCED · 5-6 SELECȚII · COTĂ 1.80–2.20x</div>`;
+    // ── 2. BILET BALANCED ──
+    html+=`<div class="sec-hdr">⚖️ BILET BALANCED · STRONG + MAX 1 ELITE · FĂRĂ SELECȚII DIN SAFE</div>`;
     html+=renderBiletGeneric(biletBalanced, {
       icon:'⚖️', label:'BALANCED', color:'var(--acc)',
-      colorRgb:'59,130,246', desc:'Prob 70-80% · AI Score >60 · +1.5G, BTTS, +2.5G'
+      colorRgb:'59,130,246', desc:'STRONG prioritizat · Max 1 ELITE · Exclud selecții SAFE · +1.5G, BTTS, +2.5G'
     });
   }
 
   if(ACTIVE_FILTER === 'all' || ACTIVE_FILTER === 'value'){
-    // ── BILET VALUE ──
-    html+=`<div class="sec-hdr">🔥 BILET VALUE · 2-4 SELECȚII · PROFIT TERMEN LUNG</div>`;
+    // ── 3. BILET VALUE ──
+    html+=`<div class="sec-hdr">🔥 BILET VALUE · STRONG · COTE MAI MARI · FĂRĂ SELECȚII DIN SAFE</div>`;
     html+=renderBiletGeneric(biletValue, {
       icon:'🔥', label:'VALUE', color:'var(--val)',
-      colorRgb:'16,185,129', desc:'Cele mai bune VALUE Score · AI Score + cotă dorită'
+      colorRgb:'16,185,129', desc:'STRONG · Value Score maxim · Cote mai mari · Profit termen lung'
     });
   }
 
   if(ACTIVE_FILTER === 'all'){
-    // ── BILET RISK ──
-    html+=`<div class="sec-hdr">⚡ BILET RISK · 3-4 SELECȚII · COTĂ 3.00–6.00+</div>`;
+    // ── 4. BILET COMBO ULTRA STRICT ──
+    html+=`<div class="sec-hdr">🎲 BILET COMBO · ULTRA STRICT · DOAR ELITE · xG 2.0-3.5 · 10-15 SELECȚII</div>`;
+    html+=renderBiletCombo(biletCombo);
+    // ── 5. BILET RISK ──
+    html+=`<div class="sec-hdr">⚡ BILET RISK · DOAR NORMAL · FĂRĂ ELITE · COTĂ 3.00–6.00+</div>`;
     html+=renderBiletGeneric(biletRisk, {
       icon:'⚡', label:'RISK', color:'var(--org)',
-      colorRgb:'249,115,22', desc:'Prob 60-70% · Risc ridicat · +1.5G, BTTS'
+      colorRgb:'249,115,22', desc:'DOAR NORMAL · Exclude complet ELITE · Prob 55-72% · Risc ridicat'
     });
-    // ── BILET COMBO EXTRA ──
-    html+=`<div class="sec-hdr">🎲 BILET COMBO EXTRA · 10-15 SELECȚII · PORTOFOLIU MAXIM</div>`;
-    html+=renderBiletCombo(biletCombo);
     // ── BILETUL CLASIC ──
     html+=`<div class="sec-hdr">🎰 BILET CLASIC · GOLURI ECHIPĂ + HT ≥85%</div>`;
     html+=renderBiletClasic(biletClasic);
   }
 
   // ── STATS ──
+  const eliteV2Cnt  = matches.filter(m=>classifyMatch(m)==='ELITE').length;
+  const strongV2Cnt = matches.filter(m=>classifyMatch(m)==='STRONG').length;
+  const normalV2Cnt = matches.filter(m=>classifyMatch(m)==='NORMAL').length;
   html+=`<div class="stats-row">
     <div class="stat-card"><div class="stat-val" style="color:var(--acc)">${matches.length}</div><div class="stat-lbl">MECIURI</div></div>
-    <div class="stat-card"><div class="stat-val" style="color:var(--val)">${valueCnt}</div><div class="stat-lbl">VALUE BETS</div></div>
-    <div class="stat-card"><div class="stat-val" style="color:var(--elite)">${eliteCnt}</div><div class="stat-lbl">ELITE PICKS</div></div>
-    <div class="stat-card"><div class="stat-val" style="color:var(--grn)">${aiHighCnt}</div><div class="stat-lbl">AI SAFE ≥65</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#FFD700">${eliteV2Cnt}</div><div class="stat-lbl">⭐ ELITE</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--acc)">${strongV2Cnt}</div><div class="stat-lbl">⭐⭐ STRONG</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--muted)">${normalV2Cnt}</div><div class="stat-lbl">⭐ NORMAL</div></div>
   </div>`;
 
   if(ACTIVE_FILTER === 'all' || ACTIVE_FILTER === 'value'){
