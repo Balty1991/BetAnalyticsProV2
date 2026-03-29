@@ -1860,66 +1860,79 @@ function renderAll(){
   const aiHighCnt = matches.filter(m=>m.aiScore>=65).length;
 
   // ═══════════════════════════════════════
-  // GENERARE BILETE STRATEGICE V3
-  // Fiecare bilet folosește EXCLUSIV lista sa proprie:
-  //   SAFE   → lista_elite (top 2-3)
-  //   BALANCED → lista_strong + max 1 elite (exclus din SAFE)
-  //   VALUE  → lista_strong cu value bets (exclus din SAFE)
-  //   COMBO  → lista_elite cu xG 2.0-3.5 (10-15 selecții)
-  //   RISK   → lista_normal
+  // GENERARE BILETE STRATEGICE V3 — LISTE SEPARATE
+  // SAFE   → EXCLUSIV lista_elite (top 2-3)
+  // BALANCED → lista_strong + max 1 elite (exclus din SAFE)
+  // VALUE  → lista_strong cu value bets (exclus din SAFE)
+  // COMBO  → lista_elite cu xG 2.0-3.5 (10-15 selecții)
+  // RISK   → EXCLUSIV lista_normal
+  // BILETUL CLASIC ȘI FUNCȚIILE VECHI SUNT DEZACTIVATE COMPLET
   // ═══════════════════════════════════════
   const {
     biletSafe, biletBalanced, biletValue, biletCombo, biletRisk
   } = genBilete(matches);
-  const biletClasic = buildBiletClasic(matches);
+
+  // DEBUG — verifică în consolă ce bilete au fost generate
+  console.log('NEW BETS GENERATED:', {
+    safe:     { picks: biletSafe.picks.length,     ids: biletSafe.picks.map(c=>c.m.id),     tiers: biletSafe.picks.map(c=>c.tier) },
+    balanced: { picks: biletBalanced.picks.length, ids: biletBalanced.picks.map(c=>c.m.id), tiers: biletBalanced.picks.map(c=>c.tier) },
+    value:    { picks: biletValue.picks.length,    ids: biletValue.picks.map(c=>c.m.id),    tiers: biletValue.picks.map(c=>c.tier) },
+    risk:     { picks: biletRisk.picks.length,     ids: biletRisk.picks.map(c=>c.m.id),     tiers: biletRisk.picks.map(c=>c.tier) },
+    combo:    { picks: biletCombo.picks.length,    ids: biletCombo.picks.map(c=>c.m.id),    tiers: biletCombo.picks.map(c=>c.tier) },
+  });
+
   let html = '';
 
-  // ── LIVE (cerința 2) ──
+  // ── LIVE ──
   if(LIVE_DATA.length > 0 || ACTIVE_FILTER === 'live'){
     html+=`<div class="sec-hdr">🔴 LIVE ANALYSIS · MECIURI În DESFĂŞURARE</div>`;
     html+=renderLiveAnalysis(LIVE_DATA);
   }
 
+  // ── 1. BILET SAFE (CEL MAI IMPORTANT) — DOAR ELITE ──
   if(ACTIVE_FILTER === 'all' || ACTIVE_FILTER === 'safe'){
-    // ── 1. BILET SAFE (CEL MAI IMPORTANT) ──
-    html+=`<div class="sec-hdr">🛡️ BILET SAFE · ELITE PICKS · MAX 3 SELECȚII · BILET PREMIUM</div>`;
+    html+=`<div class="sec-hdr">🛡️ BILET SAFE · DOAR ELITE · MAX 3 SELECȚII · BILET PREMIUM</div>`;
     html+=renderBiletGeneric(biletSafe, {
       icon:'🛡️', label:'SAFE', color:'var(--grn)',
-      colorRgb:'34,197,94', desc:'DOAR ELITE · AI Score >70 + Prob >80% · Ligi A/S · Cele mai bune 3 din zi'
+      colorRgb:'34,197,94',
+      desc:'DOAR ELITE (AI >70 + Prob >80%) · Cele mai bune 3 meciuri din zi'
     });
   }
 
+  // ── 2. BILET BALANCED — DOAR STRONG + max 1 ELITE ──
   if(ACTIVE_FILTER === 'all'){
-    // ── 2. BILET BALANCED ──
     html+=`<div class="sec-hdr">⚖️ BILET BALANCED · STRONG + MAX 1 ELITE · FĂRĂ SELECȚII DIN SAFE</div>`;
     html+=renderBiletGeneric(biletBalanced, {
       icon:'⚖️', label:'BALANCED', color:'var(--acc)',
-      colorRgb:'59,130,246', desc:'STRONG prioritizat · Max 1 ELITE · Exclud selecții SAFE · +1.5G, BTTS, +2.5G'
+      colorRgb:'59,130,246',
+      desc:'STRONG prioritizat · Max 1 ELITE (exclus din SAFE) · +1.5G, BTTS, +2.5G'
     });
   }
 
+  // ── 3. BILET VALUE — DOAR STRONG cu value bets ──
   if(ACTIVE_FILTER === 'all' || ACTIVE_FILTER === 'value'){
-    // ── 3. BILET VALUE ──
     html+=`<div class="sec-hdr">🔥 BILET VALUE · STRONG · COTE MAI MARI · FĂRĂ SELECȚII DIN SAFE</div>`;
     html+=renderBiletGeneric(biletValue, {
       icon:'🔥', label:'VALUE', color:'var(--val)',
-      colorRgb:'16,185,129', desc:'STRONG · Value Score maxim · Cote mai mari · Profit termen lung'
+      colorRgb:'16,185,129',
+      desc:'STRONG · Value Score maxim · Cote mai mari · Profit termen lung'
     });
   }
 
+  // ── 4. BILET COMBO — DOAR ELITE cu xG 2.0-3.5 ──
   if(ACTIVE_FILTER === 'all'){
-    // ── 4. BILET COMBO ULTRA STRICT ──
     html+=`<div class="sec-hdr">🎲 BILET COMBO · ULTRA STRICT · DOAR ELITE · xG 2.0-3.5 · 10-15 SELECȚII</div>`;
     html+=renderBiletCombo(biletCombo);
-    // ── 5. BILET RISK ──
+  }
+
+  // ── 5. BILET RISK — DOAR NORMAL ──
+  if(ACTIVE_FILTER === 'all'){
     html+=`<div class="sec-hdr">⚡ BILET RISK · DOAR NORMAL · FĂRĂ ELITE · COTĂ 3.00–6.00+</div>`;
     html+=renderBiletGeneric(biletRisk, {
       icon:'⚡', label:'RISK', color:'var(--org)',
-      colorRgb:'249,115,22', desc:'DOAR NORMAL · Exclude complet ELITE · Prob 55-72% · Risc ridicat'
+      colorRgb:'249,115,22',
+      desc:'DOAR NORMAL (AI <60) · Exclude complet ELITE · Prob 55-72% · Risc ridicat'
     });
-    // ── BILETUL CLASIC ──
-    html+=`<div class="sec-hdr">🎰 BILET CLASIC · GOLURI ECHIPĂ + HT ≥85%</div>`;
-    html+=renderBiletClasic(biletClasic);
   }
 
   // ── STATS ──
