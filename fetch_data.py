@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BetAnalytics Pro - GitHub Actions Data Fetcher
+BetAnalytics Pro V2 - GitHub Actions Data Fetcher
 Rulează automat la fiecare 30 minute și salvează datele API ca JSON static.
 Aplicația HTML citește aceste fișiere fără probleme CORS.
 """
@@ -14,6 +14,9 @@ TOKEN = os.environ.get('BSD_TOKEN', '')
 API_BASE = 'https://sports.bzzoiro.com'
 HEADERS = {'Authorization': f'Token {TOKEN}'}
 TZ = 'Europe/Bucharest'
+
+# Fallback: citește datele din V1 (BetAnalyticsPro) dacă tokenul nu e setat
+V1_BASE = 'https://balty1991.github.io/BetAnalyticsPro/data'
 
 def fetch(endpoint):
     """Fetch date de la API cu retry."""
@@ -29,6 +32,19 @@ def fetch(endpoint):
                 return None
     return None
 
+def fetch_from_v1(filename):
+    """Fallback: citeste datele din V1 GitHub Pages."""
+    url = f"{V1_BASE}/{filename}?t={int(datetime.now().timestamp())}"
+    try:
+        r = requests.get(url, timeout=30)
+        r.raise_for_status()
+        data = r.json()
+        print(f"  Fallback V1 OK: {url}")
+        return data
+    except Exception as e:
+        print(f"  Fallback V1 FAIL: {e}")
+        return None
+
 def save_json(data, filename):
     """Salvează datele ca JSON în directorul data/."""
     os.makedirs('data', exist_ok=True)
@@ -39,33 +55,50 @@ def save_json(data, filename):
     print(f"  Salvat: {path} ({size} bytes)")
 
 def main():
-    if not TOKEN:
-        print("ERROR: BSD_TOKEN secret nu este setat în GitHub!")
-        exit(1)
+    print(f"=== BetAnalytics V2 Fetch [{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}] ===")
 
-    print(f"=== BetAnalytics Fetch [{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}] ===")
+    predictions = None
+    live = None
 
-    # 1. Predictions
-    print("Fetching predictions...")
-    predictions = fetch(f'/api/predictions/?tz={TZ}')
+    if TOKEN:
+        print("Fetching predictions from API...")
+        predictions = fetch(f'/api/predictions/?tz={TZ}')
+        if predictions:
+            print(f"  OK: {predictions.get('count', 0)} meciuri")
+        else:
+            print("  FAIL: predictions din API")
+
+        print("Fetching live from API...")
+        live = fetch('/api/live/')
+        if live is not None:
+            count = live.get('count', len(live) if isinstance(live, list) else 0)
+            print(f"  OK: {count} meciuri live")
+        else:
+            print("  FAIL: live din API")
+    else:
+        print("WARN: BSD_TOKEN nu este setat - folosim fallback V1")
+
+    # Fallback la V1 dacă API-ul nu funcționează
+    if not predictions:
+        print("Fallback: citire predictions din V1...")
+        predictions = fetch_from_v1('predictions.json')
+
+    if live is None:
+        print("Fallback: citire live din V1...")
+        live = fetch_from_v1('live.json')
+        if live is None:
+            live = {'count': 0, 'results': []}
+
+    # Salvare date
     if predictions:
-        print(f"  OK: {predictions.get('count', 0)} meciuri")
         save_json(predictions, 'predictions.json')
     else:
-        print("  FAIL: predictions")
+        print("ERROR: Nu s-au putut obține predicțiile!")
+        exit(1)
 
-    # 2. Live
-    print("Fetching live...")
-    live = fetch('/api/live/')
-    if live is not None:
-        count = live.get('count', len(live) if isinstance(live, list) else 0)
-        print(f"  OK: {count} meciuri live")
-        save_json(live, 'live.json')
-    else:
-        print("  FAIL: live (posibil nu exista meciuri live)")
-        save_json({'count': 0, 'results': []}, 'live.json')
+    save_json(live if live else {'count': 0, 'results': []}, 'live.json')
 
-    # 3. Metadata (timestamp actualizare)
+    # Metadata
     meta = {
         'updated_at': datetime.now(timezone.utc).isoformat(),
         'predictions_count': predictions.get('count', 0) if predictions else 0,
