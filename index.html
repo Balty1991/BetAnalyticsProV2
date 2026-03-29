@@ -1,272 +1,124 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BetAnalytics Pro V6.0 - Strategic Betting Engine</title>
-    <meta name="theme-color" content="#0a0e17">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-        :root {
-            --bg-primary: #0a0e17;
-        }
-        body {
-            font-family: 'Inter', system-ui, sans-serif;
-        }
-        .mono {
-            font-family: 'JetBrains Mono', monospace;
-        }
-        .match-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .match-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BetAnalytics Pro</title>
+
+<style>
+body {
+  background:#0a0e17;
+  color:#fff;
+  font-family:Arial;
+  text-align:center;
+  padding:40px;
+}
+input,button{
+  padding:10px;
+  margin:10px;
+  border-radius:8px;
+  border:none;
+}
+button{
+  background:#22c55e;
+  cursor:pointer;
+}
+.card{
+  background:#111827;
+  padding:15px;
+  margin:10px;
+  border-radius:10px;
+}
+</style>
 </head>
-<body class="bg-[#0a0e17] text-white min-h-screen">
 
-<!-- HEADER -->
-<header class="border-b border-white/10 bg-[#111827] sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-green-500 rounded-2xl flex items-center justify-center text-3xl">⚽</div>
-            <div>
-                <h1 class="text-2xl font-bold tracking-tight">BetAnalytics <span class="text-green-400">Pro V6.0</span></h1>
-                <p class="text-xs text-gray-400">Motor strategic de pariuri • Powered by BSD AI</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-4">
-            <button onclick="toggleDarkMode()" class="text-sm px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 flex items-center gap-2">
-                🌙 Dark
-            </button>
-            <a href="https://github.com/balty1991/BetAnalyticsProV2" target="_blank" 
-               class="text-sm px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 flex items-center gap-2">
-                GitHub
-            </a>
-        </div>
-    </div>
-</header>
+<body>
 
-<div class="max-w-7xl mx-auto px-6 py-8">
+<h1>BetAnalytics Pro</h1>
 
-    <!-- SETUP -->
-    <div id="setupScreen" class="max-w-xl mx-auto">
-        <div class="bg-[#141b2a] rounded-3xl p-10 shadow-2xl border border-white/10">
-            <div class="text-center mb-8">
-                <div class="mx-auto w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-3xl flex items-center justify-center text-5xl mb-6 shadow-inner">📊</div>
-                <h2 class="text-4xl font-bold mb-2">Bun venit în V6.0!</h2>
-                <p class="text-gray-400">Introdu token-ul BSD pentru a porni analiza meciurilor de azi</p>
-            </div>
+<input id="token" placeholder="API Token">
+<button onclick="loadData()">Load Matches</button>
 
-            <input id="tokenInput" type="text" placeholder="BSD-TOKEN-AICI" 
-                   class="w-full bg-[#1a2235] border border-white/20 focus:border-green-400 rounded-2xl px-6 py-5 text-lg mono outline-none mb-6">
-
-            <button onclick="startAnalysis()" 
-                    class="w-full bg-green-500 hover:bg-green-600 text-black font-bold text-xl py-6 rounded-3xl transition-all active:scale-95 flex items-center justify-center gap-3">
-                🚀 PORNEȘTE ANALIZA
-            </button>
-
-            <p id="tokenStatus" class="text-center text-xs text-gray-500 mt-6"></p>
-        </div>
-    </div>
-
-    <!-- MAIN APP -->
-    <div id="mainApp" class="hidden">
-
-        <!-- Top 5 Picks -->
-        <div class="mb-12">
-            <div class="flex justify-between items-end mb-6">
-                <h2 class="text-3xl font-bold flex items-center gap-3">
-                    🔥 Top 5 Picks <span id="todayDate" class="text-green-400 text-xl font-normal"></span>
-                </h2>
-                <button onclick="refreshAnalysis()" class="text-sm flex items-center gap-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-2xl">
-                    🔄 Reanalizează
-                </button>
-            </div>
-
-            <div id="topPicks" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"></div>
-        </div>
-
-        <!-- Bilete recomandate -->
-        <h2 class="text-3xl font-bold mb-6">🎟️ Bilete recomandate</h2>
-        <div id="betSlips" class="grid grid-cols-1 lg:grid-cols-5 gap-6"></div>
-
-        <!-- Performanță -->
-        <div class="mt-16 bg-[#141b2a] rounded-3xl p-8">
-            <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">📈 Performanță ultimele 7 zile</h3>
-            <div id="performanceStats" class="grid grid-cols-5 gap-4 text-center">
-                <!-- JS va popula -->
-            </div>
-        </div>
-
-        <!-- Disclaimer -->
-        <div class="mt-12 text-center text-xs text-red-400/80 max-w-md mx-auto">
-            ⚠️ Pariurile sportive implică risc financiar și de dependență. 
-            Acest tool este doar un instrument de analiză. Joacă responsabil. 
-            Nu suntem o casă de pariuri. Folosește doar sume pe care ți le poți permite să le pierzi.
-        </div>
-    </div>
-</div>
+<div id="app"></div>
 
 <script>
-// ================== CONFIG & API ==================
-const API_BASE = "https://sports.bzzoiro.com/api/v1";
+const API = "https://sports.bzzoiro.com/api";
 
-// Token default (poți schimba cu al tău)
-let CURRENT_TOKEN = "";
+async function loadData(){
+  const token = document.getElementById("token").value;
+  if(!token){
+    alert("Bagă tokenul");
+    return;
+  }
 
-// ================== TAILWIND INIT ==================
-function initTailwind() {
-    tailwind.config = {
-        content: [],
-        theme: {
-            extend: {}
-        }
-    }
+  document.getElementById("app").innerHTML="Se încarcă...";
+
+  try{
+    const res = await fetch(API + "/predictions?token=" + token);
+    const data = await res.json();
+
+    const matches = data.results || [];
+
+    render(matches);
+
+  }catch(e){
+    document.getElementById("app").innerHTML="Eroare API";
+  }
 }
 
-// ================== DATA & ORA FORMAT ==================
-function formatDateTime(timestamp) {
-    const date = new Date(timestamp * 1000);
-    const day = date.toLocaleDateString('ro-RO', { day: '2-digit', month: 'long', year: 'numeric' });
-    const time = date.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
-    return `${day} • ${time}`;
-}
+function render(matches){
 
-// ================== RENDER MATCH CARD (cu data/oră) ==================
-function renderMatchCard(match, score) {
-    const div = document.createElement('div');
-    div.className = `match-card bg-[#141b2a] border border-white/10 rounded-3xl p-6 hover:border-green-400/50`;
-    div.innerHTML = `
-        <div class="flex justify-between text-xs text-gray-400 mb-3">
-            <div>${match.league || 'Liga necunoscută'}</div>
-            <div class="font-mono">${formatDateTime(match.kickoff || match.timestamp)}</div>
-        </div>
-        
-        <div class="flex items-center justify-between text-lg font-semibold">
-            <div class="flex-1 text-right">${match.home}</div>
-            <div class="w-10 h-10 bg-white/10 rounded-2xl flex items-center justify-center mx-4 text-xl">⚔️</div>
-            <div class="flex-1">${match.away}</div>
-        </div>
+  if(matches.length===0){
+    document.getElementById("app").innerHTML="Nu sunt date";
+    return;
+  }
 
-        <div class="mt-6 flex justify-between items-center">
-            <div class="text-sm">
-                <span class="text-green-400">${score}</span>
-                <span class="text-gray-400 ml-2">AI Score</span>
-            </div>
-            <div class="px-5 py-1.5 bg-green-400/10 text-green-400 text-xs font-bold rounded-2xl">ELITE</div>
-        </div>
+  let html="";
+
+  matches.slice(0,10).forEach(m=>{
+
+    const home = m.event.home_team;
+    const away = m.event.away_team;
+
+    const xgH = m.expected_home_goals || 0;
+    const xgA = m.expected_away_goals || 0;
+
+    const prob = calcOver15(xgH,xgA);
+
+    html+=`
+      <div class="card">
+        <h3>${home} vs ${away}</h3>
+        <p>xG: ${xgH.toFixed(2)} - ${xgA.toFixed(2)}</p>
+        <p>+1.5 Goluri Prob: ${(prob*100).toFixed(1)}%</p>
+      </div>
     `;
-    return div;
+  });
+
+  document.getElementById("app").innerHTML=html;
 }
 
-// ================== RENDER BET SLIP ==================
-function renderBetSlip(type, title, color, matches) {
-    const div = document.createElement('div');
-    div.className = `rounded-3xl p-6 border border-white/10 ${color}`;
-    div.innerHTML = `
-        <div class="flex items-center justify-between mb-4">
-            <div class="font-bold text-xl">${title}</div>
-            <div class="text-xs px-4 py-1 rounded-3xl bg-black/30">${type}</div>
-        </div>
-        <div class="space-y-4" id="slip-${type}"></div>
-    `;
-    const container = div.querySelector(`#slip-${type}`);
-    
-    matches.forEach(m => {
-        const row = document.createElement('div');
-        row.className = "flex justify-between items-center bg-black/30 rounded-2xl p-4 text-sm";
-        row.innerHTML = `
-            <div>
-                <div class="font-medium">${m.home} - ${m.away}</div>
-                <div class="text-xs text-gray-400">${formatDateTime(m.kickoff || m.timestamp)}</div>
-            </div>
-            <div class="text-right">
-                <div class="text-green-400 font-mono">${m.odd || '1.85'}</div>
-                <div class="text-xs text-gray-400">${m.tip || 'Over 2.5'}</div>
-            </div>
-        `;
-        container.appendChild(row);
-    });
-    return div;
+// Poisson simplu
+function factorial(n){
+  if(n===0) return 1;
+  return n*factorial(n-1);
 }
 
-// ================== START ANALYSIS ==================
-async function startAnalysis() {
-    const token = document.getElementById('tokenInput').value.trim();
-    if (!token) {
-        alert("❌ Introdu token-ul BSD!");
-        return;
+function poisson(k,lambda){
+  return (Math.pow(lambda,k)*Math.exp(-lambda))/factorial(k);
+}
+
+function calcOver15(lh,la){
+  let p=0;
+  for(let i=0;i<5;i++){
+    for(let j=0;j<5;j++){
+      if(i+j>1){
+        p+=poisson(i,lh)*poisson(j,la);
+      }
     }
-    CURRENT_TOKEN = token;
-    document.getElementById('setupScreen').classList.add('hidden');
-    document.getElementById('mainApp').classList.remove('hidden');
-    await loadMatches();
+  }
+  return p;
 }
-
-// ================== LOAD MATCHES (simulat + real) ==================
-async function loadMatches() {
-    // Aici poți pune fetch real la API-ul tău
-    // Exemplu real:
-    // const res = await fetch(`\( {API_BASE}/matches?token= \){CURRENT_TOKEN}`);
-    // const data = await res.json();
-
-    // Pentru demo folosim date mock cu kickoff real
-    const mockData = {
-        topPicks: [
-            { home: "Real Madrid", away: "Barcelona", league: "La Liga", kickoff: 1743352200, score: "ELITE 94" },
-            { home: "Bayern", away: "Dortmund", league: "Bundesliga", kickoff: 1743354000, score: "STRONG 88" },
-            // ... mai multe
-        ],
-        slips: {
-            SAFE: [{home:"Man City",away:"Liverpool",kickoff:1743355800}],
-            BALANCED: [{home:"PSG",away:"Monaco",kickoff:1743360000}],
-            VALUE: [{home:"Inter",away:"Juventus",kickoff:1743363600}],
-            RISK: [{home:"Ajax",away:"PSV",kickoff:1743367200}],
-            COMBO: [{home:"FCSB",away:"Rapid",kickoff:1743370800}]
-        }
-    };
-
-    // Render Top 5
-    const topContainer = document.getElementById('topPicks');
-    topContainer.innerHTML = '';
-    mockData.topPicks.forEach(m => {
-        topContainer.appendChild(renderMatchCard(m, m.score));
-    });
-
-    // Render Bilete
-    const slipsContainer = document.getElementById('betSlips');
-    slipsContainer.innerHTML = '';
-    slipsContainer.appendChild(renderBetSlip('SAFE', 'Bilet SAFE', 'bg-green-400/10 border-green-400/30', mockData.slips.SAFE));
-    slipsContainer.appendChild(renderBetSlip('BALANCED', 'Bilet BALANCED', 'bg-blue-400/10 border-blue-400/30', mockData.slips.BALANCED));
-    slipsContainer.appendChild(renderBetSlip('VALUE', 'Bilet VALUE', 'bg-cyan-400/10 border-cyan-400/30', mockData.slips.VALUE));
-    slipsContainer.appendChild(renderBetSlip('RISK', 'Bilet RISK', 'bg-orange-400/10 border-orange-400/30', mockData.slips.RISK));
-    slipsContainer.appendChild(renderBetSlip('COMBO', 'Bilet COMBO', 'bg-purple-400/10 border-purple-400/30', mockData.slips.COMBO));
-
-    // Data azi
-    document.getElementById('todayDate').textContent = new Date().toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' });
-}
-
-// ================== REFRESH ==================
-function refreshAnalysis() {
-    loadMatches();
-}
-
-// ================== DARK MODE (bonus) ==================
-function toggleDarkMode() {
-    document.documentElement.classList.toggle('dark');
-}
-
-// ================== START ==================
-window.onload = () => {
-    initTailwind();
-    // Dacă vrei token default, pune-l aici:
-    // document.getElementById('tokenInput').value = "TOKEN-TAU-AICI";
-};
 </script>
+
 </body>
 </html>
