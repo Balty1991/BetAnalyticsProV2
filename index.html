@@ -472,10 +472,10 @@ const LOCAL_PROXY = null;
 const STATIC_DATA_BASE = './data'; // fișierele JSON statice generate de GitHub Actions
 
 // Cache TTL inteligent (cerința 5)
-const CACHE_TTL_PREDICTIONS = 30*60*1000;  // 30 min
-const CACHE_TTL_EVENTS      = 60*60*1000;  // 1h
-const CACHE_TTL_LIVE        = 30*1000;     // 30 sec
-const CACHE_VER = 'v3a';
+const CACHE_TTL_PREDICTIONS = 0;  // Dezactivat cache pentru a forța date noi
+const CACHE_TTL_EVENTS      = 0;  // Dezactivat cache
+const CACHE_TTL_LIVE        = 0;  // Dezactivat cache
+const CACHE_VER = 'v4_force_refresh';
 
 // ═══════════════════════════════════════
 // STATE
@@ -659,7 +659,9 @@ async function fetchAllPredictions(key){
   }catch(e){}
 
   // 2. GitHub Pages mode: citește din fișierul static data/predictions.json
-  if(!IS_LOCAL_DEV){
+  // FORȚĂM FETCH DIRECT LA API DACĂ AVEM TOKEN, PENTRU A EVITA DATELE VECHI DIN GITHUB ACTIONS
+  const userKey = getKey();
+  if(!IS_LOCAL_DEV && !userKey){
     try{
       setLdrPct(20, 'Se încarcă datele statice (GitHub Actions)...');
       const r = await fetch(STATIC_DATA_BASE+'/predictions.json?t='+Date.now());
@@ -668,12 +670,10 @@ async function fetchAllPredictions(key){
         const allPreds = d.results || [];
         if(allPreds.length > 0){
           setLdrPct(60, `${allPreds.length} meciuri încărcate din cache static...`);
-          try{ lsSet('ba_cache_pred_'+CACHE_VER, JSON.stringify({data:allPreds, ts:Date.now()})); }catch(e){}
           return {predictions: allPreds, err: null, fromStatic: true};
         }
       }
     }catch(e){ console.warn('Static JSON fetch failed:', e); }
-    // Dacă fișierul static nu există sau e gol, afișăm eroare specifică
     return {err:'static_missing'};
   }
 
