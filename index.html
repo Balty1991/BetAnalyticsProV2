@@ -1425,10 +1425,17 @@ function renderElitePicks(matches){
   const elites = [...matches].filter(m=>m.isElitePick).sort((a,b)=>b.aiScore-a.aiScore).slice(0,8);
   if(!elites.length) return '';
   const rows = elites.map(m=>{
+    // Găsește cel mai bun pronostic pentru afișare
+    let bestMkt = '+1.5 Goluri';
+    let bestProb = m.p15T;
+    if(m.pHTU25 > bestProb) { bestMkt = 'HT Under 2.5'; bestProb = m.pHTU25; }
+    if(m.pMax4T > bestProb) { bestMkt = 'Sub 4.5 Goluri'; bestProb = m.pMax4T; }
+
     return`<div class="elite-row">
       <div class="elite-match">
         <div class="elite-name">${m.home} vs ${m.away}</div>
-        <div class="elite-meta">${m.flag} ${m.liga} · 📅 ${m.dataShort} · 🕐 ${m.ora} · conf: ${m.mlConf.toFixed(0)}%</div>
+        <div class="elite-meta">${m.flag} ${m.liga} · 📅 ${m.dataShort} · 🕐 ${m.ora}</div>
+        <div style="font-size:11px;color:var(--grn);font-weight:700;margin-top:2px">🎯 ${bestMkt} · ${pct(bestProb)}</div>
       </div>
       <div class="elite-r">
         <div class="elite-score">${m.aiScore}</div>
