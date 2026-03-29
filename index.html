@@ -1076,8 +1076,11 @@ function sameLiga(a, b){ return a.liga && b.liga && a.liga === b.liga; }
 // SISTEM CLASIFICARE V3 — LISTE SEPARATE
 // ═══════════════════════════════════════
 function classifyMatch(m){
-  if(m.aiScore > 70 && m.p15T > 0.80) return 'ELITE';
-  if(m.aiScore >= 60 && m.aiScore <= 70) return 'STRONG';
+  // ELITE: AI Score ridicat + Probabilitate bună
+  if(m.aiScore >= 70 || (m.aiScore >= 65 && m.p15T >= 0.80)) return 'ELITE';
+  // STRONG: AI Score mediu-ridicat
+  if(m.aiScore >= 55) return 'STRONG';
+  // NORMAL: Restul meciurilor
   return 'NORMAL';
 }
 
@@ -1093,27 +1096,27 @@ function buildListeSeparate(allMatches){
 
     if(tier === 'ELITE'){
       // Candidat principal: +1.5G (prob maximă)
-      if(m.p15T >= 0.80){
+      if(m.p15T >= 0.75){
         lista_elite.push({m, mkt:'+1.5 Goluri', p:m.p15T,
-          impliedOdd: Math.max(1.05, Math.min(1.25, 0.93/m.p15T)), tip:'+1.5G', tier:'ELITE'});
-      } else if(m.pMax4T >= 0.80){
+          impliedOdd: Math.max(1.05, Math.min(1.30, 0.93/m.p15T)), tip:'+1.5G', tier:'ELITE'});
+      } else if(m.pMax4T >= 0.75){
         lista_elite.push({m, mkt:'Sub 4.5 Goluri', p:m.pMax4T,
-          impliedOdd: Math.max(1.05, Math.min(1.20, 0.93/m.pMax4T)), tip:'U4.5', tier:'ELITE'});
-      } else if(m.pHTU25 >= 0.82){
+          impliedOdd: Math.max(1.05, Math.min(1.25, 0.93/m.pMax4T)), tip:'U4.5', tier:'ELITE'});
+      } else if(m.pHTU25 >= 0.75){
         lista_elite.push({m, mkt:'HT Under 2.5', p:m.pHTU25,
-          impliedOdd: Math.max(1.05, Math.min(1.20, 0.93/m.pHTU25)), tip:'HTU', tier:'ELITE'});
+          impliedOdd: Math.max(1.05, Math.min(1.25, 0.93/m.pHTU25)), tip:'HTU', tier:'ELITE'});
       }
     }
     else if(tier === 'STRONG'){
       // Candidat principal: cel mai bun semnal disponibil
       let best = null;
       const opts = [];
-      if(m.p15T >= 0.65) opts.push({mkt:'+1.5 Goluri', p:m.p15T,
-        impliedOdd: Math.max(1.10, Math.min(1.40, 0.93/m.p15T)), tip:'+1.5G'});
-      if(m.probBTTS && m.probBTTS/100 >= 0.65) opts.push({mkt:'BTTS (Ambele Marchează)', p:m.probBTTS/100,
-        impliedOdd: Math.max(1.15, Math.min(1.55, 0.93/(m.probBTTS/100))), tip:'BTTS'});
-      if(m.prob25 && m.prob25/100 >= 0.65) opts.push({mkt:'+2.5 Goluri', p:m.prob25/100,
-        impliedOdd: Math.max(1.10, Math.min(1.45, 0.93/(m.prob25/100))), tip:'+2.5G'});
+      if(m.p15T >= 0.60) opts.push({mkt:'+1.5 Goluri', p:m.p15T,
+        impliedOdd: Math.max(1.10, Math.min(1.50, 0.93/m.p15T)), tip:'+1.5G'});
+      if(m.probBTTS && m.probBTTS/100 >= 0.60) opts.push({mkt:'BTTS (Ambele Marchează)', p:m.probBTTS/100,
+        impliedOdd: Math.max(1.15, Math.min(1.65, 0.93/(m.probBTTS/100))), tip:'BTTS'});
+      if(m.prob25 && m.prob25/100 >= 0.60) opts.push({mkt:'+2.5 Goluri', p:m.prob25/100,
+        impliedOdd: Math.max(1.10, Math.min(1.55, 0.93/(m.prob25/100))), tip:'+2.5G'});
       opts.sort((a,b)=>b.p-a.p);
       if(opts.length) best = opts[0];
       if(best) lista_strong.push({m, ...best, tier:'STRONG'});
