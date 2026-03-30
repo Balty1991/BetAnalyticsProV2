@@ -768,23 +768,20 @@ function renderML(){
 // BILET AUTOMAT — SPEC Section 7
 // ============================================================
 function generateOver15Ticket(){
-  // Filter for Over 1.5G bets specifically
+  // Filter for Over 1.5G bets specifically from the already processed ALL_MATCHES
   var over15Matches = ALL_MATCHES.map(function(m){
-    var prob = m.prob_over_15;
-    var odds = m.event.odds_over_15;
-    if(!prob || !odds || odds < 1.10) return null;
-    
-    var adjProb = calcAdjustedProb(prob, m.confidence);
-    var value = calcValue(adjProb, odds);
+    // Find the Over 1.5G bet in the allBets array
+    var over15Bet = m.allBets.find(function(b){ return b.type === 'over15'; });
+    if(!over15Bet || !over15Bet.odds || over15Bet.odds < 1.10) return null;
     
     return {
       match: m,
-      adjProb: adjProb,
-      value: value,
-      odds: odds,
-      score: adjProb * 0.7 + (value > 0 ? value * 100 * 0.3 : 0)
+      adjProb: over15Bet.adjProb,
+      value: over15Bet.value,
+      odds: over15Bet.odds,
+      score: over15Bet.adjProb * 0.7 + (over15Bet.value > 0 ? over15Bet.value * 100 * 0.3 : 0)
     };
-  }).filter(function(x){ return x !== null && x.adjProb >= 35; }); // Lowered from 50 to 35 to ensure results with current data
+  }).filter(function(x){ return x !== null && x.adjProb >= 25; }); // Adjusted threshold to 25% for current data availability
 
   // Sort by safety (adjProb) and score
   over15Matches.sort(function(a,b){ return b.score - a.score; });
