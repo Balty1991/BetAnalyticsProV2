@@ -546,15 +546,7 @@ function passesStrictFilter(m){
 
 // SELECTION FILTER — top picks only (calibrated to real data)
 function passesSelectionFilter(m){
-  if(!m.bestBet) return false;
-  var b = m.bestBet;
-  // Best tier: high raw prob + good value + reasonable confidence
-  if(b.prob > 80 && b.value > 0.08 && m.confidence > 55) return true;
-  // Good tier: very high prob + any positive value + decent confidence  
-  if(b.prob > 85 && b.value > 0.05 && m.confidence > 45) return true;
-  // Elite tier: very high confidence (rare in this API)
-  if(m.confidence > 70 && b.value > 0.05) return true;
-  return false;
+  return !!m.bestBet;
 }
 
 // ============================================================
@@ -744,21 +736,27 @@ function renderTopPicks(){
 // ML RECOMMENDATIONS
 // ============================================================
 function renderML(){
-  var mlMatches = ALL_MATCHES.filter(function(m){ return m.hasMlRec; }).slice(0,6);
+  // Top 10 +1.5 sorted by probability
+  var mlMatches = ALL_MATCHES.map(function(m){
+    var over15Bet = m.allBets.find(function(b){ return b.type === 'over15'; });
+    return { match: m, prob: over15Bet ? over15Bet.adjProb : 0 };
+  }).sort(function(a,b){ return b.prob - a.prob; }).slice(0,10);
+
   var grid = $('ml-grid');
   if(mlMatches.length === 0){
     grid.innerHTML = '<div style="color:var(--muted);font-size:13px">Nicio recomandare ML disponibila</div>';
     return;
   }
   var html = '';
-  mlMatches.forEach(function(m){
+  mlMatches.forEach(function(item){
+    var m = item.match;
     html += '<div class="ml-card">'+
       '<div class="ml-hdr">'+
         '<div class="ml-teams">'+m.home+' vs '+m.away+'</div>'+
-        '<div class="ml-conf">'+fmt(m.confidence,0)+'%</div>'+
+        '<div class="ml-conf">'+fmt(item.prob,0)+'%</div>'+
       '</div>'+
       '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">'+m.league+' • '+m.dateLabel+' '+m.timeLabel+'</div>'+
-      '<div class="ml-picks">'+m.mlPicks.map(function(p){ return '<span class="ml-pick">'+p+'</span>'; }).join('')+'</div>'+
+      '<div class="ml-picks"><span class="ml-pick">+1.5 Goluri</span></div>'+
     '</div>';
   });
   grid.innerHTML = html;
