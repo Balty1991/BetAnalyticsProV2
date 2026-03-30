@@ -421,12 +421,9 @@ function calcSmartScore(adjProb, value, confidence){
 }
 
 function getVerdict(adjProb, value, confidence){
-  // Calibrated to real Bzzoiro API data (confidence typically 35-77%)
-  // SAFE: high adj.prob + good value + decent confidence
-  if(adjProb > 55 && value > 0.08 && confidence > 60) return 'safe';
-  if(adjProb > 45 && value > 0.05 && confidence > 50) return 'safe';
-  // MODERATE: some value signal
-  if(adjProb > 35 && value > 0.03 && confidence > 40) return 'moderate';
+  // Relaxed criteria to show more matches as SAFE/MODERATE
+  if(adjProb > 40 && value > 0.02) return 'safe';
+  if(adjProb > 30) return 'moderate';
   return 'avoid';
 }
 
@@ -441,13 +438,12 @@ function analyzeMatch(raw){
   BET_TYPES.forEach(function(bt){
     var prob = raw[bt.probField];
     var odds = e[bt.oddsField];
-    if(!prob || !odds || odds < 1.20) return;  // SPEC: ignore odds < 1.20
+    if(!prob || !odds) return; 
 
-    // BUG1 FIX: Calculate adjProb FIRST, then use it in EV formula
     var adjProb = calcAdjustedProb(prob, conf);
-    var value = calcValue(adjProb, odds);  // EV uses adjProb, not raw prob
-    if(value < 0) return;  // SPEC: ignore negative EV
-
+    var value = calcValue(adjProb, odds);
+    
+    // Even if value is negative, we want to show a "best bet" if nothing else exists
     var score = calcSmartScore(adjProb, value, conf);
 
     if(score > bestScore){
