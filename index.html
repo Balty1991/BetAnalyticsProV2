@@ -774,16 +774,21 @@ function generateOver15Ticket(){
     var over15Bet = m.allBets.find(function(b){ return b.type === 'over15'; });
     if(!over15Bet || !over15Bet.odds || over15Bet.odds < 1.10) return null;
     
+    // High Probability Logic: Prioritize adjProb and xG (form)
+    // score = adjProb (70%) + xG signal (30%)
+    var xgSignal = Math.min(100, (m.xgTotal / 3.5) * 100);
+    var safetyScore = (over15Bet.adjProb * 0.7) + (xgSignal * 0.3);
+
     return {
       match: m,
       adjProb: over15Bet.adjProb,
       value: over15Bet.value,
       odds: over15Bet.odds,
-      score: over15Bet.adjProb * 0.7 + (over15Bet.value > 0 ? over15Bet.value * 100 * 0.3 : 0)
+      score: safetyScore
     };
-  }).filter(function(x){ return x !== null && x.adjProb >= 25; }); // Adjusted threshold to 25% for current data availability
+  }).filter(function(x){ return x !== null && x.adjProb >= 30; });
 
-  // Sort by safety (adjProb) and score
+  // Sort by safety score (descending)
   over15Matches.sort(function(a,b){ return b.score - a.score; });
 
   var picks = [];
@@ -809,10 +814,7 @@ function generateOver15Ticket(){
     if(picks.length >= 10) break;
   }
 
-  // Debug: Log picks to console
-  console.log('Over15 Ticket Generated:', {picks_count: picks.length, total_odds: totalOdds, picks: picks});
-
-  if(picks.length < 3){ // Lowered from 5 to 3 as fallback if data is scarce
+  if(picks.length < 3){
     BILETE = {
       picks: [],
       totalOdds: 1,
@@ -836,13 +838,13 @@ function generateOver15Ticket(){
     totalOdds: totalOdds,
     status: 'pending',
     profit: 0,
-    criteria: 'Bilet 1.5G (5-10 selectii sigure)'
+    criteria: 'Bilet 1.5G (Prioritate Probabilitate & Forma)'
   };
   TRACKING.unshift(ticket);
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
   
   renderBilete();
-  toast('Bilet 1.5G generat cu '+picks.length+' selectii!', 'ok');
+  toast('Bilet 1.5G generat cu '+picks.length+' selectii sigure!', 'ok');
 }
 
 function generateDoubleChanceTicket(){
@@ -863,17 +865,21 @@ function generateDoubleChanceTicket(){
 
     if(!bestDC || !bestDC.odds || bestDC.odds < 1.10) return null;
     
+    // High Probability Logic: Prioritize adjProb and Confidence
+    // score = adjProb (80%) + Confidence (20%)
+    var safetyScore = (bestDC.adjProb * 0.8) + (m.confidence * 0.2);
+
     return {
       match: m,
       adjProb: bestDC.adjProb,
       value: bestDC.value,
       odds: bestDC.odds,
       label: bestDC.label,
-      score: bestDC.adjProb * 0.7 + (bestDC.value > 0 ? bestDC.value * 100 * 0.3 : 0)
+      score: safetyScore
     };
-  }).filter(function(x){ return x !== null && x.adjProb >= 25; });
+  }).filter(function(x){ return x !== null && x.adjProb >= 35; });
 
-  // Sort by safety (adjProb) and score
+  // Sort by safety score (descending)
   dcMatches.sort(function(a,b){ return b.score - a.score; });
 
   var picks = [];
@@ -923,13 +929,13 @@ function generateDoubleChanceTicket(){
     totalOdds: totalOdds,
     status: 'pending',
     profit: 0,
-    criteria: 'Bilet 1X/X2 (5-10 selectii sigure)'
+    criteria: 'Bilet 1X/X2 (Prioritate Probabilitate & Incredere)'
   };
   TRACKING.unshift(ticket);
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
 
   renderBilete();
-  toast('Bilet Combo 1X/X2 generat cu '+picks.length+' selectii!', 'ok');
+  toast('Bilet Combo 1X/X2 generat cu '+picks.length+' selectii sigure!', 'ok');
 }
 
 function generateTicket(){
