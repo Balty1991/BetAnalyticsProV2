@@ -408,10 +408,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
       </div>
       <div class="bk-grid" id="bk-grid"></div>
     </div>
-    <div class="bankroll-card">
-      <div class="sec-title" style="margin-bottom:12px">📊 Strategie Piramida</div>
-      <div id="bk-pyramid"></div>
-    </div>
+
   </div>
 
 </div><!-- /main -->
@@ -1106,13 +1103,7 @@ function calcBankroll(){
     '<div class="bk-item"><div class="bk-label">🟡 Bilet Zilnic ('+pctMedium.toFixed(1)+'%)</div><div class="bk-val" style="color:var(--yel)">'+medium.toFixed(2)+' RON</div><div class="bk-sub">Echilibrat</div></div>'+
     '<div class="bk-item"><div class="bk-label">🔴 Bilet Risc ('+pctRisk.toFixed(1)+'%)</div><div class="bk-val" style="color:var(--red)">'+risk.toFixed(2)+' RON</div><div class="bk-sub">Risc ridicat</div></div>';
 
-  $('bk-pyramid').innerHTML =
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
-    '<div class="bk-item"><div class="bk-label">Bankroll Actual</div><div class="bk-val">'+actualBk.toFixed(2)+' RON</div></div>'+
-    '<div class="bk-item"><div class="bk-label">Rezerva ('+((100-totalAlloc).toFixed(1))+'%)</div><div class="bk-val" style="color:var(--acc)">'+reserve.toFixed(2)+' RON</div></div>'+
-    '<div class="bk-item"><div class="bk-label">Alocat bilete</div><div class="bk-val" style="color:var(--yel)">'+(safe+medium+risk).toFixed(2)+' RON</div></div>'+
-    '<div class="bk-item"><div class="bk-label">Risc maxim</div><div class="bk-val" style="color:var(--red)">'+(safe+medium+risk).toFixed(2)+' RON ('+totalAlloc.toFixed(1)+'%)</div></div>'+
-    '</div>';
+
 }
 
 // ============================================================
