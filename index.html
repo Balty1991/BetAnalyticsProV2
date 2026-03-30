@@ -798,24 +798,37 @@ function generateTicket(){
 }
 
 function generateOver15Ticket(){
+  // Tiered selection to ensure at least 5 matches
   var eligible = ALL_MATCHES.filter(function(m){
     var b = m.allBets.find(function(x){ return x.type==='over15'; });
     return b && b.adjProb >= 50 && b.odds >= 1.10;
   });
+
+  // If not enough high-prob matches, relax criteria
+  if(eligible.length < 5){
+    eligible = ALL_MATCHES.filter(function(m){
+      var b = m.allBets.find(function(x){ return x.type==='over15'; });
+      return b && b.adjProb >= 40 && b.odds >= 1.05;
+    });
+  }
+
   eligible.sort(function(a,b){
     var bA = a.allBets.find(function(x){ return x.type==='over15'; });
     var bB = b.allBets.find(function(x){ return x.type==='over15'; });
     return bB.adjProb - bA.adjProb;
   });
-  var picks = eligible.slice(0, 8);
+
+  // Take between 5 and 10 matches
+  var picksCount = Math.min(Math.max(eligible.length, 0), 10);
+  if(picksCount < 5){
+    toast('Nu s-au gasit minim 5 meciuri pentru bilet 1.5G', 'warn');
+    return;
+  }
+
+  var picks = eligible.slice(0, picksCount);
   var totalOdds = picks.reduce(function(acc,m){
     return acc * m.allBets.find(function(x){ return x.type==='over15'; }).odds;
   }, 1);
-  
-  if(picks.length < 3){
-    toast('Prea putine meciuri pentru bilet 1.5G', 'warn');
-    return;
-  }
 
   BILETE = {
     picks: picks.map(function(m){
@@ -827,7 +840,7 @@ function generateOver15Ticket(){
     type: 'over15'
   };
   renderBilete();
-  toast('Bilet 1.5G generat!', 'ok');
+  toast('Bilet 1.5G generat cu ' + picks.length + ' selectii!', 'ok');
 }
 
 function generateMixTicket(){
