@@ -784,7 +784,7 @@ function generateOver15Ticket(){
       odds: odds,
       score: adjProb * 0.7 + (value > 0 ? value * 100 * 0.3 : 0)
     };
-  }).filter(function(x){ return x !== null && x.adjProb >= 50; });
+  }).filter(function(x){ return x !== null && x.adjProb >= 35; }); // Lowered from 50 to 35 to ensure results with current data
 
   // Sort by safety (adjProb) and score
   over15Matches.sort(function(a,b){ return b.score - a.score; });
@@ -812,12 +812,12 @@ function generateOver15Ticket(){
     if(picks.length >= 10) break;
   }
 
-  if(picks.length < 5){
+  if(picks.length < 3){ // Lowered from 5 to 3 as fallback if data is scarce
     BILETE = {
       picks: [],
       totalOdds: 1,
       generatedAt: new Date().toISOString(),
-      error: 'Nu am gasit destule meciuri sigure (minim 5) pentru biletul de 1.5G. Incearca mai tarziu.'
+      error: 'Nu am gasit destule meciuri sigure pentru biletul de 1.5G. Incearca mai tarziu cand oferta este mai bogata.'
     };
     renderBilete();
     toast('Prea putine meciuri sigure gasite', 'warn');
