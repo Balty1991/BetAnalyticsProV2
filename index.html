@@ -146,8 +146,16 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 /* BANKROLL */
 .bankroll-card{background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:16px}
 .bk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
-@media(max-width:500px){.bk-grid{grid-template-columns:1fr}}
-.bk-item{background:rgba(255,255,255,.03);border-radius:10px;padding:12px}
+@media(max-width:600px){
+  .bk-grid{grid-template-columns:repeat(2,1fr)}
+  .bankroll-card{padding:16px}
+}
+@media(max-width:400px){
+  .bk-grid{grid-template-columns:1fr}
+}
+.bk-item{background:rgba(255,255,255,.03);border:1px solid var(--brd2);border-radius:10px;padding:12px;min-width:0;overflow:hidden}
+.bk-val{font-size:18px;font-weight:700;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bk-lbl{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase}
 .bk-label{font-size:11px;color:var(--muted);margin-bottom:4px}
 .bk-val{font-size:18px;font-weight:700;font-family:var(--mono)}
 .bk-sub{font-size:10px;color:var(--muted);margin-top:2px}
@@ -843,14 +851,25 @@ function generateOver15Ticket(){
 }
 
 function generateMixTicket(){
-  // Scan all matches and pick the absolute best bet from ANY market
+  // Scan all matches and pick the absolute best bet, prioritizing non-over15 markets to differentiate from the other ticket
   var mixMatches = ALL_MATCHES.map(function(m){
     if(!m.allBets || m.allBets.length === 0) return null;
     
-    // Find the bet with the highest adjProb in this match
-    var bestOption = m.allBets.reduce(function(prev, current) {
-      return (prev.adjProb > current.adjProb) ? prev : current;
-    });
+    // Filter out over15 to prioritize other markets (1X, X2, BTTS, Over 2.5)
+    var nonOver15Bets = m.allBets.filter(function(b){ return b.type !== 'over15'; });
+    
+    var bestOption = null;
+    if(nonOver15Bets.length > 0) {
+      // Pick the best from non-over15 markets
+      bestOption = nonOver15Bets.reduce(function(prev, current) {
+        return (prev.adjProb > current.adjProb) ? prev : current;
+      });
+    } else {
+      // Fallback to any market if no others exist
+      bestOption = m.allBets.reduce(function(prev, current) {
+        return (prev.adjProb > current.adjProb) ? prev : current;
+      });
+    }
 
     if(!bestOption || !bestOption.odds || bestOption.odds < 1.10) return null;
     
@@ -865,7 +884,7 @@ function generateMixTicket(){
       label: bestOption.label,
       score: safetyScore
     };
-  }).filter(function(x){ return x !== null && x.adjProb >= 30; });
+  }).filter(function(x){ return x !== null && x.adjProb >= 25; });
 
   // Sort by safety score (descending)
   mixMatches.sort(function(a,b){ return b.score - a.score; });
