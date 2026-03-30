@@ -754,13 +754,14 @@ function renderML(){
   var html = '';
   mlMatches.forEach(function(item){
     var m = item.match;
+    var b = m.bestBet || { label: '+1.5 Goluri', adjProb: item.prob };
     html += '<div class="ml-card">'+
       '<div class="ml-hdr">'+
         '<div class="ml-teams">'+m.home+' vs '+m.away+'</div>'+
-        '<div class="ml-conf">'+fmt(item.prob,0)+'%</div>'+
+        '<div class="ml-conf">'+fmt(b.adjProb,0)+'%</div>'+
       '</div>'+
       '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">'+m.league+' • '+m.dateLabel+' '+m.timeLabel+'</div>'+
-      '<div class="ml-picks"><span class="ml-pick">+1.5 Goluri</span></div>'+
+      '<div class="ml-picks"><span class="ml-pick">'+b.label+'</span></div>'+
     '</div>';
   });
   grid.innerHTML = html;
