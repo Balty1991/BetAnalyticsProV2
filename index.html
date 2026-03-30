@@ -869,6 +869,7 @@ function generateTicket(){
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
 
   renderBilete();
+  var combinedEV = picks.reduce(function(acc,m){ return acc*(m.bestBet.adjProb/100); },1)*totalOdds;
   toast('Bilet generat: '+picks.length+' selectii, cota '+totalOdds.toFixed(2)+'x, EV '+(combinedEV*100).toFixed(1)+'%', 'ok');
 }
 
@@ -911,7 +912,8 @@ function renderBilete(){
     '</div>';
   });
 
-  html += '<div class="bilet-criteria">⚡ Criteriu: Adj.Prob ≥60% + Value >0% (EV pozitiv) + Confidence ≥45 | Cota totala: '+totalOdds.toFixed(2)+'x | EV combinat: '+(combinedEV*100).toFixed(1)+'%</div>';
+  var combinedEV = picks.reduce(function(acc,m){ return acc*(m.bestBet.adjProb/100); },1)*totalOdds;
+  html += '<div class="bilet-criteria">⚡ Criteriu: Adj.Prob >80% + Value >5% + Confidence >65 | Cota totala: '+totalOdds.toFixed(2)+'x | EV combinat: '+(combinedEV*100).toFixed(1)+'%</div>';
   html += '</div>';
 
   // Also show all eligible matches
