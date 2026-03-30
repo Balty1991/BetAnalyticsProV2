@@ -1,821 +1,1007 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-  <title>BetAnalytics Pro v7 — Profit Engine</title>
-  <meta name="description" content="Sistem automat avansat de analiza si generare pronosticuri fotbal cu AI"/>
-  <meta name="theme-color" content="#0a0e17"/>
-  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/33/33736.png"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>BetAnalytics Pro v8 — Value Bet Engine</title>
+<meta name="theme-color" content="#0a0e17"/>
+<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/33/33736.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
   --bg:#0a0e17;--bg2:#111827;--panel:#161d2e;--brd:#1e2a3a;--brd2:#2a3a50;
   --txt:#e2e8f0;--muted:#64748b;--acc:#3b82f6;--grn:#22c55e;--yel:#f59e0b;
-  --org:#f97316;--live:#ef4444;--pur:#a855f7;--cyan:#06b6d4;--val:#10b981;
+  --org:#f97316;--red:#ef4444;--pur:#a855f7;--cyan:#06b6d4;--val:#10b981;
   --mono:'JetBrains Mono',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
-.header{position:sticky;top:0;z-index:100;background:rgba(10,14,23,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:12px 16px}
-.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.logo-title{font-size:18px;font-weight:800;background:linear-gradient(135deg,#3b82f6,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* HEADER */
+.header{position:sticky;top:0;z-index:100;background:rgba(10,14,23,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:10px 16px}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.logo{display:flex;flex-direction:column}
+.logo-title{font-size:17px;font-weight:800;background:linear-gradient(135deg,#3b82f6,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo-sub{font-size:10px;color:var(--muted);font-family:var(--mono)}
-.header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .status-bar{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);font-family:var(--mono)}
 .sb-dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
 .sb-dot.live{background:var(--grn);box-shadow:0 0 6px var(--grn);animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.btn{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s}
+.btn{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
 .btn-primary{background:linear-gradient(135deg,var(--acc),var(--pur));color:#fff}
-.btn-primary:hover{opacity:.85}
-.btn-outline{background:transparent;border:1px solid var(--brd2);color:var(--muted)}
-.btn-outline:hover{border-color:var(--acc);color:var(--acc)}
-.tabs{max-width:1400px;margin:0 auto;padding:16px 16px 0;display:flex;gap:4px;border-bottom:1px solid var(--brd)}
+.btn-primary:hover{opacity:.85;transform:translateY(-1px)}
+.btn-green{background:linear-gradient(135deg,var(--grn),var(--val));color:#fff}
+.btn-green:hover{opacity:.85}
+
+/* TABS */
+.tabs{max-width:1400px;margin:0 auto;padding:14px 16px 0;display:flex;gap:4px;border-bottom:1px solid var(--brd)}
 .tab{padding:8px 16px;border-radius:8px 8px 0 0;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent}
 .tab.active{color:var(--acc);border-bottom-color:var(--acc);background:rgba(59,130,246,.08)}
 .tab:hover:not(.active){color:var(--txt);background:rgba(255,255,255,.04)}
-.main{max-width:1400px;margin:0 auto;padding:20px 16px 60px}
+.main{max-width:1400px;margin:0 auto;padding:20px 16px 80px}
 .tab-content{display:none}
 .tab-content.active{display:block}
-.loader{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,14,23,.92);backdrop-filter:blur(8px);flex-direction:column;align-items:center;justify-content:center;gap:16px}
+
+/* LOADER */
+.loader{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,14,23,.95);backdrop-filter:blur(8px);flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .loader.show{display:flex}
-.loader-title{font-size:18px;font-weight:700}
-.loader-sub{font-size:12px;color:var(--muted);font-family:var(--mono)}
-.loader-bar{width:280px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden}
-.loader-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--pur));border-radius:2px;transition:width .4s}
+.loader-spin{width:48px;height:48px;border:3px solid var(--brd2);border-top-color:var(--acc);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-title{font-size:16px;font-weight:700}
+.loader-sub{font-size:11px;color:var(--muted);font-family:var(--mono)}
+
+/* TOAST */
 .toast-wrap{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px}
-.toast{padding:10px 16px;border-radius:10px;font-size:12px;font-weight:600;animation:slideIn .3s ease;max-width:280px}
+.toast{padding:10px 16px;border-radius:10px;font-size:12px;font-weight:600;animation:slideIn .3s ease;max-width:300px}
 .toast-ok{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);color:var(--grn)}
-.toast-err{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:var(--live)}
-.toast-inf{background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.4);color:var(--acc)}
+.toast-err{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:var(--red)}
 @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:24px}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
 .stat-card{background:var(--panel);border:1px solid var(--brd);border-radius:12px;padding:16px;text-align:center}
-.stat-val{font-size:28px;font-weight:900;font-family:var(--mono);margin-bottom:4px}
-.stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.sec-hdr{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:16px 0 8px;border-bottom:1px solid var(--brd);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.sec-hdr::before{content:'';width:3px;height:14px;background:var(--acc);border-radius:2px}
-.welcome{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(168,85,247,.1));border:1px solid rgba(59,130,246,.2);border-radius:16px;padding:20px;margin-bottom:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.welcome h2{font-size:20px;font-weight:800;margin-bottom:4px}
-.welcome p{font-size:13px;color:var(--muted)}
-.hl{color:var(--grn);font-weight:700}
-.top-picks-wrap{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(255,215,0,.04));border:1px solid rgba(245,158,11,.25);border-radius:16px;padding:16px;margin-bottom:24px}
-.top-picks-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
-.top-picks-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
-.elite-badge{background:rgba(245,158,11,.2);color:#f59e0b;border:1px solid rgba(245,158,11,.4);padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;font-family:var(--mono)}
-.card{background:var(--panel);border:1px solid var(--brd);border-radius:14px;overflow:hidden;transition:border-color .2s,transform .2s;cursor:pointer}
-.card:hover{border-color:var(--brd2);transform:translateY(-1px)}
-.card.card-elite{border-color:rgba(255,215,0,.35);background:linear-gradient(135deg,rgba(255,215,0,.04),var(--panel))}
-.card.card-value{border-color:rgba(16,185,129,.35);background:linear-gradient(135deg,rgba(16,185,129,.04),var(--panel))}
-.card-head{padding:14px 14px 10px}
-.card-league{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted);font-family:var(--mono);margin-bottom:8px;flex-wrap:wrap}
-.lr-badge{font-size:8px;padding:2px 5px;border-radius:4px;font-weight:700;font-family:var(--mono)}
-.lr-S{background:rgba(34,197,94,.2);color:#22c55e}
-.lr-A{background:rgba(59,130,246,.2);color:#3b82f6}
-.lr-B{background:rgba(245,158,11,.2);color:#f59e0b}
-.lr-C{background:rgba(239,68,68,.15);color:#ef4444}
-.card-teams{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-.card-team{font-size:14px;font-weight:700;flex:1;display:flex;align-items:center;gap:6px}
-.card-team img{width:20px;height:20px;border-radius:2px}
-.card-team.away{text-align:right;justify-content:flex-end}
-.card-vs{font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0}
-.card-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);flex-wrap:wrap;margin-bottom:8px}
-.card-date{font-family:var(--mono);font-size:11px;color:var(--org);font-weight:700}
-.card-time{font-family:var(--mono);font-size:11px;color:var(--acc)}
-.ai-badge{font-family:var(--mono);font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;margin-left:auto}
-.ai-elite{background:rgba(255,215,0,.15);color:#ffd700;border:1px solid rgba(255,215,0,.4)}
-.ai-safe{background:rgba(34,197,94,.12);color:var(--grn);border:1px solid rgba(34,197,94,.3)}
-.ai-medium{background:rgba(245,158,11,.12);color:var(--yel);border:1px solid rgba(245,158,11,.3)}
-.ai-risk{background:rgba(239,68,68,.12);color:var(--live);border:1px solid rgba(239,68,68,.3)}
-.card-xg{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px}
-.card-badges{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
-.badge{font-size:9px;padding:2px 7px;border-radius:5px;border:1px solid;font-weight:700;font-family:var(--mono)}
-.badge-elite{color:#ffd700;background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.4)}
-.badge-strong{color:var(--acc);background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3)}
-.badge-value{color:var(--val);background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3)}
-.badge-ml{color:var(--pur);background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.3)}
-.card-odds{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
-.odd-chip{flex:1;min-width:44px;text-align:center;padding:5px 3px;background:var(--bg2);border-radius:7px;font-family:var(--mono);font-size:11px;font-weight:700;border:1px solid var(--brd)}
-.odd-lbl{font-size:8px;color:var(--muted);font-weight:400;display:block}
-.conf-wrap{display:flex;align-items:center;gap:8px;padding:0 14px 10px}
-.conf-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;white-space:nowrap}
-.conf-track{flex:1;height:5px;background:var(--brd2);border-radius:3px;overflow:hidden}
-.conf-fill{height:100%;border-radius:3px;transition:width .5s}
-.conf-pct{font-family:var(--mono);font-size:11px;font-weight:800;min-width:38px;text-align:right}
-.probs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 14px;border-top:1px solid var(--brd)}
-.prob-cell{text-align:center;padding:8px 4px;background:var(--bg2);border-radius:8px}
-.prob-val{font-size:16px;font-weight:800;font-family:var(--mono)}
-.prob-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;margin-top:2px}
-.card-detail{display:none;padding:12px 14px;border-top:1px solid var(--brd);background:rgba(0,0,0,.2)}
-.card-detail.open{display:block}
-.detail-section{margin-bottom:10px}
-.detail-title{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--brd)}
-.detail-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,.03)}
-.detail-row:last-child{border-bottom:none}
-.detail-row-val{font-family:var(--mono);font-weight:700}
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-.cards-grid-5{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
-.ml-wrap{background:var(--panel);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:20px}
-.ml-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.15);margin-bottom:6px;gap:8px;flex-wrap:wrap}
-.ml-row:last-child{margin-bottom:0}
-.ml-match-name{font-size:12px;font-weight:600;margin-bottom:2px}
-.ml-match-meta{font-size:10px;color:var(--muted)}
-.ml-tags{display:flex;gap:4px;flex-wrap:wrap}
-.ml-tag{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;font-family:var(--mono);background:rgba(168,85,247,.2);color:var(--pur);border:1px solid rgba(168,85,247,.3)}
-.bilet{background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:16px;margin-bottom:16px}
-.bilet-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap}
-.bilet-title{font-size:15px;font-weight:700;margin-bottom:4px}
-.bilet-tag{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:5px;border:1px solid;display:inline-block}
-.bilet-cota-lbl{font-size:10px;color:var(--muted);text-align:right}
-.bilet-cota{font-family:var(--mono);font-size:22px;font-weight:900;text-align:right}
-.pick{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--brd);margin-bottom:6px;gap:8px}
-.pick:last-child{margin-bottom:0}
-.pick-name{font-size:12px;font-weight:700;margin-bottom:2px}
-.pick-meta{font-size:10px;color:var(--muted)}
-.pick-right{text-align:right;flex-shrink:0}
-.pick-pct{font-family:var(--mono);font-size:14px;font-weight:900}
-.pick-odd{font-family:var(--mono);font-size:10px;color:var(--muted)}
-.bilet-note{font-size:10px;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--brd)}
-.bilet-empty{font-size:13px;color:var(--muted);line-height:1.7;padding:12px 0}
-.bankroll-wrap{background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:20px}
-.bankroll-input-row{display:flex;gap:8px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
-.bankroll-input{background:var(--bg2);border:1px solid var(--brd2);border-radius:8px;padding:10px 14px;font-size:15px;font-weight:700;color:var(--txt);width:160px;font-family:var(--mono)}
-.bankroll-input:focus{outline:none;border-color:var(--acc)}
-.bankroll-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.bk-card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:14px}
-.bk-card-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.bk-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
-.bk-val{font-family:var(--mono);font-weight:700}
-.date-sep{display:flex;align-items:center;gap:10px;margin:20px 0 10px;font-size:12px;color:var(--muted)}
-.date-sep-lbl{font-weight:600;white-space:nowrap}
-.date-sep-line{flex:1;height:1px;background:var(--brd)}
-.date-sep-count{font-family:var(--mono);font-size:10px;white-space:nowrap}
-.sort-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:16px;padding:10px 0}
-.sort-lbl{font-size:11px;color:var(--muted);font-weight:600}
-.sort-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--brd);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;transition:all .2s}
-.sort-btn.active,.sort-btn:hover{border-color:var(--acc);color:var(--acc);background:rgba(59,130,246,.08)}
-.sort-count{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto}
-.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
-.filter-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--brd);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s}
-.filter-btn.active,.filter-btn:hover{border-color:var(--acc);color:var(--acc);background:rgba(59,130,246,.08)}
-.empty{text-align:center;padding:60px 20px}
-.empty-ico{font-size:48px;margin-bottom:12px}
-.empty-title{font-size:18px;font-weight:700;margin-bottom:6px}
-.empty-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
-@media(max-width:600px){
-  .cards-grid{grid-template-columns:1fr}
-  .cards-grid-5{grid-template-columns:1fr}
-  .probs-grid{grid-template-columns:repeat(2,1fr)}
-  .stats-row{grid-template-columns:repeat(2,1fr)}
+.stat-num{font-size:28px;font-weight:800;font-family:var(--mono)}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+
+/* SECTION HEADER */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.sec-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.sec-badge{background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--acc);font-size:11px;padding:2px 8px;border-radius:20px;font-family:var(--mono)}
+
+/* MATCH CARD */
+.matches-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.match-card{background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.match-card:hover{border-color:var(--brd2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.match-card.safe{border-left:3px solid var(--grn)}
+.match-card.moderate{border-left:3px solid var(--yel)}
+.match-card.avoid{border-left:3px solid var(--red);opacity:.7}
+.mc-league{font-size:10px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mc-teams{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+.mc-team{font-size:14px;font-weight:700;flex:1}
+.mc-team.away{text-align:right}
+.mc-vs{font-size:11px;color:var(--muted);font-family:var(--mono);flex-shrink:0}
+.mc-time{font-size:10px;color:var(--muted);font-family:var(--mono);margin-bottom:10px}
+.mc-verdict{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:10px}
+.verdict-safe{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);color:var(--grn)}
+.verdict-moderate{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.4);color:var(--yel)}
+.verdict-avoid{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:var(--red)}
+.mc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.mc-stat{background:rgba(255,255,255,.04);border-radius:8px;padding:6px 4px;text-align:center}
+.mc-stat-val{font-size:13px;font-weight:700;font-family:var(--mono)}
+.mc-stat-lbl{font-size:9px;color:var(--muted);margin-top:2px}
+.mc-rec{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:8px 10px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.mc-rec-type{color:var(--acc);font-family:var(--mono)}
+.mc-rec-val{font-size:11px;color:var(--muted)}
+.mc-conf-bar{margin-top:8px}
+.mc-conf-bar-bg{height:3px;background:var(--brd2);border-radius:2px;overflow:hidden}
+.mc-conf-bar-fill{height:100%;border-radius:2px;transition:width .6s ease}
+.mc-conf-lbl{font-size:9px;color:var(--muted);margin-top:3px;text-align:right;font-family:var(--mono)}
+
+/* FILTERS */
+.filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--brd2);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s}
+.filter-btn.active{background:rgba(59,130,246,.15);border-color:var(--acc);color:var(--acc)}
+.sort-select{background:var(--panel);border:1px solid var(--brd2);color:var(--txt);font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer}
+.filter-count{font-size:11px;color:var(--muted);font-family:var(--mono);margin-left:auto}
+
+/* DATE GROUP */
+.date-group{margin-bottom:20px}
+.date-label{font-size:12px;font-weight:600;color:var(--muted);padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px;margin-bottom:10px;display:inline-flex;align-items:center;gap:6px;font-family:var(--mono)}
+
+/* BILETE TAB */
+.bilet-card{background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:16px}
+.bilet-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.bilet-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.bilet-cota{font-size:22px;font-weight:800;font-family:var(--mono)}
+.bilet-meta{font-size:11px;color:var(--muted);margin-bottom:12px}
+.bilet-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--brd);gap:8px;flex-wrap:wrap}
+.bilet-row:last-child{border-bottom:none}
+.bilet-match{flex:1;min-width:0}
+.bilet-match-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bilet-match-info{font-size:10px;color:var(--muted);font-family:var(--mono)}
+.bilet-pick{text-align:right;flex-shrink:0}
+.bilet-pick-type{font-size:12px;font-weight:700;color:var(--acc)}
+.bilet-pick-prob{font-size:10px;color:var(--grn);font-family:var(--mono)}
+.bilet-criteria{font-size:11px;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--brd)}
+.gen-btn-wrap{text-align:center;margin:20px 0}
+
+/* TRACKING TAB */
+.tracking-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:500px){.tracking-stats{grid-template-columns:1fr}}
+.track-stat{background:var(--panel);border:1px solid var(--brd);border-radius:12px;padding:16px;text-align:center}
+.track-num{font-size:26px;font-weight:800;font-family:var(--mono)}
+.track-lbl{font-size:11px;color:var(--muted);margin-top:4px}
+.history-table{width:100%;border-collapse:collapse;font-size:12px}
+.history-table th{text-align:left;padding:8px 10px;color:var(--muted);border-bottom:1px solid var(--brd);font-weight:600;font-size:11px;text-transform:uppercase}
+.history-table td{padding:8px 10px;border-bottom:1px solid rgba(30,42,58,.5)}
+.history-table tr:hover td{background:rgba(255,255,255,.02)}
+.badge-win{background:rgba(34,197,94,.15);color:var(--grn);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.badge-loss{background:rgba(239,68,68,.15);color:var(--red);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.badge-pending{background:rgba(245,158,11,.15);color:var(--yel);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-text{font-size:14px}
+
+/* BANKROLL */
+.bankroll-card{background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:16px}
+.bk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+@media(max-width:500px){.bk-grid{grid-template-columns:1fr}}
+.bk-item{background:rgba(255,255,255,.03);border-radius:10px;padding:12px}
+.bk-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+.bk-val{font-size:18px;font-weight:700;font-family:var(--mono)}
+.bk-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.bk-input-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.bk-input{background:var(--bg2);border:1px solid var(--brd2);color:var(--txt);padding:8px 12px;border-radius:8px;font-size:14px;width:150px;font-family:var(--mono)}
+
+/* WELCOME */
+.welcome-box{background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(168,85,247,.08));border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.welcome-text{font-size:13px;color:var(--muted)}
+.welcome-text .hl{color:var(--txt);font-weight:700}
+
+/* TOP PICKS */
+.top-picks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:24px}
+.top-pick-card{background:var(--panel);border:1px solid rgba(59,130,246,.3);border-radius:14px;padding:14px;position:relative;overflow:hidden}
+.top-pick-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--acc),var(--pur))}
+.tp-rank{position:absolute;top:10px;right:12px;font-size:20px;font-weight:900;color:rgba(255,255,255,.06);font-family:var(--mono)}
+.tp-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-bottom:8px}
+.tp-badge-safe{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--grn)}
+.tp-badge-mod{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--yel)}
+.tp-teams{font-size:14px;font-weight:700;margin-bottom:4px}
+.tp-league{font-size:10px;color:var(--muted);margin-bottom:10px}
+.tp-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.tp-metric{text-align:center;background:rgba(255,255,255,.04);border-radius:6px;padding:5px}
+.tp-metric-val{font-size:13px;font-weight:700;font-family:var(--mono)}
+.tp-metric-lbl{font-size:9px;color:var(--muted)}
+.tp-rec{font-size:11px;font-weight:600;color:var(--acc);background:rgba(59,130,246,.08);border-radius:6px;padding:5px 8px;text-align:center}
+
+/* ML SECTION */
+.ml-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:24px}
+.ml-card{background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:12px}
+.ml-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.ml-teams{font-size:13px;font-weight:600}
+.ml-conf{font-size:11px;font-family:var(--mono);color:var(--pur)}
+.ml-picks{display:flex;gap:6px;flex-wrap:wrap}
+.ml-pick{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(168,85,247,.15);color:var(--pur)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .matches-grid{grid-template-columns:1fr}
+  .top-picks-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
+<!-- LOADER -->
 <div class="loader" id="loader">
-  <div style="font-size:40px">⚽</div>
-  <div class="loader-title" id="ldr-title">Se analizeaza meciurile</div>
-  <div class="loader-sub" id="ldr-sub">Filtrare agresivă — doar VALUE BETS reale</div>
-  <div class="loader-bar"><div class="loader-fill" id="ldr-fill" style="width:0%"></div></div>
+  <div class="loader-spin"></div>
+  <div class="loader-title">Se incarca datele...</div>
+  <div class="loader-sub" id="loader-sub">Conectare la API Bzzoiro</div>
 </div>
 
+<!-- TOAST -->
 <div class="toast-wrap" id="toast-wrap"></div>
 
-<header class="header">
+<!-- HEADER -->
+<div class="header">
   <div class="header-inner">
-    <div style="display:flex;align-items:center;gap:10px">
-      <span style="font-size:22px">⚽</span>
-      <div>
-        <div class="logo-title">BetAnalytics Pro</div>
-        <div class="logo-sub">Profit Engine v7 — Filtrare Agresivă + Value Bets</div>
-      </div>
+    <div class="logo">
+      <div class="logo-title">BetAnalytics Pro</div>
+      <div class="logo-sub">Value Bet Engine v8 — Bzzoiro API</div>
     </div>
-    <div class="header-right">
-      <div class="status-bar">
-        <span class="sb-dot" id="sb-dot"></span>
-        <span id="sb-txt">Se incarca...</span>
-        <span id="sb-time"></span>
-      </div>
-      <button class="btn btn-primary" id="btn-refresh" onclick="doRefresh()">🔄 Reimprospateaza</button>
+    <div class="status-bar">
+      <div class="sb-dot live" id="sb-dot"></div>
+      <span id="sb-text">Se incarca...</span>
     </div>
+    <button class="btn btn-primary" id="btn-refresh" onclick="doRefresh()">🔄 Reimprospateaza</button>
   </div>
-</header>
+</div>
 
+<!-- TABS -->
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('dashboard',this)">📊 Dashboard</button>
-  <button class="tab" onclick="switchTab('tickets',this)">🎫 Bilete</button>
-  <button class="tab" onclick="switchTab('bankroll',this)">💰 Bankroll</button>
+  <button class="tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+  <button class="tab" onclick="switchTab('meciuri')">⚽ Meciuri</button>
+  <button class="tab" onclick="switchTab('bilete')">🎫 Bilete</button>
+  <button class="tab" onclick="switchTab('tracking')">📈 Tracking</button>
+  <button class="tab" onclick="switchTab('bankroll')">💰 Bankroll</button>
 </div>
 
 <div class="main">
 
+  <!-- ===== DASHBOARD ===== -->
   <div class="tab-content active" id="tab-dashboard">
-    <div class="welcome" id="welcome-banner" style="display:none">
-      <div>
-        <h2>🎯 BetAnalytics Pro</h2>
-        <p id="welcome-text">Se analizeaza meciurile...</p>
-      </div>
-      <button class="btn btn-outline" onclick="doRefresh()">🔄 Reimprospateaza</button>
+    <div class="welcome-box">
+      <div class="welcome-text" id="welcome-text">Se incarca datele...</div>
+      <button class="btn btn-primary" onclick="doRefresh()">🔄 Reimprospateaza</button>
     </div>
-    <div class="stats-row" id="stats-row" style="display:none">
-      <div class="stat-card"><div class="stat-val" id="stat-total" style="color:var(--acc)">0</div><div class="stat-lbl">Meciuri</div></div>
-      <div class="stat-card"><div class="stat-val" id="stat-elite" style="color:#ffd700">0</div><div class="stat-lbl">⭐ Elite</div></div>
-      <div class="stat-card"><div class="stat-val" id="stat-value" style="color:var(--val)">0</div><div class="stat-lbl">🔥 Value</div></div>
-      <div class="stat-card"><div class="stat-val" id="stat-visible" style="color:var(--grn)">0</div><div class="stat-lbl">✅ Eligibile</div></div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num" id="st-total" style="color:var(--acc)">—</div><div class="stat-lbl">Meciuri</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-safe" style="color:var(--grn)">—</div><div class="stat-lbl">🟢 Safe</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-value" style="color:var(--yel)">—</div><div class="stat-lbl">💰 Value Bets</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-eligible" style="color:var(--val)">—</div><div class="stat-lbl">✅ Eligibile</div></div>
     </div>
-    <div id="top5-section" style="display:none">
-      <div class="top-picks-wrap">
-        <div class="top-picks-header">
-          <div class="top-picks-title">⭐ Top 5 Picks <span style="font-size:13px;color:var(--muted);font-weight:400">- Cele mai bune meciuri ale zilei</span></div>
-          <span class="elite-badge">⭐ ELITE</span>
-        </div>
-        <div class="cards-grid-5" id="top5-grid"></div>
-      </div>
+
+    <div class="sec-hdr">
+      <div class="sec-title">⭐ Top 5 Value Picks <span class="sec-badge">BEST TODAY</span></div>
     </div>
-    <div id="ml-section" style="display:none">
-      <div class="sec-hdr">🤖 ML Recommendations - CatBoost</div>
-      <div class="ml-wrap" id="ml-list"></div>
+    <div class="top-picks-grid" id="top-picks-grid"></div>
+
+    <div class="sec-hdr">
+      <div class="sec-title">🤖 ML Recommendations <span class="sec-badge">CatBoost</span></div>
     </div>
-    <div id="matches-section">
-      <div class="sec-hdr">📋 Toate Meciurile <span id="matches-count-lbl" style="font-size:10px;color:var(--muted);font-weight:400;margin-left:8px"></span></div>
-      <div class="filter-bar">
-        <button class="filter-btn active" onclick="setFilter('all',this)">🌐 Toate</button>
-        <button class="filter-btn" onclick="setFilter('elite',this)">⭐ Elite</button>
-        <button class="filter-btn" onclick="setFilter('value',this)">🔥 Value</button>
-        <button class="filter-btn" onclick="setFilter('safe',this)">🛡️ Safe</button>
-      </div>
-      <div class="sort-bar" id="sort-bar" style="display:none">
-        <span class="sort-lbl">Sorteaza:</span>
-        <button class="sort-btn active" onclick="setSort('date',this)">📅 Data</button>
-        <button class="sort-btn" onclick="setSort('ai',this)">🧠 AI Score</button>
-        <button class="sort-btn" onclick="setSort('prob',this)">📊 Prob %</button>
-        <button class="sort-btn" onclick="setSort('value',this)">🔥 Value</button>
-        <span class="sort-count" id="sort-count"></span>
-      </div>
-      <div id="matches-grid"></div>
-    </div>
+    <div class="ml-grid" id="ml-grid"></div>
   </div>
 
-  <div class="tab-content" id="tab-tickets">
-    <div id="tickets-content">
-      <div class="empty"><div class="empty-ico">🎫</div><div class="empty-title">Se genereaza biletele...</div><div class="empty-sub">Reimprospateaza datele pentru a vedea biletele.</div></div>
+  <!-- ===== MECIURI ===== -->
+  <div class="tab-content" id="tab-meciuri">
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter('all',this)">🌐 Toate</button>
+      <button class="filter-btn" onclick="setFilter('safe',this)">🟢 Safe</button>
+      <button class="filter-btn" onclick="setFilter('moderate',this)">🟡 Moderate</button>
+      <button class="filter-btn" onclick="setFilter('value',this)">💰 Value</button>
+      <select class="sort-select" id="sort-select" onchange="renderMatches()">
+        <option value="score">🎯 Smart Score</option>
+        <option value="value">💰 Value %</option>
+        <option value="prob">📊 Probabilitate</option>
+        <option value="conf">🧠 Confidence</option>
+        <option value="date">📅 Data</option>
+      </select>
+      <span class="filter-count" id="filter-count">0 meciuri</span>
     </div>
+    <div id="matches-container"></div>
   </div>
 
+  <!-- ===== BILETE ===== -->
+  <div class="tab-content" id="tab-bilete">
+    <div class="gen-btn-wrap">
+      <button class="btn btn-green" style="font-size:14px;padding:12px 24px" onclick="generateTicket()">
+        🎯 Genereaza Bilet Sigur (2-3 meciuri)
+      </button>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px">Criteriu: prob >80% + value >5% + confidence >65</div>
+    </div>
+    <div id="bilete-container"></div>
+  </div>
+
+  <!-- ===== TRACKING ===== -->
+  <div class="tab-content" id="tab-tracking">
+    <div class="tracking-stats">
+      <div class="track-stat"><div class="track-num" id="tr-total" style="color:var(--acc)">0</div><div class="track-lbl">Bilete Generate</div></div>
+      <div class="track-stat"><div class="track-num" id="tr-winrate" style="color:var(--grn)">0%</div><div class="track-lbl">Win Rate</div></div>
+      <div class="track-stat"><div class="track-num" id="tr-profit" style="color:var(--yel)">0%</div><div class="track-lbl">Profit Teoretic</div></div>
+    </div>
+    <div class="sec-hdr">
+      <div class="sec-title">📋 Istoric Pariuri</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="exportHistory()" style="font-size:11px;padding:5px 10px">📥 Export</button>
+        <button class="btn" style="background:rgba(239,68,68,.15);color:var(--red);font-size:11px;padding:5px 10px;border:1px solid rgba(239,68,68,.3)" onclick="clearHistory()">🗑️ Sterge</button>
+      </div>
+    </div>
+    <div id="tracking-container"></div>
+  </div>
+
+  <!-- ===== BANKROLL ===== -->
   <div class="tab-content" id="tab-bankroll">
-    <div class="bankroll-wrap">
-      <div class="sec-hdr">💰 Management Bankroll</div>
-      <div class="bankroll-input-row">
-        <label style="font-size:13px;color:var(--muted)">Bankroll total (RON):</label>
-        <input type="number" class="bankroll-input" id="bankroll-input" value="1000" min="10" step="10" oninput="updateBankroll()"/>
-        <button class="btn btn-primary" onclick="updateBankroll()">Calculeaza</button>
+    <div class="bankroll-card">
+      <div class="sec-title" style="margin-bottom:16px">💰 Management Bankroll</div>
+      <div class="bk-input-row">
+        <label style="font-size:13px;font-weight:600">Bankroll total (RON):</label>
+        <input type="number" class="bk-input" id="bankroll-input" value="1000" min="10" step="50"/>
+        <button class="btn btn-primary" onclick="calcBankroll()">Calculeaza</button>
       </div>
-      <div class="bankroll-grid" id="bankroll-grid"></div>
+      <div class="bk-grid" id="bk-grid"></div>
+    </div>
+    <div class="bankroll-card">
+      <div class="sec-title" style="margin-bottom:12px">📊 Strategie Piramida</div>
+      <div id="bk-pyramid"></div>
     </div>
   </div>
 
-</div>
+</div><!-- /main -->
 
 <script>
-var DATA=[], BILETE=null, ACTIVE_FILTER='all', ACTIVE_SORT='date', BANKROLL=1000;
-var TZ='Europe/Bucharest';
+'use strict';
 
-function showLdr(t,s,p){
-  var l=document.getElementById('loader'); l.classList.add('show');
-  document.getElementById('ldr-title').textContent=t;
-  document.getElementById('ldr-sub').textContent=s;
-  document.getElementById('ldr-fill').style.width=p+'%';
+// ============================================================
+// GLOBAL STATE
+// ============================================================
+var ALL_MATCHES = [];
+var BILETE = null;
+var CURRENT_FILTER = 'all';
+var TRACKING = JSON.parse(localStorage.getItem('bet_tracking') || '[]');
+
+// ============================================================
+// UTILS
+// ============================================================
+function $(id){ return document.getElementById(id); }
+function fmt(n,d){ return (d===undefined?Math.round(n):n.toFixed(d)); }
+function fmtPct(n){ return n.toFixed(1)+'%'; }
+function fmtDate(iso){
+  var d=new Date(iso);
+  var days=['Dum','Lun','Mar','Mie','Joi','Vin','Sam'];
+  var months=['ian','feb','mar','apr','mai','iun','iul','aug','sep','oct','nov','dec'];
+  return days[d.getDay()]+' '+d.getDate()+' '+months[d.getMonth()];
 }
-function hideLdr(){document.getElementById('loader').classList.remove('show');}
-function setLdrPct(p,s){
-  document.getElementById('ldr-fill').style.width=p+'%';
-  if(s) document.getElementById('ldr-sub').textContent=s;
+function fmtTime(iso){
+  var d=new Date(iso);
+  return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+}
+function fmtDateKey(iso){
+  var d=new Date(iso);
+  return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0');
 }
 function toast(msg,type){
-  type=type||'inf';
-  var w=document.getElementById('toast-wrap');
+  var w=$('toast-wrap');
   var t=document.createElement('div');
-  t.className='toast toast-'+type; t.textContent=msg;
-  w.appendChild(t); setTimeout(function(){t.remove();},4000);
+  t.className='toast toast-'+(type||'ok');
+  t.textContent=msg;
+  w.appendChild(t);
+  setTimeout(function(){t.remove();},3500);
 }
-function switchTab(id,btn){
-  document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
-  document.getElementById('tab-'+id).classList.add('active');
-  btn.classList.add('active');
+function showLoader(msg){
+  $('loader').classList.add('show');
+  if(msg) $('loader-sub').textContent=msg;
 }
-function setFilter(f,btn){
-  ACTIVE_FILTER=f;
-  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
-  if(btn) btn.classList.add('active');
-  renderMatches();
-}
-function setSort(s,btn){
-  ACTIVE_SORT=s;
-  document.querySelectorAll('.sort-btn').forEach(function(b){b.classList.remove('active');});
-  if(btn) btn.classList.add('active');
-  renderMatches();
+function hideLoader(){ $('loader').classList.remove('show'); }
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(name){
+  document.querySelectorAll('.tab-content').forEach(function(el){ el.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(el){ el.classList.remove('active'); });
+  $('tab-'+name).classList.add('active');
+  var tabs=document.querySelectorAll('.tab');
+  var names=['dashboard','meciuri','bilete','tracking','bankroll'];
+  tabs[names.indexOf(name)].classList.add('active');
+  if(name==='tracking') renderTracking();
+  if(name==='bankroll') calcBankroll();
 }
 
-var LEAGUE_RATING={
-  'Eredivisie':'S','Bundesliga':'S','Pro League':'S','Allsvenskan':'S','La Liga':'S','Second Bundesliga':'S',
-  'Premier League':'A','Serie A':'A','Ligue 1':'A','Liga Portugal Betclic':'A','Trendyol Super Lig':'A',
-  'Scottish Premiership':'A','Super League':'A','Ekstraklasa':'A','Brasileirao Serie A':'A','MLS':'A',
-  'Liga MX Apertura':'A','Liga MX Clausura':'A','Championship':'A','Champions League':'A','Europa League':'A',
-  'Europa Conference League':'A','Saudi Pro League':'B','World Cup 2026':'B','CAF Champions League':'B',
-  'Africa Cup of Nations 2025':'B','Copa Libertadores':'B','Copa Sudamericana':'B','J1 League':'B',
-  'K League 1':'B','International Friendly Games':'B','Superliga':'C','Stoiximan Super League':'C',
-  'Parva Liga':'C','Nigeria Premier Football League':'C','Indian Super League':'C','A-League':'C'
-};
-var LEAGUE_FLAGS={
-  'Premier League':'\uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67\uDB40\uDC7F',
-  'La Liga':'\uD83C\uDDEA\uD83C\uDDF8','Bundesliga':'\uD83C\uDDE9\uD83C\uDDEA','Serie A':'\uD83C\uDDEE\uD83C\uDDF9',
-  'Ligue 1':'\uD83C\uDDEB\uD83C\uDDF7','Liga Portugal Betclic':'\uD83C\uDDF5\uD83C\uDDF9',
-  'Eredivisie':'\uD83C\uDDF3\uD83C\uDDF1','Trendyol Super Lig':'\uD83C\uDDF9\uD83C\uDDF7',
-  'Pro League':'\uD83C\uDDE7\uD83C\uDDEA','Champions League':'\uD83C\uDFC6','Europa League':'\uD83C\uDFC6',
-  'Europa Conference League':'\uD83C\uDFC6','Superliga':'\uD83C\uDDF7\uD83C\uDDF4',
-  'MLS':'\uD83C\uDDFA\uD83C\uDDF8','Brasileirao Serie A':'\uD83C\uDDE7\uD83C\uDDF7',
-  'Saudi Pro League':'\uD83C\uDDF8\uD83C\uDDE6','Allsvenskan':'\uD83C\uDDF8\uD83C\uDDEA'
-};
-function getLR(n){return LEAGUE_RATING[n]||'B';}
-function getFlag(n){return LEAGUE_FLAGS[n]||'\u26BD';}
-function lrStab(r){return r==='S'?1.0:r==='A'?0.85:r==='B'?0.65:0.40;}
+// ============================================================
+// CORE ENGINE — VALUE BET ANALYSIS
+// ============================================================
 
-function pois(k,lam){
-  if(lam<=0||k<0) return 0;
-  var lp=-lam+k*Math.log(lam);
-  for(var i=1;i<=k;i++) lp-=Math.log(i);
-  return Math.exp(lp);
-}
-function pRange(lam,lo,hi){var p=0;for(var k=lo;k<=hi;k++) p+=pois(k,lam);return p;}
-function pHTUnder(lh,la,line){
-  var p=0, htF=Math.max(0.38,Math.min(0.48,0.43-(lh+la-2.5)*0.02));
-  for(var h=0;h<=10;h++) for(var a=0;a<=10;a++) if(h+a<line) p+=pois(h,lh*htF)*pois(a,la*htF);
-  return p;
-}
-function pTotalUnder(lh,la,line){
-  var p=0;
-  for(var h=0;h<=10;h++) for(var a=0;a<=10;a++) if(h+a<line) p+=pois(h,lh)*pois(a,la);
-  return p;
-}
-function pTotalRange(lh,la,lo,hi){
-  var p=0;
-  for(var h=0;h<=10;h++) for(var a=0;a<=10;a++) if(h+a>=lo&&h+a<=hi) p+=pois(h,lh)*pois(a,la);
-  return p;
+// Bet types we analyze
+var BET_TYPES = [
+  {key:'over15', label:'Over 1.5G', probField:'prob_over_15', oddsField:'odds_over_15'},
+  {key:'over25', label:'Over 2.5G', probField:'prob_over_25', oddsField:'odds_over_25'},
+  {key:'btts',   label:'BTTS',      probField:'prob_btts_yes', oddsField:'odds_btts_yes'},
+  {key:'home',   label:'1X',        probField:'prob_home_win', oddsField:'odds_home'},
+  {key:'away',   label:'X2',        probField:'prob_away_win', oddsField:'odds_away'},
+];
+
+function calcValue(prob, odds){
+  // value = probabilitate_API - (1/cota)
+  if(!odds || odds < 1.01) return -1;
+  return (prob/100) - (1/odds);
 }
 
-function calcValueBets(m){
-  var vbs=[];
-  function cv(pAI,odds){
-    if(!odds||!pAI||odds<=1) return null;
-    return{pAI:pAI,pBook:1/odds,odds:odds,value:+(pAI*odds-1).toFixed(4)};
-  }
-  if(m.o15&&m.p15T>0){var v=cv(m.p15T,m.o15);if(v) vbs.push(Object.assign({mkt:'+1.5G'},v));}
-  if(m.o25&&m.prob25>0){var v=cv(m.prob25/100,m.o25);if(v) vbs.push(Object.assign({mkt:'+2.5G'},v));}
-  if(m.o35&&m.prob35>0){var v=cv(m.prob35/100,m.o35);if(v) vbs.push(Object.assign({mkt:'+3.5G'},v));}
-  if(m.o1&&m.probH>0){var v=cv(m.probH/100,m.o1);if(v) vbs.push(Object.assign({mkt:'1 (Acasa)'},v));}
-  if(m.ox&&m.probD>0){var v=cv(m.probD/100,m.ox);if(v) vbs.push(Object.assign({mkt:'X (Egal)'},v));}
-  if(m.o2&&m.probA>0){var v=cv(m.probA/100,m.o2);if(v) vbs.push(Object.assign({mkt:'2 (Deplasare)'},v));}
-  var pos=vbs.filter(function(v){return v.value>0.05;}).sort(function(a,b){return b.value-a.value;});
-  var bestValue=pos.length>0?pos[0].value:0;
-  return{valueBets:vbs,positive:pos,bestValue:bestValue,hasValue:pos.length>0};
+function calcAdjustedProb(prob, confidence){
+  // adjusted_prob = probabilitate_API * (confidence/100)
+  return prob * (confidence/100);
 }
 
-function calcAIScore(lh,la,lr,mlConf,prob15,prob25,probBTTS,bestValue){
-  var xgTotal=lh+la;
-  // Spec: Scor = (xG_total*0.4) + (forma goluri*0.3) + (consistenta*0.2) + (factor liga*0.1)
-  // Scaled to 0-100
-  var xgFactor=Math.min(40,Math.max(0,(xgTotal/5.0)*40)); // 0-40 pts
-  var formaFactor=Math.min(30,(prob15||0)/100*30); // 0-30 pts based on +1.5G prob
-  var consistFactor=Math.min(20,(mlConf/100)*20); // 0-20 pts based on ML confidence
-  var leagueFactor=Math.min(10,lrStab(lr)*10); // 0-10 pts based on league
-  // Bonuses
-  var valueBonus=bestValue>0.10?5:bestValue>0.05?3:0;
-  var xgDiff=Math.abs(lh-la);
-  var volPenalty=xgDiff>2.0?-8:xgDiff>1.5?-4:0;
-  return Math.min(100,Math.max(0,Math.round(xgFactor+formaFactor+consistFactor+leagueFactor+valueBonus+volPenalty)));
+function calcSmartScore(adjProb, value, confidence){
+  // score = 50% adjusted_prob + 30% value + 20% confidence_norm
+  var probScore = Math.min(50, (adjProb/100)*50);
+  var valueScore = Math.min(30, Math.max(0, value*100)*1.5);  // value 0-20% -> 0-30pts
+  var confScore = Math.min(20, (confidence/100)*20);
+  return Math.round(probScore + valueScore + confScore);
 }
-function aiClass(s){return s>=78?'ai-elite':s>=65?'ai-safe':s>=50?'ai-medium':'ai-risk';}
-function aiLabel(s){return s>=78?'ELITE':s>=65?'SAFE':s>=50?'MED':'RISK';}
-function classifyMatch(m){return m.aiScore>70&&m.p15T>0.80?'ELITE':m.aiScore>=60&&m.aiScore<=70?'STRONG':'NORMAL';}
 
-function processPrediction(pred){
-  var ev=pred.event||{};
-  var leagueName=ev.league?ev.league.name:'Unknown';
-  var lr=getLR(leagueName);
-  var flag=getFlag(leagueName);
-  var dt=new Date(ev.event_date||Date.now());
-  var ora=dt.toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit',timeZone:TZ});
-  var dataShort=dt.toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',timeZone:TZ});
-  var dataFull=dt.toLocaleDateString('ro-RO',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:TZ});
-  var dtLocal=new Date(dt.toLocaleString('en-US',{timeZone:TZ}));
-  var dateKey=dtLocal.getFullYear()+'-'+String(dtLocal.getMonth()+1).padStart(2,'0')+'-'+String(dtLocal.getDate()).padStart(2,'0');
-  var lh=pred.expected_home_goals||1.0, la=pred.expected_away_goals||0.8;
-  var o1=ev.odds_home||null, ox=ev.odds_draw||null, o2=ev.odds_away||null;
-  var o15=ev.odds_over_15||null, o25=ev.odds_over_25||null, o35=ev.odds_over_35||null;
-  var prob15=pred.prob_over_15||0, prob25=pred.prob_over_25||0, prob35=pred.prob_over_35||0;
-  var probBTTS=pred.prob_btts_yes||0, probH=pred.prob_home_win||0, probD=pred.prob_draw||0, probA=pred.prob_away_win||0;
-  var mlConf=pred.confidence||0;
-  var p15T=prob15>0?prob15/100:0;
-  if(p15T===0){for(var h=0;h<=10;h++) for(var a=0;a<=10;a++) if(h+a>1) p15T+=pois(h,lh)*pois(a,la);}
-  var pH14=pRange(lh,1,4), pH13=pRange(lh,1,3);
-  var pA14=pRange(la,1,4), pA13=pRange(la,1,3);
-  var pHscores=1-pois(0,lh), pAscores=1-pois(0,la);
-  var pHTU25=pHTUnder(lh,la,2.5), pHTU35=pHTUnder(lh,la,3.5);
-  var pMax4T=pTotalUnder(lh,la,5), pMax5T=pTotalUnder(lh,la,6);
-  var pSafeZone=pTotalRange(lh,la,2,4);
-  var tempM={o15:o15,o25:o25,o35:o35,o1:o1,ox:ox,o2:o2,p15T:p15T,prob25:prob25,prob35:prob35,probH:probH,probD:probD,probA:probA};
-  var vbResult=calcValueBets(tempM);
-  var aiScore=calcAIScore(lh,la,lr,mlConf,prob15,prob25,probBTTS,vbResult.bestValue);
-  var signals=[pH14,pH13,pA14,pA13,pHscores,pAscores].sort(function(a,b){return b-a;});
-  var confScore=signals.slice(0,3).reduce(function(s,x){return s+x;},0)/3;
-  var topScore=pred.most_likely_score||'?';
-  var matchType=(lh+la)>=2.8?'ofensiv':(lh+la)<=1.8?'defensiv':'echilibrat';
-  var homeObj=ev.home_team_obj, awayObj=ev.away_team_obj;
-  var homeLogoUrl=homeObj?'https://sports.bzzoiro.com/img/team/'+homeObj.api_id+'/?token=demo':null;
-  var awayLogoUrl=awayObj?'https://sports.bzzoiro.com/img/team/'+awayObj.api_id+'/?token=demo':null;
-  var recommendations=[];
-  if(pred.over_15_recommend) recommendations.push('+1.5');
-  if(pred.over_25_recommend) recommendations.push('+2.5');
-  if(pred.over_35_recommend) recommendations.push('+3.5');
-  if(pred.btts_recommend) recommendations.push('BTTS');
-  if(pred.favorite_recommend) recommendations.push(pred.favorite==='H'?'1':'2');
-  if(pred.winner_recommend) recommendations.push('12');
-  var isElitePick=aiScore>60&&mlConf>55&&(lr==='A'||lr==='S')&&p15T>0.70&&vbResult.hasValue;
-  return{
-    id:ev.id, home:ev.home_team||'?', away:ev.away_team||'?',
-    liga:leagueName, ligaRating:lr, flag:flag, ora:ora, dataShort:dataShort, dataFull:dataFull, dateKey:dateKey,
-    sortKey:dateKey+' '+ora,
-    o1:o1,ox:ox,o2:o2,o15:o15,o25:o25,o35:o35,
-    lh:+lh.toFixed(3), la:+la.toFixed(3),
-    probH:probH, probD:probD, probA:probA, prob15:prob15, prob25:prob25, prob35:prob35, probBTTS:probBTTS, mlConf:mlConf,
-    pH14:+pH14.toFixed(4), pH13:+pH13.toFixed(4),
-    pA14:+pA14.toFixed(4), pA13:+pA13.toFixed(4),
-    pHscores:+pHscores.toFixed(4), pAscores:+pAscores.toFixed(4),
-    pHTU25:+pHTU25.toFixed(4), pHTU35:+pHTU35.toFixed(4),
-    pMax4T:+pMax4T.toFixed(4), pMax5T:+pMax5T.toFixed(4),
-    p15T:+p15T.toFixed(4), pSafeZone:+pSafeZone.toFixed(4),
-    aiScore:aiScore, confScore:+confScore.toFixed(4),
-    topScore:topScore, matchType:matchType,
-    homeLogoUrl:homeLogoUrl, awayLogoUrl:awayLogoUrl,
-    recommendations:recommendations,
-    valueBets:vbResult.valueBets, positive:vbResult.positive,
-    bestValue:vbResult.bestValue, hasValue:vbResult.hasValue,
-    isElitePick:isElitePick, isLive:false
+function getVerdict(adjProb, value, confidence){
+  // SPEC: adjusted_prob > 75%, value > 5%, confidence > 65
+  if(adjProb > 75 && value > 0.05 && confidence > 65) return 'safe';
+  if(adjProb > 65 && value > 0.03 && confidence > 55) return 'moderate';
+  return 'avoid';
+}
+
+function analyzeMatch(raw){
+  var e = raw.event;
+  var conf = raw.confidence;
+
+  // Find best bet type
+  var bestBet = null;
+  var bestScore = -1;
+
+  BET_TYPES.forEach(function(bt){
+    var prob = raw[bt.probField];
+    var odds = e[bt.oddsField];
+    if(!prob || !odds || odds < 1.20) return;  // SPEC: ignore odds < 1.20
+
+    var value = calcValue(prob, odds);
+    if(value < 0) return;  // SPEC: ignore negative value
+
+    var adjProb = calcAdjustedProb(prob, conf);
+    var score = calcSmartScore(adjProb, value, conf);
+
+    if(score > bestScore){
+      bestScore = score;
+      bestBet = {
+        type: bt.key,
+        label: bt.label,
+        prob: prob,
+        odds: odds,
+        value: value,
+        adjProb: adjProb,
+        score: score,
+        verdict: getVerdict(adjProb, value, conf)
+      };
+    }
+  });
+
+  // Also compute all bets for display
+  var allBets = [];
+  BET_TYPES.forEach(function(bt){
+    var prob = raw[bt.probField];
+    var odds = e[bt.oddsField];
+    if(!prob || !odds) return;
+    var value = calcValue(prob, odds);
+    var adjProb = calcAdjustedProb(prob, conf);
+    allBets.push({
+      type: bt.key,
+      label: bt.label,
+      prob: prob,
+      odds: odds,
+      value: value,
+      adjProb: adjProb,
+      verdict: getVerdict(adjProb, value, conf)
+    });
+  });
+
+  // ML recommendations
+  var mlPicks = [];
+  if(raw.over_15_recommend) mlPicks.push('Over 1.5G');
+  if(raw.over_25_recommend) mlPicks.push('Over 2.5G');
+  if(raw.btts_recommend) mlPicks.push('BTTS');
+  if(raw.winner_recommend) mlPicks.push(raw.predicted_result==='H'?'1':'2');
+
+  return {
+    id: raw.id,
+    home: e.home_team,
+    away: e.away_team,
+    league: e.league.name,
+    country: e.league.country,
+    date: e.event_date,
+    dateKey: fmtDateKey(e.event_date),
+    dateLabel: fmtDate(e.event_date),
+    timeLabel: fmtTime(e.event_date),
+    status: e.status,
+    confidence: conf,
+    xgHome: raw.expected_home_goals,
+    xgAway: raw.expected_away_goals,
+    xgTotal: raw.expected_home_goals + raw.expected_away_goals,
+    bestBet: bestBet,
+    allBets: allBets,
+    smartScore: bestBet ? bestBet.score : 0,
+    verdict: bestBet ? bestBet.verdict : 'avoid',
+    mlPicks: mlPicks,
+    hasMlRec: mlPicks.length > 0,
+    // Raw fields for reference
+    probHome: raw.prob_home_win,
+    probDraw: raw.prob_draw,
+    probAway: raw.prob_away_win,
+    probOver15: raw.prob_over_15,
+    probOver25: raw.prob_over_25,
+    probBtts: raw.prob_btts_yes,
+    oddsHome: e.odds_home,
+    oddsDraw: e.odds_draw,
+    oddsAway: e.odds_away,
+    oddsOver15: e.odds_over_15,
+    oddsOver25: e.odds_over_25,
+    oddsBtts: e.odds_btts_yes,
   };
 }
 
-async function fetchData(){
-  try{
-    var r=await fetch('./data/predictions.json?t='+Date.now());
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    var d=await r.json();
-    return d.results||[];
-  }catch(e){console.error('Fetch error:',e);return [];}
-}
-async function fetchMeta(){
-  try{
-    var r=await fetch('./data/meta.json?t='+Date.now());
-    if(!r.ok) return null;
-    return await r.json();
-  }catch(e){return null;}
-}
-
-function buildListeSeparate(allMatches){
-  var elite=[],strong=[],normal=[];
-  for(var i=0;i<allMatches.length;i++){
-    var m=allMatches[i];
-    var tier=classifyMatch(m);
-    if(tier==='ELITE'){
-      if(m.p15T>=0.80) elite.push({m:m,mkt:'+1.5 Goluri',p:m.p15T,impliedOdd:Math.max(1.05,Math.min(1.25,0.93/m.p15T)),tip:'+1.5G',tier:'ELITE'});
-      else if(m.pMax4T>=0.80) elite.push({m:m,mkt:'Sub 4.5 Goluri',p:m.pMax4T,impliedOdd:Math.max(1.05,Math.min(1.20,0.93/m.pMax4T)),tip:'U4.5',tier:'ELITE'});
-    } else if(tier==='STRONG'){
-      var opts=[];
-      if(m.p15T>=0.65) opts.push({mkt:'+1.5 Goluri',p:m.p15T,impliedOdd:Math.max(1.10,Math.min(1.40,0.93/m.p15T)),tip:'+1.5G'});
-      if(m.probBTTS&&m.probBTTS/100>=0.65) opts.push({mkt:'BTTS',p:m.probBTTS/100,impliedOdd:Math.max(1.15,Math.min(1.55,0.93/(m.probBTTS/100))),tip:'BTTS'});
-      if(m.prob25&&m.prob25/100>=0.65) opts.push({mkt:'+2.5 Goluri',p:m.prob25/100,impliedOdd:Math.max(1.10,Math.min(1.45,0.93/(m.prob25/100))),tip:'+2.5G'});
-      opts.sort(function(a,b){return b.p-a.p;});
-      if(opts.length) strong.push(Object.assign({m:m,tier:'STRONG'},opts[0]));
-    } else {
-      var opts=[];
-      if(m.p15T>=0.55&&m.p15T<0.75) opts.push({mkt:'+1.5 Goluri',p:m.p15T,impliedOdd:Math.max(1.30,Math.min(1.65,0.93/m.p15T)),tip:'+1.5G'});
-      if(m.probBTTS&&m.probBTTS/100>=0.50&&m.probBTTS/100<0.72) opts.push({mkt:'BTTS',p:m.probBTTS/100,impliedOdd:Math.max(1.35,Math.min(1.75,0.93/(m.probBTTS/100))),tip:'BTTS'});
-      if(m.prob25&&m.prob25/100>=0.50&&m.prob25/100<0.70) opts.push({mkt:'+2.5 Goluri',p:m.prob25/100,impliedOdd:Math.max(1.40,Math.min(1.80,0.93/(m.prob25/100))),tip:'+2.5G'});
-      opts.sort(function(a,b){return b.p-a.p;});
-      if(opts.length) normal.push(Object.assign({m:m,tier:'NORMAL'},opts[0]));
-    }
-  }
-  elite.sort(function(a,b){return b.m.aiScore-a.m.aiScore||b.p-a.p;});
-  strong.sort(function(a,b){return b.m.aiScore-a.m.aiScore||b.p-a.p;});
-  normal.sort(function(a,b){return b.m.aiScore-a.m.aiScore||b.p-a.p;});
-  return{elite:elite,strong:strong,normal:normal};
-}
-function selectFromList(list,maxN,usedIds){
-  var picks=[],used=new Set(usedIds||[]);
-  for(var i=0;i<list.length;i++){
-    if(used.has(list[i].m.id)) continue;
-    picks.push(list[i]); used.add(list[i].m.id);
-    if(picks.length>=maxN) break;
-  }
-  return picks;
-}
-function buildBiletFromPicks(picks,tip){
-  var cota=1;
-  for(var i=0;i<picks.length;i++) cota*=picks[i].impliedOdd;
-  return{picks:picks,cota:+cota.toFixed(2),tip:tip};
-}
-function genBilete(allMatches){
-  // SPEC: 3-5 meciuri, cota totala 1.5-2.2, HIGH CONFIDENCE
-  // Bilet Zilnic: selectie agresiva - doar ELITE + STRONG cu value bet
-  var lists=buildListeSeparate(allMatches);
-  var elite=lists.elite, strong=lists.strong, normal=lists.normal;
-
-  // BILET SIGUR: 3 meciuri ELITE, cota target 1.5-1.8
-  var safePicks=selectFromList(elite,3,new Set());
-  var safeUsed=new Set(safePicks.map(function(c){return c.m.id;}));
-  var biletSafe=buildBiletFromPicks(safePicks,'SAFE');
-
-  // BILET ZILNIC OPTIM: 4-5 meciuri STRONG+ELITE, cota target 1.8-2.2
-  var dailyPool=elite.filter(function(c){return !safeUsed.has(c.m.id);})
-    .concat(strong.filter(function(c){return !safeUsed.has(c.m.id);}));
-  dailyPool.sort(function(a,b){return b.m.aiScore-a.m.aiScore||b.p-a.p;});
-  // Select 4-5 picks targeting cota 1.8-2.2
-  var dailyPicks=[], dailyUsed=new Set(safeUsed);
-  for(var i=0;i<dailyPool.length;i++){
-    var c=dailyPool[i];
-    if(dailyUsed.has(c.m.id)) continue;
-    dailyPicks.push(c); dailyUsed.add(c.m.id);
-    var testCota=dailyPicks.reduce(function(acc,x){return acc*x.impliedOdd;},1);
-    if(dailyPicks.length>=4&&testCota>=1.7) break;
-    if(dailyPicks.length>=5) break;
-  }
-  var biletMediu=buildBiletFromPicks(dailyPicks,'ZILNIC');
-
-  // BILET RISC: 4 meciuri NORMAL, cota mai mare
-  var riskPicks=selectFromList(normal,4,new Set());
-  var biletRisc=buildBiletFromPicks(riskPicks,'RISC');
-  return{biletSafe:biletSafe,biletMediu:biletMediu,biletRisc:biletRisc};
+// STRICT FILTER — SPEC Section 3
+function passesStrictFilter(m){
+  if(!m.bestBet) return false;
+  var b = m.bestBet;
+  // SPEC: confidence < 60 -> EXCLUDE
+  if(m.confidence < 60) return false;
+  // SPEC: probabilitate < 70% -> EXCLUDE
+  if(b.prob < 70) return false;
+  // SPEC: value < +3% -> EXCLUDE
+  if(b.value < 0.03) return false;
+  // SPEC: cote < 1.20 -> EXCLUDE (already handled in analyzeMatch)
+  // SPEC: probabilitati echilibrate (45-55%) -> EXCLUDE
+  var maxProb = Math.max(m.probHome, m.probDraw, m.probAway);
+  var minProb = Math.min(m.probHome, m.probDraw, m.probAway);
+  if(maxProb < 55 && minProb > 30) return false;  // too balanced
+  return true;
 }
 
-function pC(p){return p>=0.90?'var(--grn)':p>=0.82?'#4ade80':p>=0.75?'var(--yel)':'#f97316';}
-function pct(p){return(p*100).toFixed(1)+'%';}
-function imgTag(url,size){
-  size=size||20;
-  if(!url) return '';
-  return '<img src="'+url+'" width="'+size+'" height="'+size+'" style="border-radius:3px;flex-shrink:0" onerror="this.style.display=\'none\'" loading="lazy">';
+// SELECTION FILTER — SPEC Section 4
+function passesSelectionFilter(m){
+  if(!m.bestBet) return false;
+  var b = m.bestBet;
+  // SPEC: adjusted_prob > 75%, value > 5%, confidence > 65
+  return b.adjProb > 75 && b.value > 0.05 && m.confidence > 65;
 }
 
-function renderCard(m,isTopPick){
-  isTopPick=isTopPick||false;
-  var aiCls=aiClass(m.aiScore), aiLbl=aiLabel(m.aiScore);
-  var tier=classifyMatch(m);
-  var cardCls=(isTopPick||tier==='ELITE')?'card card-elite':m.hasValue?'card card-value':'card';
-  var confBw=Math.round(Math.max(0,(m.confScore-0.65)/(0.97-0.65)*100));
-  var confClr=m.confScore>=0.90?'var(--grn)':m.confScore>=0.82?'#4ade80':m.confScore>=0.75?'var(--yel)':'#f97316';
-  var confPct=Math.round(m.confScore*100);
-  var oddsH=[];
-  if(m.o1) oddsH.push('<div class="odd-chip"><span class="odd-lbl">1</span>'+m.o1+'</div>');
-  if(m.ox) oddsH.push('<div class="odd-chip"><span class="odd-lbl">X</span>'+m.ox+'</div>');
-  if(m.o2) oddsH.push('<div class="odd-chip"><span class="odd-lbl">2</span>'+m.o2+'</div>');
-  if(m.o25) oddsH.push('<div class="odd-chip"><span class="odd-lbl">O2.5</span>'+m.o25+'</div>');
-  var oddsRow=oddsH.length?'<div class="card-odds">'+oddsH.join('')+'</div>':'';
-  var badges=[];
-  if(tier==='ELITE') badges.push('<span class="badge badge-elite">⭐ ELITE</span>');
-  else if(tier==='STRONG') badges.push('<span class="badge badge-strong">💪 STRONG</span>');
-  if(m.hasValue) badges.push('<span class="badge badge-value">🔥 VALUE +'+(m.bestValue*100).toFixed(1)+'%</span>');
-  if(m.recommendations.length>0) badges.push('<span class="badge badge-ml">🤖 '+m.recommendations.slice(0,2).join(' / ')+'</span>');
-  var badgesHtml=badges.length?'<div class="card-badges">'+badges.join('')+'</div>':'';
-  var detailId='detail-'+m.id;
-  var detailRows='';
-  if(m.pH14>=0.60) detailRows+='<div class="detail-row"><span>1-4G Gazda</span><span class="detail-row-val" style="color:'+pC(m.pH14)+'">'+pct(m.pH14)+'</span></div>';
-  if(m.pH13>=0.60) detailRows+='<div class="detail-row"><span>1-3G Gazda</span><span class="detail-row-val" style="color:'+pC(m.pH13)+'">'+pct(m.pH13)+'</span></div>';
-  if(m.pA14>=0.60) detailRows+='<div class="detail-row"><span>1-4G Oaspeti</span><span class="detail-row-val" style="color:'+pC(m.pA14)+'">'+pct(m.pA14)+'</span></div>';
-  if(m.pA13>=0.60) detailRows+='<div class="detail-row"><span>1-3G Oaspeti</span><span class="detail-row-val" style="color:'+pC(m.pA13)+'">'+pct(m.pA13)+'</span></div>';
-  detailRows+='<div class="detail-row"><span>Gazda marcheaza</span><span class="detail-row-val" style="color:'+pC(m.pHscores)+'">'+pct(m.pHscores)+'</span></div>';
-  detailRows+='<div class="detail-row"><span>Oaspeti marcheaza</span><span class="detail-row-val" style="color:'+pC(m.pAscores)+'">'+pct(m.pAscores)+'</span></div>';
-  var vbRows='';
-  if(m.valueBets&&m.valueBets.length>0){
-    vbRows='<div class="detail-section"><div class="detail-title">🔥 Value Bets</div>';
-    m.valueBets.slice(0,4).forEach(function(vb){
-      vbRows+='<div class="detail-row"><span>'+vb.mkt+'</span><span class="detail-row-val" style="color:'+(vb.value>0.05?'var(--grn)':vb.value>=0?'var(--yel)':'var(--live)')+'">'+(vb.value>0?'+':'')+(vb.value*100).toFixed(1)+'%</span></div>';
+// ============================================================
+// DATA LOADING
+// ============================================================
+function doRefresh(){
+  showLoader('Incarcare date din API Bzzoiro...');
+  var base = document.location.pathname.replace(/\/[^\/]*$/, '');
+  var url = base + '/data/predictions.json?t=' + Date.now();
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var results = data.results || data;
+      ALL_MATCHES = results.map(analyzeMatch);
+      BILETE = null;
+      renderAll();
+      hideLoader();
+      toast('Date actualizate: '+ALL_MATCHES.length+' meciuri', 'ok');
+    })
+    .catch(function(err){
+      hideLoader();
+      toast('Eroare la incarcare date: '+err.message, 'err');
+      console.error(err);
     });
-    vbRows+='</div>';
-  }
-  var detailHtml='<div class="card-detail" id="'+detailId+'">'
-    +'<div class="detail-section"><div class="detail-title">⚽ Goluri Echipa (Poisson)</div>'+detailRows+'</div>'
-    +'<div class="detail-section"><div class="detail-title">⏱ Half Time Under</div>'
-    +'<div class="detail-row"><span>-3.5 HT</span><span class="detail-row-val" style="color:'+pC(m.pHTU35)+'">'+pct(m.pHTU35)+'</span></div>'
-    +'<div class="detail-row"><span>-2.5 HT</span><span class="detail-row-val" style="color:'+pC(m.pHTU25)+'">'+pct(m.pHTU25)+'</span></div></div>'
-    +'<div class="detail-section"><div class="detail-title">📊 Total Goluri</div>'
-    +'<div class="detail-row"><span>+1.5 Goluri</span><span class="detail-row-val" style="color:'+pC(m.p15T)+'">'+pct(m.p15T)+'</span></div>'
-    +(m.prob25>0?'<div class="detail-row"><span>+2.5 Goluri (ML)</span><span class="detail-row-val" style="color:'+pC(m.prob25/100)+'">'+m.prob25.toFixed(1)+'%</span></div>':'')
-    +(m.probBTTS>0?'<div class="detail-row"><span>BTTS (ML)</span><span class="detail-row-val" style="color:'+pC(m.probBTTS/100)+'">'+m.probBTTS.toFixed(1)+'%</span></div>':'')
-    +'<div class="detail-row"><span>2-4G SafeZone</span><span class="detail-row-val" style="color:'+pC(m.pSafeZone)+'">'+pct(m.pSafeZone)+'</span></div></div>'
-    +vbRows
-    +'<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px">1X2: '+m.probH.toFixed(1)+'% / '+m.probD.toFixed(1)+'% / '+m.probA.toFixed(1)+'% - pred: '+m.topScore+'</div>'
-    +'</div>';
-  return '<div class="'+cardCls+'" onclick="toggleDetail(\''+detailId+'\')">'
-    +'<div class="card-head">'
-    +'<div class="card-league"><span>'+m.flag+'</span><span>'+m.liga+'</span><span class="lr-badge lr-'+m.ligaRating+'">'+m.ligaRating+'</span><span style="margin-left:auto;font-size:9px">'+m.matchType+'</span></div>'
-    +'<div class="card-teams"><div class="card-team">'+imgTag(m.homeLogoUrl,20)+' <span>'+m.home+'</span></div><div class="card-vs">vs</div><div class="card-team away"><span>'+m.away+'</span> '+imgTag(m.awayLogoUrl,20)+'</div></div>'
-    +'<div class="card-meta"><span class="card-date">📅 '+m.dataShort+'</span><span class="card-time">🕐 '+m.ora+'</span><span class="ai-badge '+aiCls+'">🧠 '+aiLbl+' '+m.aiScore+'</span></div>'
-    +'<div class="card-xg">\u03BB '+m.lh+'/'+m.la+' - xG '+(m.lh+m.la).toFixed(2)+' - conf '+m.mlConf.toFixed(0)+'% - top '+m.topScore+'</div>'
-    +badgesHtml+oddsRow
-    +'</div>'
-    +'<div class="probs-grid">'
-    +'<div class="prob-cell"><div class="prob-val" style="color:'+pC(m.p15T)+'">'+(m.p15T*100).toFixed(0)+'%</div><div class="prob-lbl">+1.5G</div></div>'
-    +'<div class="prob-cell"><div class="prob-val" style="color:'+pC(m.prob25/100)+'">'+m.prob25.toFixed(0)+'%</div><div class="prob-lbl">+2.5G</div></div>'
-    +'<div class="prob-cell"><div class="prob-val" style="color:var(--acc)">'+(m.lh+m.la).toFixed(1)+'</div><div class="prob-lbl">xG</div></div>'
-    +'<div class="prob-cell"><div class="prob-val" style="color:'+pC(m.aiScore/100)+'">'+m.aiScore+'</div><div class="prob-lbl">AI</div></div>'
-    +'</div>'
-    +'<div class="conf-wrap"><div class="conf-lbl">CONF</div><div class="conf-track"><div class="conf-fill" style="width:'+confBw+'%;background:'+confClr+'"></div></div><div class="conf-pct" style="color:'+confClr+'">'+confPct+'%</div></div>'
-    +detailHtml
-    +'</div>';
-}
-function toggleDetail(id){
-  var d=document.getElementById(id);
-  if(d) d.classList.toggle('open');
 }
 
-function renderTop5(matches){
-  var top5=matches.filter(function(m){return m.p15T>=0.65||m.aiScore>=60||m.hasValue;})
-    .sort(function(a,b){return b.aiScore-a.aiScore||b.p15T-a.p15T;}).slice(0,5);
-  if(!top5.length){document.getElementById('top5-section').style.display='none';return;}
-  document.getElementById('top5-section').style.display='block';
-  document.getElementById('top5-grid').innerHTML=top5.map(function(m){return renderCard(m,true);}).join('');
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+
+function verdictBadge(v){
+  if(v==='safe') return '<span class="mc-verdict verdict-safe">🟢 SAFE</span>';
+  if(v==='moderate') return '<span class="mc-verdict verdict-moderate">🟡 MODERATE</span>';
+  return '<span class="mc-verdict verdict-avoid">🔴 AVOID</span>';
 }
 
-function renderML(matches){
-  var withRecs=matches.filter(function(m){return m.recommendations.length>0;}).sort(function(a,b){return b.mlConf-a.mlConf;}).slice(0,10);
-  if(!withRecs.length){document.getElementById('ml-section').style.display='none';return;}
-  document.getElementById('ml-section').style.display='block';
-  var rows=withRecs.map(function(m){
-    var tags=m.recommendations.map(function(r){return '<span class="ml-tag">'+r+'</span>';}).join('');
-    return '<div class="ml-row"><div style="flex:1;min-width:0"><div class="ml-match-name">'+m.home+' vs '+m.away+'</div><div class="ml-match-meta">'+m.flag+' '+m.liga+' - 📅 '+m.dataShort+' - 🕐 '+m.ora+' - conf: '+m.mlConf.toFixed(0)+'%</div></div><div class="ml-tags">'+tags+'</div></div>';
-  }).join('');
-  document.getElementById('ml-list').innerHTML=rows;
+function confColor(c){
+  if(c>=70) return 'var(--grn)';
+  if(c>=55) return 'var(--yel)';
+  return 'var(--red)';
+}
+
+function valueColor(v){
+  if(v>=0.08) return 'var(--grn)';
+  if(v>=0.05) return 'var(--yel)';
+  if(v>=0.03) return 'var(--org)';
+  return 'var(--red)';
+}
+
+function renderMatchCard(m){
+  var b = m.bestBet;
+  if(!b) return '';
+  var confPct = Math.min(100, m.confidence);
+  var confFill = confPct+'%';
+  var confCol = confColor(m.confidence);
+  var valStr = b.value >= 0 ? '+'+fmtPct(b.value*100) : fmtPct(b.value*100);
+  var valCol = valueColor(b.value);
+
+  return '<div class="match-card '+m.verdict+'" onclick="toggleCard(this)">' +
+    '<div class="mc-league">'+
+      '<span>'+m.league+'</span>'+
+      '<span style="color:var(--muted)">•</span>'+
+      '<span style="font-family:var(--mono)">'+m.dateLabel+'</span>'+
+    '</div>'+
+    '<div class="mc-teams">'+
+      '<div class="mc-team">'+m.home+'</div>'+
+      '<div class="mc-vs">vs</div>'+
+      '<div class="mc-team away">'+m.away+'</div>'+
+    '</div>'+
+    '<div class="mc-time">📅 '+m.dateLabel+' 🕐 '+m.timeLabel+'</div>'+
+    verdictBadge(m.verdict)+
+    '<div class="mc-stats">'+
+      '<div class="mc-stat"><div class="mc-stat-val" style="color:'+valCol+'">'+valStr+'</div><div class="mc-stat-lbl">Value</div></div>'+
+      '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--acc)">'+fmtPct(b.adjProb)+'</div><div class="mc-stat-lbl">Adj.Prob</div></div>'+
+      '<div class="mc-stat"><div class="mc-stat-val" style="color:'+confCol+'">'+fmt(m.confidence,0)+'</div><div class="mc-stat-lbl">Conf</div></div>'+
+      '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--pur)">'+m.smartScore+'</div><div class="mc-stat-lbl">Score</div></div>'+
+    '</div>'+
+    '<div class="mc-rec">'+
+      '<div>🎯 <span class="mc-rec-type">'+b.label+'</span></div>'+
+      '<div class="mc-rec-val">Prob: '+fmtPct(b.prob)+' | Cota: '+b.odds+'</div>'+
+    '</div>'+
+    '<div class="mc-conf-bar">'+
+      '<div class="mc-conf-bar-bg"><div class="mc-conf-bar-fill" style="width:'+confFill+';background:'+confCol+'"></div></div>'+
+      '<div class="mc-conf-lbl">Confidence '+fmt(m.confidence,1)+'%</div>'+
+    '</div>'+
+  '</div>';
+}
+
+function toggleCard(el){
+  // Could expand for more details — for now just visual feedback
+  el.style.borderColor = el.style.borderColor ? '' : 'var(--acc)';
 }
 
 function renderMatches(){
-  var filtered=DATA;
-  if(ACTIVE_FILTER==='elite') filtered=DATA.filter(function(m){return m.isElitePick||classifyMatch(m)==='ELITE';});
-  else if(ACTIVE_FILTER==='value') filtered=DATA.filter(function(m){return m.hasValue;});
-  else if(ACTIVE_FILTER==='safe') filtered=DATA.filter(function(m){return m.aiScore>=65&&(m.ligaRating==='A'||m.ligaRating==='S');});
-  // SPEC: Filtrare agresiva - calitate > cantitate
-  // Afisam meciuri care au cel putin un semnal bun
-  var vis=filtered.filter(function(m){
-    var xgTotal=m.lh+m.la;
-    // Tier 1: ELITE - toate criteriile spec
-    if(xgTotal>=2.5&&m.p15T>=0.78&&m.aiScore>=75&&m.hasValue) return true;
-    // Tier 2: STRONG - xG bun + prob buna
-    if(xgTotal>=2.5&&m.p15T>=0.75&&m.aiScore>=65) return true;
-    // Tier 3: VALUE - value bet clar
-    if(m.hasValue&&m.bestValue>=0.08&&m.p15T>=0.70) return true;
-    // Tier 4: Safe - prob foarte mare
-    if(m.p15T>=0.80&&m.aiScore>=60) return true;
-    return false;
-  });
-  document.getElementById('matches-count-lbl').textContent=vis.length+' meciuri analizate';
-  document.getElementById('sort-count').textContent=vis.length+' meciuri';
-  document.getElementById('sort-bar').style.display=vis.length>0?'flex':'none';
-  var sorted;
-  if(ACTIVE_SORT==='ai') sorted=vis.slice().sort(function(a,b){return b.aiScore-a.aiScore;});
-  else if(ACTIVE_SORT==='prob') sorted=vis.slice().sort(function(a,b){return b.p15T-a.p15T;});
-  else if(ACTIVE_SORT==='value') sorted=vis.slice().sort(function(a,b){
-    var va=a.positive&&a.positive.length?a.positive[0].value:-999;
-    var vb=b.positive&&b.positive.length?b.positive[0].value:-999;
-    return vb-va;
-  });
-  else sorted=vis.slice().sort(function(a,b){return a.sortKey.localeCompare(b.sortKey);});
-  var html='';
-  if(!sorted.length){
-    html='<div class="empty"><div class="empty-ico">📭</div><div class="empty-title">Niciun meci eligibil</div><div class="empty-sub">Niciun meci nu atinge pragul de calitate pentru filtrul selectat.</div></div>';
-  } else if(ACTIVE_SORT==='date'){
-    var lastDate='', gridOpen=false;
-    for(var i=0;i<sorted.length;i++){
-      var m=sorted[i];
-      if(m.dateKey!==lastDate){
-        if(gridOpen) html+='</div>';
-        lastDate=m.dateKey;
-        var cnt=sorted.filter(function(x){return x.dateKey===m.dateKey;}).length;
-        html+='<div class="date-sep"><div class="date-sep-lbl">📅 '+m.dataFull.charAt(0).toUpperCase()+m.dataFull.slice(1)+'</div><div class="date-sep-line"></div><div class="date-sep-count">'+cnt+' meciuri</div></div>';
-        html+='<div class="cards-grid">';
-        gridOpen=true;
-      }
-      html+=renderCard(m);
-    }
-    if(gridOpen) html+='</div>';
-  } else {
-    html='<div class="cards-grid">'+sorted.map(function(m){return renderCard(m);}).join('')+'</div>';
-  }
-  document.getElementById('matches-grid').innerHTML=html;
-}
+  var container = $('matches-container');
+  var sortBy = $('sort-select').value;
 
-function renderTickets(){
-  if(!BILETE){
-    document.getElementById('tickets-content').innerHTML='<div class="empty"><div class="empty-ico">🎫</div><div class="empty-title">Se genereaza biletele...</div><div class="empty-sub">Reimprospateaza datele pentru a vedea biletele.</div></div>';
+  var filtered = ALL_MATCHES.filter(function(m){
+    if(!m.bestBet) return false;
+    if(CURRENT_FILTER === 'safe') return m.verdict === 'safe';
+    if(CURRENT_FILTER === 'moderate') return m.verdict === 'safe' || m.verdict === 'moderate';
+    if(CURRENT_FILTER === 'value') return m.bestBet && m.bestBet.value >= 0.05;
+    return m.bestBet !== null;  // 'all' - show all with any bet
+  });
+
+  // Sort
+  filtered.sort(function(a,b){
+    if(sortBy==='value') return (b.bestBet?b.bestBet.value:0)-(a.bestBet?a.bestBet.value:0);
+    if(sortBy==='prob') return (b.bestBet?b.bestBet.adjProb:0)-(a.bestBet?a.bestBet.adjProb:0);
+    if(sortBy==='conf') return b.confidence-a.confidence;
+    if(sortBy==='date') return new Date(a.date)-new Date(b.date);
+    return b.smartScore-a.smartScore;
+  });
+
+  $('filter-count').textContent = filtered.length + ' meciuri';
+
+  if(filtered.length === 0){
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">Niciun meci nu corespunde filtrului selectat</div></div>';
     return;
   }
-  var html='';
-  html+=renderBilet(BILETE.biletSafe,{icon:'🛡️',label:'Bilet Sigur',color:'var(--grn)',colorRgb:'34,197,94',desc:'ELITE - AI Score >70 + Prob >80% - Ligi A/S - Cele mai bune 3 din zi'});
-  html+=renderBilet(BILETE.biletMediu,{icon:'🎯',label:'Bilet Zilnic Optim',color:'var(--acc)',colorRgb:'59,130,246',desc:'4-5 meciuri ELITE+STRONG - cota tinta 1.8-2.2 - HIGH CONFIDENCE'});
-  html+=renderBilet(BILETE.biletRisc,{icon:'⚡',label:'Bilet Risc',color:'var(--org)',colorRgb:'249,115,22',desc:'NORMAL - Prob 55-72% - Cota mai mare - Risc ridicat'});
-  document.getElementById('tickets-content').innerHTML=html;
+
+  // Group by date
+  var byDate = {};
+  var dateOrder = [];
+  filtered.forEach(function(m){
+    if(!byDate[m.dateKey]){ byDate[m.dateKey]=[]; dateOrder.push(m.dateKey); }
+    byDate[m.dateKey].push(m);
+  });
+
+  var html = '';
+  dateOrder.forEach(function(dk){
+    var ms = byDate[dk];
+    html += '<div class="date-group">'+
+      '<div class="date-label">📅 '+ms[0].dateLabel+' <span style="color:var(--acc)">'+ms.length+' meciuri</span></div>'+
+      '<div class="matches-grid">';
+    ms.forEach(function(m){ html += renderMatchCard(m); });
+    html += '</div></div>';
+  });
+
+  container.innerHTML = html;
 }
-function renderBilet(b,cfg){
-  var icon=cfg.icon, label=cfg.label, color=cfg.color, colorRgb=cfg.colorRgb, desc=cfg.desc;
-  var cotaC=b.cota>=2.0?'var(--org)':b.cota>=1.5?'var(--yel)':'var(--grn)';
-  if(!b.picks||!b.picks.length){
-    return '<div class="bilet" style="border-color:var(--brd)"><div class="bilet-head"><div><div class="bilet-title">'+icon+' '+label+'</div><div class="bilet-tag" style="color:var(--muted);border-color:var(--brd)">FARA SELECTII DISPONIBILE</div></div></div><div class="bilet-empty">Nu s-au gasit meciuri care sa indeplineasca criteriile pentru '+label+'. Revino mai tarziu.</div></div>';
+
+function setFilter(f, btn){
+  CURRENT_FILTER = f;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderMatches();
+}
+
+// ============================================================
+// TOP PICKS
+// ============================================================
+function renderTopPicks(){
+  var eligible = ALL_MATCHES.filter(passesSelectionFilter);
+  eligible.sort(function(a,b){ return b.smartScore-a.smartScore; });
+  var top5 = eligible.slice(0,5);
+
+  var grid = $('top-picks-grid');
+  if(top5.length === 0){
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">Niciun meci nu trece filtrele stricte azi</div></div>';
+    return;
   }
-  var picksH=b.picks.map(function(c){
-    var m=c.m;
-    var tierColor=c.tier==='ELITE'?'#ffd700':c.tier==='STRONG'?'var(--acc)':'var(--muted)';
-    var tierBg=c.tier==='ELITE'?'rgba(255,215,0,.12)':c.tier==='STRONG'?'rgba(59,130,246,.12)':'rgba(107,122,153,.1)';
-    return '<div class="pick"><div style="flex:1;min-width:0"><div class="pick-name">'+m.home+' vs '+m.away+'</div><div class="pick-meta">'+m.flag+' '+m.liga+' - '+c.mkt+'</div><div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap"><span style="font-family:var(--mono);font-size:8px;font-weight:800;padding:2px 6px;border-radius:4px;color:'+tierColor+';background:'+tierBg+';border:1px solid '+tierColor+'40">'+c.tier+'</span><span style="font-family:var(--mono);font-size:9px;color:var(--muted)">AI '+m.aiScore+'</span><span style="font-family:var(--mono);font-size:9px;color:var(--muted)">📅 '+m.dataShort+' - 🕐 '+m.ora+'</span></div></div><div class="pick-right"><div class="pick-pct" style="color:'+pC(c.p)+'">'+pct(c.p)+'</div><div class="pick-odd">'+c.impliedOdd.toFixed(2)+'x</div></div></div>';
-  }).join('');
-  return '<div class="bilet" style="background:linear-gradient(135deg,rgba('+colorRgb+',.07),rgba('+colorRgb+',.02));border-color:rgba('+colorRgb+',.35)"><div class="bilet-head"><div><div class="bilet-title">'+icon+' '+label+' <span style="color:'+color+'">~'+b.cota+'x</span></div><div class="bilet-tag" style="color:'+color+';border-color:rgba('+colorRgb+',.35);background:rgba('+colorRgb+',.08)">'+b.picks.length+' SELECTII - '+b.tip+'</div></div><div><div class="bilet-cota-lbl">Cota estimata</div><div class="bilet-cota" style="color:'+cotaC+'">~'+b.cota+'x</div></div></div>'+picksH+'<div class="bilet-note">⚡ Criterii: '+desc+'</div></div>';
+
+  var html = '';
+  top5.forEach(function(m,i){
+    var b = m.bestBet;
+    var valStr = '+'+fmtPct(b.value*100);
+    var badgeCls = m.verdict==='safe' ? 'tp-badge-safe' : 'tp-badge-mod';
+    var badgeTxt = m.verdict==='safe' ? '🟢 SAFE' : '🟡 MODERATE';
+    html += '<div class="top-pick-card">'+
+      '<div class="tp-rank">'+(i+1)+'</div>'+
+      '<div class="tp-badge '+badgeCls+'">'+badgeTxt+'</div>'+
+      '<div class="tp-teams">'+m.home+' vs '+m.away+'</div>'+
+      '<div class="tp-league">'+m.league+' • '+m.dateLabel+' '+m.timeLabel+'</div>'+
+      '<div class="tp-metrics">'+
+        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--grn)">'+valStr+'</div><div class="tp-metric-lbl">Value</div></div>'+
+        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--acc)">'+fmtPct(b.adjProb)+'</div><div class="tp-metric-lbl">Adj.Prob</div></div>'+
+        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--pur)">'+m.smartScore+'</div><div class="tp-metric-lbl">Score</div></div>'+
+      '</div>'+
+      '<div class="tp-rec">🎯 '+b.label+' @ '+b.odds+' | Prob: '+fmtPct(b.prob)+'</div>'+
+    '</div>';
+  });
+  grid.innerHTML = html;
 }
 
-function updateBankroll(){
-  BANKROLL=parseFloat(document.getElementById('bankroll-input').value)||1000;
-  var safe=+(BANKROLL*0.02).toFixed(2);
-  var medium=+(BANKROLL*0.05).toFixed(2);
-  var risk=+(BANKROLL*0.10).toFixed(2);
-  var safeReturn=BILETE&&BILETE.biletSafe.picks.length?+(safe*BILETE.biletSafe.cota).toFixed(2):0;
-  var medReturn=BILETE&&BILETE.biletMediu.picks.length?+(medium*BILETE.biletMediu.cota).toFixed(2):0;
-  var riskReturn=BILETE&&BILETE.biletRisc.picks.length?+(risk*BILETE.biletRisc.cota).toFixed(2):0;
-  document.getElementById('bankroll-grid').innerHTML=
-    '<div class="bk-card" style="border-color:rgba(34,197,94,.3)"><div class="bk-card-title" style="color:var(--grn)">🛡️ Bilet Sigur</div><div class="bk-row"><span>Miza recomandata (2%)</span><span class="bk-val" style="color:var(--grn)">'+safe+' RON</span></div><div class="bk-row"><span>Cota estimata</span><span class="bk-val">'+(BILETE?BILETE.biletSafe.cota+'x':'—')+'</span></div><div class="bk-row"><span>Castig potential</span><span class="bk-val" style="color:var(--grn)">'+(safeReturn>0?safeReturn+' RON':'—')+'</span></div><div class="bk-row"><span>Profit net</span><span class="bk-val" style="color:var(--grn)">'+(safeReturn>0?+(safeReturn-safe).toFixed(2)+' RON':'—')+'</span></div></div>'
-    +'<div class="bk-card" style="border-color:rgba(59,130,246,.3)"><div class="bk-card-title" style="color:var(--acc)">⚖️ Bilet Mediu</div><div class="bk-row"><span>Miza recomandata (5%)</span><span class="bk-val" style="color:var(--acc)">'+medium+' RON</span></div><div class="bk-row"><span>Cota estimata</span><span class="bk-val">'+(BILETE?BILETE.biletMediu.cota+'x':'—')+'</span></div><div class="bk-row"><span>Castig potential</span><span class="bk-val" style="color:var(--acc)">'+(medReturn>0?medReturn+' RON':'—')+'</span></div><div class="bk-row"><span>Profit net</span><span class="bk-val" style="color:var(--acc)">'+(medReturn>0?+(medReturn-medium).toFixed(2)+' RON':'—')+'</span></div></div>'
-    +'<div class="bk-card" style="border-color:rgba(249,115,22,.3)"><div class="bk-card-title" style="color:var(--org)">⚡ Bilet Risc</div><div class="bk-row"><span>Miza recomandata (10%)</span><span class="bk-val" style="color:var(--org)">'+risk+' RON</span></div><div class="bk-row"><span>Cota estimata</span><span class="bk-val">'+(BILETE?BILETE.biletRisc.cota+'x':'—')+'</span></div><div class="bk-row"><span>Castig potential</span><span class="bk-val" style="color:var(--org)">'+(riskReturn>0?riskReturn+' RON':'—')+'</span></div><div class="bk-row"><span>Profit net</span><span class="bk-val" style="color:var(--org)">'+(riskReturn>0?+(riskReturn-risk).toFixed(2)+' RON':'—')+'</span></div></div>'
-    +'<div class="bk-card"><div class="bk-card-title">📊 Strategie Piramida</div><div class="bk-row"><span>Bankroll total</span><span class="bk-val">'+BANKROLL+' RON</span></div><div class="bk-row"><span>Rezerva (83%)</span><span class="bk-val">'+(BANKROLL*0.83).toFixed(2)+' RON</span></div><div class="bk-row"><span>Alocat bilete</span><span class="bk-val">'+(safe+medium+risk).toFixed(2)+' RON</span></div><div class="bk-row"><span>Risc maxim</span><span class="bk-val" style="color:var(--yel)">'+(safe+medium+risk).toFixed(2)+' RON ('+((safe+medium+risk)/BANKROLL*100).toFixed(1)+'%)</span></div></div>';
-}
-
-async function doRefresh(){
-  var btn=document.getElementById('btn-refresh');
-  btn.disabled=true; btn.textContent='⏳ Se incarca...';
-  showLdr('Se analizeaza meciurile','Filtrare agresivă — doar VALUE BETS reale',0);
-  try{
-    setLdrPct(15,'Se descarca predictiile...');
-    var preds=await fetchData();
-    var meta=await fetchMeta();
-    setLdrPct(50,'Se proceseaza datele...');
-    if(!preds.length){
-      hideLdr();
-      toast('Nu s-au gasit date. Verifica GitHub Actions.','err');
-      btn.disabled=false; btn.textContent='🔄 Reimprospateaza';
-      return;
-    }
-    var allMatches=preds.map(function(p){try{return processPrediction(p);}catch(e){return null;}}).filter(Boolean);
-    allMatches.sort(function(a,b){return a.sortKey.localeCompare(b.sortKey);});
-    DATA=allMatches;
-    setLdrPct(80,'Se genereaza biletele...');
-    BILETE=genBilete(allMatches);
-    setLdrPct(95,'Se randeaza interfata...');
-    var eliteCnt=allMatches.filter(function(m){return m.isElitePick||classifyMatch(m)==='ELITE';}).length;
-    var valueCnt=allMatches.filter(function(m){return m.hasValue;}).length;
-    // SPEC: eligible = xG>=2.5 + prob>=78% + score>=75 + value bet
-    var visCnt=allMatches.filter(function(m){
-      var xgTotal=m.lh+m.la;
-      return (xgTotal>=2.5&&m.p15T>=0.78&&m.aiScore>=75&&m.hasValue)||
-             (xgTotal>=2.5&&m.p15T>=0.75&&m.aiScore>=65)||
-             (m.hasValue&&m.bestValue>=0.08&&m.p15T>=0.70)||
-             (m.p15T>=0.80&&m.aiScore>=60);
-    }).length;
-    document.getElementById('stat-total').textContent=allMatches.length;
-    document.getElementById('stat-elite').textContent=eliteCnt;
-    document.getElementById('stat-value').textContent=valueCnt;
-    document.getElementById('stat-visible').textContent=visCnt;
-    document.getElementById('stats-row').style.display='grid';
-    var wb=document.getElementById('welcome-banner');
-    wb.style.display='flex';
-    document.getElementById('welcome-text').innerHTML='Am analizat <span class="hl">'+allMatches.length+'</span> meciuri. Dupa filtrare agresiva: <span class="hl">'+visCnt+'</span> meciuri eligibile (xG≥2.5 + Prob≥75% + Score≥65 + Value Bet).';
-    var now=new Date().toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});
-    document.getElementById('sb-dot').className='sb-dot live';
-    document.getElementById('sb-txt').textContent=allMatches.length+' meciuri - '+valueCnt+' value bets';
-    document.getElementById('sb-time').textContent='ora '+now;
-    if(meta&&meta.updated_at){
-      var upd=new Date(meta.updated_at).toLocaleString('ro-RO',{timeZone:TZ});
-    }
-    renderTop5(allMatches);
-    renderML(allMatches);
-    renderMatches();
-    renderTickets();
-    updateBankroll();
-    hideLdr();
-    toast(allMatches.length+' meciuri incarcate cu succes!','ok');
-  }catch(e){
-    hideLdr();
-    console.error('Refresh error:',e);
-    toast('Eroare la incarcare: '+e.message,'err');
+// ============================================================
+// ML RECOMMENDATIONS
+// ============================================================
+function renderML(){
+  var mlMatches = ALL_MATCHES.filter(function(m){ return m.hasMlRec; }).slice(0,6);
+  var grid = $('ml-grid');
+  if(mlMatches.length === 0){
+    grid.innerHTML = '<div style="color:var(--muted);font-size:13px">Nicio recomandare ML disponibila</div>';
+    return;
   }
-  btn.disabled=false; btn.textContent='🔄 Reimprospateaza';
+  var html = '';
+  mlMatches.forEach(function(m){
+    html += '<div class="ml-card">'+
+      '<div class="ml-hdr">'+
+        '<div class="ml-teams">'+m.home+' vs '+m.away+'</div>'+
+        '<div class="ml-conf">'+fmt(m.confidence,0)+'%</div>'+
+      '</div>'+
+      '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">'+m.league+' • '+m.dateLabel+' '+m.timeLabel+'</div>'+
+      '<div class="ml-picks">'+m.mlPicks.map(function(p){ return '<span class="ml-pick">'+p+'</span>'; }).join('')+'</div>'+
+    '</div>';
+  });
+  grid.innerHTML = html;
 }
 
-document.addEventListener('DOMContentLoaded',function(){
-  updateBankroll();
+// ============================================================
+// BILET AUTOMAT — SPEC Section 7
+// ============================================================
+function generateTicket(){
+  // SPEC: 2-3 meciuri, prob >80%, value pozitiv, cota totala 1.4-2.2
+  var eligible = ALL_MATCHES.filter(function(m){
+    if(!m.bestBet) return false;
+    var b = m.bestBet;
+    return b.adjProb > 80 && b.value > 0.05 && m.confidence > 65 && b.odds >= 1.20;
+  });
+
+  eligible.sort(function(a,b){ return b.smartScore-a.smartScore; });
+
+  // Try to build a ticket with cota totala 1.4-2.2
+  var picks = [];
+  var totalOdds = 1;
+
+  for(var i=0; i<eligible.length; i++){
+    var m = eligible[i];
+    var b = m.bestBet;
+    var testOdds = totalOdds * b.odds;
+
+    if(picks.length < 3 && testOdds <= 2.5){
+      picks.push(m);
+      totalOdds = testOdds;
+    }
+    if(picks.length >= 3 && totalOdds >= 1.4) break;
+    if(picks.length >= 2 && totalOdds >= 1.4 && totalOdds <= 2.2) break;
+  }
+
+  if(picks.length < 2){
+    // Relax criteria slightly
+    eligible = ALL_MATCHES.filter(function(m){
+      if(!m.bestBet) return false;
+      var b = m.bestBet;
+      return b.adjProb > 70 && b.value > 0.03 && m.confidence > 55;
+    });
+    eligible.sort(function(a,b){ return b.smartScore-a.smartScore; });
+    picks = eligible.slice(0,3);
+    totalOdds = picks.reduce(function(acc,m){ return acc*(m.bestBet?m.bestBet.odds:1); },1);
+  }
+
+  BILETE = {picks: picks, totalOdds: totalOdds, generatedAt: new Date().toISOString()};
+
+  // Save to tracking
+  if(picks.length > 0){
+    var ticket = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString('ro-RO'),
+      picks: picks.map(function(m){
+        return {home:m.home, away:m.away, bet:m.bestBet.label, odds:m.bestBet.odds, prob:m.bestBet.adjProb};
+      }),
+      totalOdds: totalOdds,
+      status: 'pending',
+      profit: 0
+    };
+    TRACKING.unshift(ticket);
+    if(TRACKING.length > 100) TRACKING = TRACKING.slice(0,100);
+    localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
+  }
+
+  renderBilete();
+  toast('Bilet generat: '+picks.length+' selectii, cota '+totalOdds.toFixed(2)+'x', 'ok');
+}
+
+function renderBilete(){
+  var container = $('bilete-container');
+
+  if(!BILETE || BILETE.picks.length === 0){
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🎫</div><div class="empty-text">Apasa butonul de mai sus pentru a genera un bilet sigur</div></div>';
+    return;
+  }
+
+  var picks = BILETE.picks;
+  var totalOdds = BILETE.totalOdds;
+  var combinedProb = picks.reduce(function(acc,m){ return acc*(m.bestBet.adjProb/100); },1)*100;
+
+  var html = '<div class="bilet-card">'+
+    '<div class="bilet-hdr">'+
+      '<div class="bilet-title">🎯 Bilet Sigur <span style="font-size:12px;color:var(--muted);font-weight:400">'+picks.length+' selectii</span></div>'+
+      '<div class="bilet-cota" style="color:var(--grn)">'+totalOdds.toFixed(2)+'x</div>'+
+    '</div>'+
+    '<div class="bilet-meta">Probabilitate combinata: <strong style="color:var(--acc)">'+fmtPct(combinedProb)+'</strong> • Generat: '+new Date(BILETE.generatedAt).toLocaleTimeString('ro-RO')+'</div>';
+
+  picks.forEach(function(m){
+    var b = m.bestBet;
+    var valStr = '+'+fmtPct(b.value*100);
+    html += '<div class="bilet-row">'+
+      '<div class="bilet-match">'+
+        '<div class="bilet-match-name">'+m.home+' vs '+m.away+'</div>'+
+        '<div class="bilet-match-info">'+m.league+' • '+m.dateLabel+' '+m.timeLabel+'</div>'+
+      '</div>'+
+      '<div class="bilet-pick">'+
+        '<div class="bilet-pick-type">'+b.label+' @ '+b.odds+'</div>'+
+        '<div class="bilet-pick-prob">'+fmtPct(b.adjProb)+' adj.prob | Value: '+valStr+'</div>'+
+      '</div>'+
+    '</div>';
+  });
+
+  html += '<div class="bilet-criteria">⚡ Criteriu: Adj.Prob >80% + Value >5% + Confidence >65 | Cota totala: '+totalOdds.toFixed(2)+'x</div>';
+  html += '</div>';
+
+  // Also show all eligible matches
+  var eligible = ALL_MATCHES.filter(passesSelectionFilter);
+  eligible.sort(function(a,b){ return b.smartScore-a.smartScore; });
+
+  if(eligible.length > 0){
+    html += '<div class="sec-hdr" style="margin-top:20px"><div class="sec-title">✅ Toate Selectiile Eligibile <span class="sec-badge">'+eligible.length+' meciuri</span></div></div>';
+    html += '<div class="matches-grid">';
+    eligible.forEach(function(m){ html += renderMatchCard(m); });
+    html += '</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+// ============================================================
+// TRACKING — SPEC Section 8
+// ============================================================
+function renderTracking(){
+  var total = TRACKING.length;
+  var wins = TRACKING.filter(function(t){ return t.status==='win'; }).length;
+  var winRate = total > 0 ? (wins/total*100) : 0;
+  var profit = TRACKING.reduce(function(acc,t){ return acc+t.profit; }, 0);
+
+  $('tr-total').textContent = total;
+  $('tr-winrate').textContent = fmtPct(winRate);
+  $('tr-profit').textContent = (profit>=0?'+':'')+fmtPct(profit);
+
+  var container = $('tracking-container');
+  if(TRACKING.length === 0){
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📈</div><div class="empty-text">Niciun pariu inregistrat inca.<br>Genereaza un bilet din tab-ul Bilete.</div></div>';
+    return;
+  }
+
+  var html = '<table class="history-table"><thead><tr>'+
+    '<th>Data</th><th>Meciuri</th><th>Cota</th><th>Status</th><th>Profit</th><th>Actiuni</th>'+
+  '</tr></thead><tbody>';
+
+  TRACKING.forEach(function(t,i){
+    var statusBadge = t.status==='win'?'<span class="badge-win">WIN</span>':
+                      t.status==='loss'?'<span class="badge-loss">LOSS</span>':
+                      '<span class="badge-pending">PENDING</span>';
+    var profitStr = t.profit>0?'<span style="color:var(--grn)">+'+fmtPct(t.profit)+'</span>':
+                    t.profit<0?'<span style="color:var(--red)">'+fmtPct(t.profit)+'</span>':
+                    '<span style="color:var(--muted)">—</span>';
+    var matches = t.picks.map(function(p){ return p.home+' vs '+p.away+' ('+p.bet+')'; }).join(', ');
+    html += '<tr>'+
+      '<td style="font-family:var(--mono);font-size:11px">'+t.date+'</td>'+
+      '<td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+matches+'">'+t.picks.length+' selectii</td>'+
+      '<td style="font-family:var(--mono)">'+t.totalOdds.toFixed(2)+'x</td>'+
+      '<td>'+statusBadge+'</td>'+
+      '<td>'+profitStr+'</td>'+
+      '<td style="display:flex;gap:4px">'+
+        '<button onclick="markTicket('+i+',\'win\')" style="background:rgba(34,197,94,.15);color:var(--grn);border:1px solid rgba(34,197,94,.3);border-radius:4px;padding:2px 6px;font-size:10px;cursor:pointer">WIN</button>'+
+        '<button onclick="markTicket('+i+',\'loss\')" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);border-radius:4px;padding:2px 6px;font-size:10px;cursor:pointer">LOSS</button>'+
+      '</td>'+
+    '</tr>';
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function markTicket(idx, status){
+  TRACKING[idx].status = status;
+  if(status==='win') TRACKING[idx].profit = (TRACKING[idx].totalOdds - 1) * 100;
+  else if(status==='loss') TRACKING[idx].profit = -100;
+  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
+  renderTracking();
+  toast('Bilet marcat ca '+status.toUpperCase(), 'ok');
+}
+
+function clearHistory(){
+  if(confirm('Stergi tot istoricul?')){
+    TRACKING = [];
+    localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
+    renderTracking();
+    toast('Istoric sters', 'ok');
+  }
+}
+
+function exportHistory(){
+  var csv = 'Data,Meciuri,Cota,Status,Profit%\n';
+  TRACKING.forEach(function(t){
+    var matches = t.picks.map(function(p){ return p.home+' vs '+p.away; }).join(' | ');
+    csv += t.date+',"'+matches+'",'+t.totalOdds.toFixed(2)+','+t.status+','+t.profit.toFixed(1)+'\n';
+  });
+  var blob = new Blob([csv], {type:'text/csv'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'bet_history_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('Export CSV descarcat', 'ok');
+}
+
+// ============================================================
+// BANKROLL
+// ============================================================
+function calcBankroll(){
+  var bk = parseFloat($('bankroll-input').value) || 1000;
+  var safe = bk * 0.02;
+  var medium = bk * 0.05;
+  var risk = bk * 0.10;
+  var reserve = bk * 0.83;
+
+  $('bk-grid').innerHTML =
+    '<div class="bk-item"><div class="bk-label">🟢 Bilet Sigur (2%)</div><div class="bk-val" style="color:var(--grn)">'+safe.toFixed(2)+' RON</div><div class="bk-sub">Risc minim</div></div>'+
+    '<div class="bk-item"><div class="bk-label">🟡 Bilet Zilnic (5%)</div><div class="bk-val" style="color:var(--yel)">'+medium.toFixed(2)+' RON</div><div class="bk-sub">Echilibrat</div></div>'+
+    '<div class="bk-item"><div class="bk-label">🔴 Bilet Risc (10%)</div><div class="bk-val" style="color:var(--red)">'+risk.toFixed(2)+' RON</div><div class="bk-sub">Risc ridicat</div></div>';
+
+  $('bk-pyramid').innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
+    '<div class="bk-item"><div class="bk-label">Bankroll total</div><div class="bk-val">'+bk.toFixed(2)+' RON</div></div>'+
+    '<div class="bk-item"><div class="bk-label">Rezerva (83%)</div><div class="bk-val" style="color:var(--acc)">'+(bk*0.83).toFixed(2)+' RON</div></div>'+
+    '<div class="bk-item"><div class="bk-label">Alocat bilete</div><div class="bk-val" style="color:var(--yel)">'+(safe+medium+risk).toFixed(2)+' RON</div></div>'+
+    '<div class="bk-item"><div class="bk-label">Risc maxim</div><div class="bk-val" style="color:var(--red)">'+(safe+medium+risk).toFixed(2)+' RON ('+((safe+medium+risk)/bk*100).toFixed(1)+'%)</div></div>'+
+    '</div>';
+}
+
+// ============================================================
+// RENDER ALL
+// ============================================================
+function renderAll(){
+  var total = ALL_MATCHES.length;
+  var safe = ALL_MATCHES.filter(function(m){ return m.verdict==='safe'; }).length;
+  var value = ALL_MATCHES.filter(function(m){ return m.bestBet && m.bestBet.value>=0.05; }).length;
+  var eligible = ALL_MATCHES.filter(passesSelectionFilter).length;
+
+  $('st-total').textContent = total;
+  $('st-safe').textContent = safe;
+  $('st-value').textContent = value;
+  $('st-eligible').textContent = eligible;
+
+  $('welcome-text').innerHTML = 'Am analizat <span class="hl">'+total+'</span> meciuri. '+
+    '<span class="hl">'+eligible+'</span> trec filtrele stricte (Adj.Prob>75% + Value>5% + Conf>65).';
+
+  var now = new Date();
+  var timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  $('sb-text').textContent = total+' meciuri — '+safe+' safe — '+value+' value bets — ora '+timeStr;
+  $('sb-dot').classList.add('live');
+
+  renderTopPicks();
+  renderML();
+  renderMatches();
+  renderBilete();
+  calcBankroll();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('DOMContentLoaded', function(){
   doRefresh();
 });
 </script>
