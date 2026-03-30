@@ -638,7 +638,7 @@ function renderML(){
     return '<div class="ml-card">'+
       '<div class="ml-hdr">'+
         '<div class="ml-teams">'+m.home+' vs '+m.away+'</div>'+
-        '<div class="ml-conf">'+m.confidence+'%</div>'+
+        '<div class="ml-conf">'+m.confidence.toFixed(0)+'%</div>'+
       '</div>'+
       '<div style="font-size:9px;color:var(--muted);margin-bottom:8px">'+m.league+' • '+m.dateLabel+'</div>'+
       '<div class="ml-picks">'+
@@ -800,7 +800,7 @@ function generateTicket(){
 function generateOver15Ticket(){
   var eligible = ALL_MATCHES.filter(function(m){
     var b = m.allBets.find(function(x){ return x.type==='over15'; });
-    return b && b.adjProb >= 60 && b.odds >= 1.15;
+    return b && b.adjProb >= 50 && b.odds >= 1.10;
   });
   eligible.sort(function(a,b){
     var bA = a.allBets.find(function(x){ return x.type==='over15'; });
@@ -831,7 +831,7 @@ function generateOver15Ticket(){
 }
 
 function generateMixTicket(){
-  var eligible = ALL_MATCHES.filter(function(m){ return m.bestBet && m.bestBet.adjProb >= 55; });
+  var eligible = ALL_MATCHES.filter(function(m){ return m.bestBet && m.bestBet.adjProb >= 45; });
   eligible.sort(function(a,b){ return b.smartScore - a.smartScore; });
   var picks = eligible.slice(0, 7);
   var totalOdds = picks.reduce(function(acc,m){ return acc * m.bestBet.odds; }, 1);
