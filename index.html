@@ -736,15 +736,14 @@ function renderTopPicks(){
 // ML RECOMMENDATIONS
 // ============================================================
 function renderML(){
-  // Top 10 +1.5 sorted by probability (descending) and then by date (most recent first)
-  var mlMatches = ALL_MATCHES.map(function(m){
-    var over15Bet = m.allBets.find(function(b){ return b.type === 'over15'; });
-    return { match: m, prob: over15Bet ? over15Bet.adjProb : 0 };
-  }).filter(function(item){ return item.prob > 0; })
-    .sort(function(a,b){ 
-      if(b.prob !== a.prob) return b.prob - a.prob;
-      return new Date(b.match.date) - new Date(a.match.date);
-    }).slice(0,10);
+  // Filter matches that have ML recommendations from the API
+  var mlMatches = ALL_MATCHES.filter(function(m){ return m.hasMlRec; });
+  
+  // Sort by confidence (descending) and then by date (most recent first)
+  mlMatches.sort(function(a,b){
+    if(b.confidence !== a.confidence) return b.confidence - a.confidence;
+    return new Date(b.date) - new Date(a.date);
+  });
 
   var grid = $('ml-grid');
   if(mlMatches.length === 0){
@@ -752,16 +751,14 @@ function renderML(){
     return;
   }
   var html = '';
-  mlMatches.forEach(function(item){
-    var m = item.match;
-    var b = m.bestBet || { label: '+1.5 Goluri', adjProb: item.prob };
+  mlMatches.slice(0,10).forEach(function(m){
     html += '<div class="ml-card">'+
       '<div class="ml-hdr">'+
         '<div class="ml-teams">'+m.home+' vs '+m.away+'</div>'+
-        '<div class="ml-conf">'+fmt(b.adjProb,0)+'%</div>'+
+        '<div class="ml-conf">'+fmt(m.confidence,0)+'%</div>'+
       '</div>'+
       '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">'+m.league+' • '+m.dateLabel+' '+m.timeLabel+'</div>'+
-      '<div class="ml-picks"><span class="ml-pick">'+b.label+'</span></div>'+
+      '<div class="ml-picks">'+m.mlPicks.map(function(p){ return '<span class="ml-pick">'+p+'</span>'; }).join('')+'</div>'+
     '</div>';
   });
   grid.innerHTML = html;
