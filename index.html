@@ -653,8 +653,8 @@ function renderMatchCard(m){
     '<div class="mc-stats">'+
       '<div class="mc-stat"><div class="mc-stat-val" style="color:'+valCol+'">'+valStr+'</div><div class="mc-stat-lbl">Value</div></div>'+
       '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--acc)">'+fmtPct(b.adjProb)+'</div><div class="mc-stat-lbl">Șansă Reală</div></div>'+
-      '<div class="mc-stat"><div class="mc-stat-val" style="color:'+confCol+'">'+fmt(m.confidence,0)+'</div><div class="mc-stat-lbl">Conf</div></div>'+
-      '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--pur)">'+m.smartScore+'</div><div class="mc-stat-lbl">Score</div></div>'+
+      '<div class="mc-stat"><div class="mc-stat-val" style="color:'+confCol+'">'+fmt(m.confidence,0)+'</div><div class="mc-stat-lbl">Încredere Date</div></div>'+
+      '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--pur)">'+m.smartScore+'</div><div class="mc-stat-lbl">Notă Pariu</div></div>'+
     '</div>'+
     '<div class="mc-rec">'+
       '<div>🎯 <span class="mc-rec-type">'+b.label+'</span></div>'+
@@ -662,7 +662,7 @@ function renderMatchCard(m){
     '</div>'+
     '<div class="mc-conf-bar">'+
       '<div class="mc-conf-bar-bg"><div class="mc-conf-bar-fill" style="width:'+confFill+';background:'+confCol+'"></div></div>'+
-      '<div class="mc-conf-lbl">Confidence '+fmt(m.confidence,1)+'%</div>'+
+      '<div class="mc-conf-lbl">Încredere Date '+fmt(m.confidence,1)+'%</div>'+
     '</div>'+
     '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--brd);font-size:9px;color:var(--muted)">'+
       '💪 Putere mare (xG>1.8) | ⚡ Putere medie (xG 1.2-1.8) | 📊 Putere mică (xG<1.2)'+
@@ -760,7 +760,7 @@ function renderTopPicks(){
       '<div class="tp-metrics">'+
         '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--grn)">'+valStr+'</div><div class="tp-metric-lbl">Value</div></div>'+
         '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--acc)">'+fmtPct(b.adjProb)+'</div><div class="tp-metric-lbl">Adj.Prob</div></div>'+
-        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--pur)">'+m.smartScore+'</div><div class="tp-metric-lbl">Score</div></div>'+
+        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--pur)">'+m.smartScore+'</div><div class="tp-metric-lbl">Notă Pariu</div></div>'+
       '</div>'+
       '<div class="tp-rec">🎯 '+b.label+' @ '+b.odds+' | Prob: '+fmtPct(b.prob)+'</div>'+
     '</div>';
