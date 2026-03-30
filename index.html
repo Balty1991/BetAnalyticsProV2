@@ -284,11 +284,11 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
         <button class="btn btn-primary" style="font-size:14px;padding:12px 24px;background:linear-gradient(135deg,var(--acc),var(--cyan))" onclick="generateOver15Ticket()">
           🔥 Genereaza Bilet 1.5G (5-10 meciuri)
         </button>
-        <button class="btn btn-primary" style="font-size:14px;padding:12px 24px;background:linear-gradient(135deg,var(--pur),var(--red))" onclick="generateDoubleChanceTicket()">
-          🛡️ Genereaza Bilet 1X/X2 (5-10 meciuri)
+        <button class="btn btn-primary" style="font-size:14px;padding:12px 24px;background:linear-gradient(135deg,var(--pur),var(--red))" onclick="generateMixTicket()">
+          🛡️ Genereaza Mix 5-10 Evenimente
         </button>
       </div>
-      <div style="font-size:11px;color:var(--muted)">Criteriu: Selectii sigure cu probabilitate ridicata de 1X sau X2</div>
+      <div style="font-size:11px;color:var(--muted)">Criteriu: Cele mai sigure selectii din toate pietele (1X, X2, +1.5G, BTTS)</div>
     </div>
     <div id="bilete-container"></div>
   </div>
@@ -842,47 +842,40 @@ function generateOver15Ticket(){
   toast('Bilet 1.5G generat cu '+picks.length+' selectii!', 'ok');
 }
 
-function generateDoubleChanceTicket(){
-  // Filter for 1X or X2 bets specifically
-  var dcMatches = ALL_MATCHES.map(function(m){
-    // Find 1X and X2 bets
-    var homeBet = m.allBets.find(function(b){ return b.type === 'home'; }); // 1X
-    var awayBet = m.allBets.find(function(b){ return b.type === 'away'; }); // X2
+function generateMixTicket(){
+  // Scan all matches and pick the absolute best bet from ANY market
+  var mixMatches = ALL_MATCHES.map(function(m){
+    if(!m.allBets || m.allBets.length === 0) return null;
     
-    var bestDC = null;
-    if(homeBet && awayBet) {
-      bestDC = homeBet.adjProb >= awayBet.adjProb ? homeBet : awayBet;
-    } else if(homeBet) {
-      bestDC = homeBet;
-    } else if(awayBet) {
-      bestDC = awayBet;
-    }
+    // Find the bet with the highest adjProb in this match
+    var bestOption = m.allBets.reduce(function(prev, current) {
+      return (prev.adjProb > current.adjProb) ? prev : current;
+    });
 
-    if(!bestDC || !bestDC.odds || bestDC.odds < 1.10) return null;
+    if(!bestOption || !bestOption.odds || bestOption.odds < 1.10) return null;
     
-    // High Probability Logic: Prioritize adjProb and Confidence
-    // score = adjProb (80%) + Confidence (20%)
-    var safetyScore = (bestDC.adjProb * 0.8) + (m.confidence * 0.2);
+    // Score based on probability (80%) and confidence (20%)
+    var safetyScore = (bestOption.adjProb * 0.8) + (m.confidence * 0.2);
 
     return {
       match: m,
-      adjProb: bestDC.adjProb,
-      value: bestDC.value,
-      odds: bestDC.odds,
-      label: bestDC.label,
+      adjProb: bestOption.adjProb,
+      value: bestOption.value,
+      odds: bestOption.odds,
+      label: bestOption.label,
       score: safetyScore
     };
-  }).filter(function(x){ return x !== null && x.adjProb >= 35; });
+  }).filter(function(x){ return x !== null && x.adjProb >= 30; });
 
   // Sort by safety score (descending)
-  dcMatches.sort(function(a,b){ return b.score - a.score; });
+  mixMatches.sort(function(a,b){ return b.score - a.score; });
 
   var picks = [];
   var totalOdds = 1;
   
-  // Take 5-10 matches, prioritizing safety
-  for(var i=0; i<dcMatches.length; i++){
-    var item = dcMatches[i];
+  // Take 5-10 matches
+  for(var i=0; i<mixMatches.length; i++){
+    var item = mixMatches[i];
     picks.push({
       home: item.match.home,
       away: item.match.away,
@@ -905,14 +898,14 @@ function generateDoubleChanceTicket(){
       picks: [],
       totalOdds: 1,
       generatedAt: new Date().toISOString(),
-      error: 'Nu am gasit destule meciuri sigure pentru biletul de 1X/X2. Incearca mai tarziu cand oferta este mai bogata.'
+      error: 'Nu am gasit destule meciuri sigure pentru biletul Mix. Incearca mai tarziu cand oferta este mai bogata.'
     };
     renderBilete();
     toast('Prea putine meciuri sigure gasite', 'warn');
     return;
   }
 
-  BILETE = {picks: picks, totalOdds: totalOdds, generatedAt: new Date().toISOString(), type: 'dc_combo'};
+  BILETE = {picks: picks, totalOdds: totalOdds, generatedAt: new Date().toISOString(), type: 'mix_combo'};
   
   // Save to tracking
   var ticket = {
@@ -924,13 +917,13 @@ function generateDoubleChanceTicket(){
     totalOdds: totalOdds,
     status: 'pending',
     profit: 0,
-    criteria: 'Bilet 1X/X2 (Prioritate Probabilitate & Incredere)'
+    criteria: 'Bilet Mix (Cele mai sigure selectii din toate pietele)'
   };
   TRACKING.unshift(ticket);
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
 
   renderBilete();
-  toast('Bilet Combo 1X/X2 generat cu '+picks.length+' selectii sigure!', 'ok');
+  toast('Bilet Mix generat cu '+picks.length+' selectii sigure!', 'ok');
 }
 
 function generateTicket(){
