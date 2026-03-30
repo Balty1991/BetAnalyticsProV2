@@ -812,6 +812,9 @@ function generateOver15Ticket(){
     if(picks.length >= 10) break;
   }
 
+  // Debug: Log picks to console
+  console.log('Over15 Ticket Generated:', {picks_count: picks.length, total_odds: totalOdds, picks: picks});
+
   if(picks.length < 3){ // Lowered from 5 to 3 as fallback if data is scarce
     BILETE = {
       picks: [],
@@ -952,7 +955,10 @@ function generateTicket(){
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
 
   renderBilete();
-  var combinedEV = picks.reduce(function(acc,m){ return acc*(m.bestBet.adjProb/100); },1)*totalOdds;
+  var combinedEV = picks.reduce(function(acc,m){
+    var adjProb = m.bestBet ? m.bestBet.adjProb : m.adjProb;
+    return acc * (adjProb / 100);
+  }, 1) * totalOdds;
   toast('Bilet generat: '+picks.length+' selectii, cota '+totalOdds.toFixed(2)+'x, EV '+(combinedEV*100).toFixed(1)+'%', 'ok');
 }
 
@@ -971,7 +977,12 @@ function renderBilete(){
 
   var picks = BILETE.picks;
   var totalOdds = BILETE.totalOdds;
-  var combinedProb = picks.reduce(function(acc,m){ return acc*(m.bestBet.adjProb/100); },1)*100;
+  
+  // Handle both old format (with bestBet) and new format (direct fields)
+  var combinedProb = picks.reduce(function(acc,m){
+    var adjProb = m.bestBet ? m.bestBet.adjProb : m.adjProb;
+    return acc * (adjProb / 100);
+  }, 1) * 100;
 
   var title = BILETE.type === 'over15' ? '🔥 Bilet 1.5G' : '🎯 Bilet Sigur';
   var html = '<div class="bilet-card">'+
@@ -983,20 +994,24 @@ function renderBilete(){
 
   picks.forEach(function(m){
     var b = m.bestBet;
-    var valStr = '+'+fmtPct(b.value*100);
+    if(!b) return; // Skip if no bestBet
+    var valStr = b.value >= 0 ? '+'+fmtPct(b.value*100) : fmtPct(b.value*100);
     html += '<div class="bilet-row">'+
       '<div class="bilet-match">'+
         '<div class="bilet-match-name">'+m.home+' vs '+m.away+'</div>'+
-        '<div class="bilet-match-info">'+m.league+' • '+m.dateLabel+' '+m.timeLabel+'</div>'+
+        '<div class="bilet-match-info">'+(m.league || 'Liga')+' • '+(m.dateLabel || '')+' '+(m.timeLabel || '')+'</div>'+
       '</div>'+
       '<div class="bilet-pick">'+
-        '<div class="bilet-pick-type">'+b.label+' @ '+b.odds+'</div>'+
+        '<div class="bilet-pick-type">'+b.label+' @ '+b.odds.toFixed(2)+'</div>'+
         '<div class="bilet-pick-prob">'+fmtPct(b.adjProb)+' adj.prob | Value: '+valStr+'</div>'+
       '</div>'+
     '</div>';
   });
 
-  var combinedEV = picks.reduce(function(acc,m){ return acc*(m.bestBet.adjProb/100); },1)*totalOdds;
+  var combinedEV = picks.reduce(function(acc,m){
+    var adjProb = m.bestBet ? m.bestBet.adjProb : m.adjProb;
+    return acc * (adjProb / 100);
+  }, 1) * totalOdds;
   html += '<div class="bilet-criteria">⚡ Criteriu: Adj.Prob >80% + Value >5% + Confidence >65 | Cota totala: '+totalOdds.toFixed(2)+'x | EV combinat: '+(combinedEV*100).toFixed(1)+'%</div>';
   html += '</div>';
 
