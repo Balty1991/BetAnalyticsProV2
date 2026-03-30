@@ -795,7 +795,8 @@ function generateTicket(){
 
   eligible.sort(function(a,b){ return b.smartScore-a.smartScore; });
 
-  // Build ticket: 2-3 meciuri, target cota totala 1.4-2.2
+  // Build ticket: 2-3 meciuri, target cota totala 1.4-4.0
+  // Cap raised to 4.0 to allow combining 2 matches (e.g. 1.73 x 1.87 = 3.24)
   var picks = [];
   var totalOdds = 1;
 
@@ -803,15 +804,15 @@ function generateTicket(){
     var m = eligible[i];
     var b = m.bestBet;
     var testOdds = totalOdds * b.odds;
-    if(picks.length < 3 && testOdds <= 2.5){
+    if(picks.length < 3 && testOdds <= 4.0){
       picks.push(m);
       totalOdds = testOdds;
     }
-    if(picks.length >= 2 && totalOdds >= 1.4 && totalOdds <= 2.2) break;
+    if(picks.length >= 2 && totalOdds >= 1.4) break;
     if(picks.length >= 3) break;
   }
 
-  // If still not enough picks even at minimum tier, show honest error
+  // Accept even a single pick if it has strong EV — better than showing nothing
   if(picks.length < 1){
     BILETE = {
       picks: [],
