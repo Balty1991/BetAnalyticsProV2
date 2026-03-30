@@ -129,7 +129,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 
 /* TRACKING TAB */
 .tracking-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
-@media(max-width:500px){.tracking-stats{grid-template-columns:1fr}}
+  @media(max-width:500px){.tracking-stats{grid-template-columns:1fr}}
+  @media(max-width:1000px){.tracking-stats{grid-template-columns:repeat(3,1fr)}}
 .track-stat{background:var(--panel);border:1px solid var(--brd);border-radius:12px;padding:16px;text-align:center}
 .track-num{font-size:26px;font-weight:800;font-family:var(--mono)}
 .track-lbl{font-size:11px;color:var(--muted);margin-top:4px}
@@ -307,6 +308,9 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
       <div class="track-stat"><div class="track-num" id="tr-total" style="color:var(--acc)">0</div><div class="track-lbl">Bilete Generate</div></div>
       <div class="track-stat"><div class="track-num" id="tr-winrate" style="color:var(--grn)">0%</div><div class="track-lbl">Win Rate</div></div>
       <div class="track-stat"><div class="track-num" id="tr-profit" style="color:var(--yel)">0%</div><div class="track-lbl">Profit Teoretic</div></div>
+      <div class="track-stat"><div class="track-num" id="tr-roi" style="color:var(--val)">0%</div><div class="track-lbl">ROI</div></div>
+      <div class="track-stat"><div class="track-num" id="tr-yield" style="color:var(--cyan)">0%</div><div class="track-lbl">Yield/Bet</div></div>
+      <div class="track-stat"><div class="track-num" id="tr-avgodds" style="color:var(--pur)">0x</div><div class="track-lbl">Avg Odds</div></div>
     </div>
     <div class="sec-hdr">
       <div class="sec-title">📋 Istoric Pariuri</div>
@@ -326,6 +330,23 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
         <label style="font-size:13px;font-weight:600">Bankroll total (RON):</label>
         <input type="number" class="bk-input" id="bankroll-input" value="1000" min="10" step="50"/>
         <button class="btn btn-primary" onclick="calcBankroll()">Calculeaza</button>
+      </div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--brd)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:12px">Ajustare Procente Mize</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">
+          <div>
+            <label style="font-size:11px;color:var(--muted)">🟢 Sigur (%):</label>
+            <input type="number" id="pct-safe" value="2" min="0.1" max="50" step="0.1" style="width:100%;padding:6px;background:var(--panel);border:1px solid var(--brd);color:var(--txt);border-radius:6px;font-size:12px" onchange="calcBankroll()"/>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted)">🟡 Zilnic (%):</label>
+            <input type="number" id="pct-medium" value="5" min="0.1" max="50" step="0.1" style="width:100%;padding:6px;background:var(--panel);border:1px solid var(--brd);color:var(--txt);border-radius:6px;font-size:12px" onchange="calcBankroll()"/>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted)">🔴 Risc (%):</label>
+            <input type="number" id="pct-risk" value="10" min="0.1" max="50" step="0.1" style="width:100%;padding:6px;background:var(--panel);border:1px solid var(--brd);color:var(--txt);border-radius:6px;font-size:12px" onchange="calcBankroll()"/>
+          </div>
+        </div>
       </div>
       <div class="bk-grid" id="bk-grid"></div>
     </div>
@@ -1152,12 +1173,27 @@ function toggleTicketDetail(idx){
 function renderTracking(){
   var total = TRACKING.length;
   var wins = TRACKING.filter(function(t){ return t.status==='win'; }).length;
+  var losses = TRACKING.filter(function(t){ return t.status==='loss'; }).length;
   var winRate = total > 0 ? (wins/total*100) : 0;
   var profit = TRACKING.reduce(function(acc,t){ return acc+t.profit; }, 0);
+  
+  // Calculate total stakes (assuming 100 RON per ticket for ROI calculation)
+  var totalStakes = total * 100;
+  var roi = totalStakes > 0 ? ((profit / totalStakes) * 100) : 0;
+  
+  // Calculate Yield (profit per bet)
+  var yield_val = total > 0 ? (profit / total) : 0;
+  
+  // Calculate average odds
+  var totalOdds = TRACKING.reduce(function(acc,t){ return acc + t.totalOdds; }, 0);
+  var avgOdds = total > 0 ? (totalOdds / total) : 0;
 
   $('tr-total').textContent = total;
   $('tr-winrate').textContent = fmtPct(winRate);
   $('tr-profit').textContent = (profit>=0?'+':'')+fmtPct(profit);
+  $('tr-roi').textContent = (roi>=0?'+':'')+roi.toFixed(2)+'%';
+  $('tr-yield').textContent = (yield_val>=0?'+':'')+yield_val.toFixed(2)+'%';
+  $('tr-avgodds').textContent = avgOdds.toFixed(2)+'x';
 
   var container = $('tracking-container');
   if(TRACKING.length === 0){
@@ -1270,22 +1306,27 @@ function exportHistory(){
 // ============================================================
 function calcBankroll(){
   var bk = parseFloat($('bankroll-input').value) || 1000;
-  var safe = bk * 0.02;
-  var medium = bk * 0.05;
-  var risk = bk * 0.10;
-  var reserve = bk * 0.83;
+  var pctSafe = parseFloat($('pct-safe').value) || 2;
+  var pctMedium = parseFloat($('pct-medium').value) || 5;
+  var pctRisk = parseFloat($('pct-risk').value) || 10;
+  
+  var safe = bk * (pctSafe / 100);
+  var medium = bk * (pctMedium / 100);
+  var risk = bk * (pctRisk / 100);
+  var totalAlloc = pctSafe + pctMedium + pctRisk;
+  var reserve = bk * ((100 - totalAlloc) / 100);
 
   $('bk-grid').innerHTML =
-    '<div class="bk-item"><div class="bk-label">🟢 Bilet Sigur (2%)</div><div class="bk-val" style="color:var(--grn)">'+safe.toFixed(2)+' RON</div><div class="bk-sub">Risc minim</div></div>'+
-    '<div class="bk-item"><div class="bk-label">🟡 Bilet Zilnic (5%)</div><div class="bk-val" style="color:var(--yel)">'+medium.toFixed(2)+' RON</div><div class="bk-sub">Echilibrat</div></div>'+
-    '<div class="bk-item"><div class="bk-label">🔴 Bilet Risc (10%)</div><div class="bk-val" style="color:var(--red)">'+risk.toFixed(2)+' RON</div><div class="bk-sub">Risc ridicat</div></div>';
+    '<div class="bk-item"><div class="bk-label">🟢 Bilet Sigur ('+pctSafe.toFixed(1)+'%)</div><div class="bk-val" style="color:var(--grn)">'+safe.toFixed(2)+' RON</div><div class="bk-sub">Risc minim</div></div>'+
+    '<div class="bk-item"><div class="bk-label">🟡 Bilet Zilnic ('+pctMedium.toFixed(1)+'%)</div><div class="bk-val" style="color:var(--yel)">'+medium.toFixed(2)+' RON</div><div class="bk-sub">Echilibrat</div></div>'+
+    '<div class="bk-item"><div class="bk-label">🔴 Bilet Risc ('+pctRisk.toFixed(1)+'%)</div><div class="bk-val" style="color:var(--red)">'+risk.toFixed(2)+' RON</div><div class="bk-sub">Risc ridicat</div></div>';
 
   $('bk-pyramid').innerHTML =
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
     '<div class="bk-item"><div class="bk-label">Bankroll total</div><div class="bk-val">'+bk.toFixed(2)+' RON</div></div>'+
-    '<div class="bk-item"><div class="bk-label">Rezerva (83%)</div><div class="bk-val" style="color:var(--acc)">'+(bk*0.83).toFixed(2)+' RON</div></div>'+
+    '<div class="bk-item"><div class="bk-label">Rezerva ('+((100-totalAlloc).toFixed(1))+'%)</div><div class="bk-val" style="color:var(--acc)">'+reserve.toFixed(2)+' RON</div></div>'+
     '<div class="bk-item"><div class="bk-label">Alocat bilete</div><div class="bk-val" style="color:var(--yel)">'+(safe+medium+risk).toFixed(2)+' RON</div></div>'+
-    '<div class="bk-item"><div class="bk-label">Risc maxim</div><div class="bk-val" style="color:var(--red)">'+(safe+medium+risk).toFixed(2)+' RON ('+((safe+medium+risk)/bk*100).toFixed(1)+'%)</div></div>'+
+    '<div class="bk-item"><div class="bk-label">Risc maxim</div><div class="bk-val" style="color:var(--red)">'+(safe+medium+risk).toFixed(2)+' RON ('+totalAlloc.toFixed(1)+'%)</div></div>'+
     '</div>';
 }
 
