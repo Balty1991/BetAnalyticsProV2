@@ -394,9 +394,12 @@ var BET_TYPES = [
 ];
 
 function calcValue(prob, odds){
-  // value = probabilitate_API - (1/cota)
-  if(!odds || odds < 1.01) return -1;
-  return (prob/100) - (1/odds);
+  // BUG1 FIX: Correct EV formula per spec
+  // Value_Procentual = ((Probabilitate_Zecimala * Cota) - 1) * 100
+  // Returns decimal: e.g. 0.05 = +5%, -0.46 = -46%
+  // prob is adjProb (already adjusted by confidence) — ensures EV reflects real edge
+  if(!odds || odds < 1.01) return -999;
+  return ((prob / 100) * odds) - 1;
 }
 
 function calcAdjustedProb(prob, confidence){
@@ -435,10 +438,11 @@ function analyzeMatch(raw){
     var odds = e[bt.oddsField];
     if(!prob || !odds || odds < 1.20) return;  // SPEC: ignore odds < 1.20
 
-    var value = calcValue(prob, odds);
-    if(value < 0) return;  // SPEC: ignore negative value
-
+    // BUG1 FIX: Calculate adjProb FIRST, then use it in EV formula
     var adjProb = calcAdjustedProb(prob, conf);
+    var value = calcValue(adjProb, odds);  // EV uses adjProb, not raw prob
+    if(value < 0) return;  // SPEC: ignore negative EV
+
     var score = calcSmartScore(adjProb, value, conf);
 
     if(score > bestScore){
@@ -462,8 +466,8 @@ function analyzeMatch(raw){
     var prob = raw[bt.probField];
     var odds = e[bt.oddsField];
     if(!prob || !odds) return;
-    var value = calcValue(prob, odds);
-    var adjProb = calcAdjustedProb(prob, conf);
+    var adjProb = calcAdjustedProb(prob, conf);  // BUG1 FIX: adjProb first
+    var value = calcValue(adjProb, odds);         // BUG1 FIX: EV uses adjProb
     allBets.push({
       type: bt.key,
       label: bt.label,
@@ -759,18 +763,17 @@ function renderML(){
 // BILET AUTOMAT — SPEC Section 7
 // ============================================================
 function generateTicket(){
-  // SPEC: 2-3 meciuri, prob >80%, value pozitiv, cota totala 1.4-2.2
-  // SPEC: 2-3 meciuri, prob >80%, value pozitiv, cota totala 1.4-2.2
-  // Calibrated thresholds for real Bzzoiro API data
+  // BUG2 FIX: Strict filter — ONLY matches meeting ALL criteria simultaneously
+  // Criteria: adjProb >= 80%, value >= 5% (0.05 decimal), confidence >= 65
   var eligible = ALL_MATCHES.filter(function(m){
     if(!m.bestBet) return false;
     var b = m.bestBet;
-    return b.prob > 78 && b.value > 0.05 && m.confidence > 45 && b.odds >= 1.20;
+    return b.adjProb >= 80 && b.value >= 0.05 && m.confidence >= 65 && b.odds >= 1.20;
   });
 
   eligible.sort(function(a,b){ return b.smartScore-a.smartScore; });
 
-  // Try to build a ticket with cota totala 1.4-2.2
+  // Build ticket: 2-3 meciuri, target cota totala 1.4-2.2
   var picks = [];
   var totalOdds = 1;
 
@@ -778,55 +781,74 @@ function generateTicket(){
     var m = eligible[i];
     var b = m.bestBet;
     var testOdds = totalOdds * b.odds;
-
     if(picks.length < 3 && testOdds <= 2.5){
       picks.push(m);
       totalOdds = testOdds;
     }
-    if(picks.length >= 3 && totalOdds >= 1.4) break;
     if(picks.length >= 2 && totalOdds >= 1.4 && totalOdds <= 2.2) break;
+    if(picks.length >= 3) break;
   }
 
+  // BUG2 FIX: If not enough strict matches, show error — do NOT relax criteria
   if(picks.length < 2){
-    // Relax criteria slightly
-    eligible = ALL_MATCHES.filter(function(m){
-      if(!m.bestBet) return false;
-      var b = m.bestBet;
-      return b.adjProb > 70 && b.value > 0.03 && m.confidence > 55;
-    });
-    eligible.sort(function(a,b){ return b.smartScore-a.smartScore; });
-    picks = eligible.slice(0,3);
-    totalOdds = picks.reduce(function(acc,m){ return acc*(m.bestBet?m.bestBet.odds:1); },1);
+    BILETE = {
+      picks: [],
+      totalOdds: 1,
+      generatedAt: new Date().toISOString(),
+      error: 'Nu sunt suficiente meciuri sigure momentan. Necesita: adjProb ≥80% + Value ≥5% + Confidence ≥65. Incearca mai tarziu cand datele se actualizeaza.'
+    };
+    renderBilete();
+    toast('Nu sunt suficiente meciuri sigure momentan', 'warn');
+    return;
+  }
+
+  // BUG3 FIX: Validate combined EV of the ticket before accepting it
+  var combinedProb = picks.reduce(function(acc,m){ return acc*(m.bestBet.adjProb/100); }, 1);
+  var combinedEV = combinedProb * totalOdds;
+  if(combinedEV < 1.0){
+    BILETE = {
+      picks: [],
+      totalOdds: totalOdds,
+      generatedAt: new Date().toISOString(),
+      error: 'Biletul generat are EV negativ (' + (combinedEV*100).toFixed(1) + '%). Nu se recomanda plasarea acestui bilet — nu respecta principiul Value Bet Engine. Asteapta meciuri cu valoare matematica pozitiva.'
+    };
+    renderBilete();
+    toast('Bilet respins: EV negativ (' + (combinedEV*100).toFixed(1) + '%)', 'warn');
+    return;
   }
 
   BILETE = {picks: picks, totalOdds: totalOdds, generatedAt: new Date().toISOString()};
 
   // Save to tracking
-  if(picks.length > 0){
-    var ticket = {
-      id: Date.now(),
-      date: new Date().toLocaleDateString('ro-RO'),
-      picks: picks.map(function(m){
-        return {home:m.home, away:m.away, bet:m.bestBet.label, odds:m.bestBet.odds, prob:m.bestBet.adjProb};
-      }),
-      totalOdds: totalOdds,
-      status: 'pending',
-      profit: 0
-    };
-    TRACKING.unshift(ticket);
-    if(TRACKING.length > 100) TRACKING = TRACKING.slice(0,100);
-    localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
-  }
+  var ticket = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('ro-RO'),
+    picks: picks.map(function(m){
+      return {home:m.home, away:m.away, bet:m.bestBet.label, odds:m.bestBet.odds, prob:m.bestBet.adjProb};
+    }),
+    totalOdds: totalOdds,
+    combinedEV: (combinedEV*100).toFixed(1),
+    status: 'pending',
+    profit: 0
+  };
+  TRACKING.unshift(ticket);
+  if(TRACKING.length > 100) TRACKING = TRACKING.slice(0,100);
+  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
 
   renderBilete();
-  toast('Bilet generat: '+picks.length+' selectii, cota '+totalOdds.toFixed(2)+'x', 'ok');
+  toast('Bilet generat: '+picks.length+' selectii, cota '+totalOdds.toFixed(2)+'x, EV '+(combinedEV*100).toFixed(1)+'%', 'ok');
 }
 
 function renderBilete(){
   var container = $('bilete-container');
 
   if(!BILETE || BILETE.picks.length === 0){
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🎫</div><div class="empty-text">Apasa butonul de mai sus pentru a genera un bilet sigur</div></div>';
+    var msg = (BILETE && BILETE.error)
+      ? BILETE.error
+      : 'Apasa butonul de mai sus pentru a genera un bilet sigur';
+    var icon = (BILETE && BILETE.error) ? '⚠️' : '🎫';
+    var col = (BILETE && BILETE.error) ? 'color:var(--yel);max-width:500px;margin:0 auto;line-height:1.6' : '';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">'+icon+'</div><div class="empty-text" style="'+col+'">'+msg+'</div></div>';
     return;
   }
 
