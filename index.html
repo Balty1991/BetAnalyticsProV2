@@ -632,6 +632,10 @@ function renderMatchCard(m){
   var confCol = confColor(m.confidence);
   var valStr = b.value >= 0 ? '+'+fmtPct(b.value*100) : fmtPct(b.value*100);
   var valCol = valueColor(b.value);
+  
+  // xG-based team strength indicators
+  var homeStrength = m.xgHome >= 1.8 ? '💪' : m.xgHome >= 1.2 ? '⚡' : '📊';
+  var awayStrength = m.xgAway >= 1.8 ? '💪' : m.xgAway >= 1.2 ? '⚡' : '📊';
 
   return '<div class="match-card '+m.verdict+'" onclick="toggleCard(this)">' +
     '<div class="mc-league">'+
@@ -640,25 +644,28 @@ function renderMatchCard(m){
       '<span style="font-family:var(--mono)">'+m.dateLabel+'</span>'+
     '</div>'+
     '<div class="mc-teams">'+
-      '<div class="mc-team">'+m.home+'</div>'+
+      '<div class="mc-team">'+m.home+' <span style="font-size:12px">'+homeStrength+' '+m.xgHome.toFixed(2)+'</span></div>'+
       '<div class="mc-vs">vs</div>'+
-      '<div class="mc-team away">'+m.away+'</div>'+
+      '<div class="mc-team away"><span style="font-size:12px">'+m.xgAway.toFixed(2)+' '+awayStrength+'</span> '+m.away+'</div>'+
     '</div>'+
     '<div class="mc-time">📅 '+m.dateLabel+' 🕐 '+m.timeLabel+'</div>'+
     verdictBadge(m.verdict)+
     '<div class="mc-stats">'+
       '<div class="mc-stat"><div class="mc-stat-val" style="color:'+valCol+'">'+valStr+'</div><div class="mc-stat-lbl">Value</div></div>'+
-      '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--acc)">'+fmtPct(b.adjProb)+'</div><div class="mc-stat-lbl">Adj.Prob</div></div>'+
+      '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--acc)">'+fmtPct(b.adjProb)+'</div><div class="mc-stat-lbl">Șansă Reală</div></div>'+
       '<div class="mc-stat"><div class="mc-stat-val" style="color:'+confCol+'">'+fmt(m.confidence,0)+'</div><div class="mc-stat-lbl">Conf</div></div>'+
       '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--pur)">'+m.smartScore+'</div><div class="mc-stat-lbl">Score</div></div>'+
     '</div>'+
     '<div class="mc-rec">'+
       '<div>🎯 <span class="mc-rec-type">'+b.label+'</span></div>'+
-      '<div class="mc-rec-val">Prob: '+fmtPct(b.prob)+' | Cota: '+b.odds+'</div>'+
+      '<div class="mc-rec-val">Șansă Stat: '+fmtPct(b.prob)+' | Cota: '+b.odds+'</div>'+
     '</div>'+
     '<div class="mc-conf-bar">'+
       '<div class="mc-conf-bar-bg"><div class="mc-conf-bar-fill" style="width:'+confFill+';background:'+confCol+'"></div></div>'+
       '<div class="mc-conf-lbl">Confidence '+fmt(m.confidence,1)+'%</div>'+
+    '</div>'+
+    '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--brd);font-size:9px;color:var(--muted)">'+
+      '💪 Putere mare (xG>1.8) | ⚡ Putere medie (xG 1.2-1.8) | 📊 Putere mică (xG<1.2)'+
     '</div>'+
   '</div>';
 }
@@ -1111,7 +1118,7 @@ function renderBilete(){
       '</div>'+
       '<div class="bilet-pick">'+
         '<div class="bilet-pick-type">'+b.label+' @ '+b.odds.toFixed(2)+'</div>'+
-        '<div class="bilet-pick-prob">'+fmtPct(b.adjProb)+' adj.prob | Value: '+valStr+'</div>'+
+        '<div class="bilet-pick-prob">'+fmtPct(b.adjProb)+' Șansă Reală | Value: '+valStr+'</div>'+
       '</div>'+
     '</div>';
   });
