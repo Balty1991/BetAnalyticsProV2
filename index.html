@@ -34,8 +34,9 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 .btn-green:hover{opacity:.85}
 
 /* TABS */
-.tabs{max-width:1400px;margin:0 auto;padding:14px 16px 0;display:flex;gap:4px;border-bottom:1px solid var(--brd)}
-.tab{padding:8px 16px;border-radius:8px 8px 0 0;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent}
+  .tabs{max-width:1400px;margin:0 auto;padding:14px 16px 0;display:flex;gap:4px;border-bottom:1px solid var(--brd);overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{padding:8px 16px;border-radius:8px 8px 0 0;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px}
 .tab.active{color:var(--acc);border-bottom-color:var(--acc);background:rgba(59,130,246,.08)}
 .tab:hover:not(.active){color:var(--txt);background:rgba(255,255,255,.04)}
 .main{max-width:1400px;margin:0 auto;padding:20px 16px 80px}
@@ -58,8 +59,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 
 /* STATS GRID */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+  @media(max-width:600px){.stats-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}}
 .stat-card{background:var(--panel);border:1px solid var(--brd);border-radius:12px;padding:16px;text-align:center}
 .stat-num{font-size:28px;font-weight:800;font-family:var(--mono)}
 .stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
@@ -843,9 +844,6 @@ function generateOver15Ticket(){
     profit: 0,
     criteria: 'Bilet 1.5G (5-10 selectii sigure)'
   };
-  TRACKING.unshift(ticket);
-  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
-  
   renderBilete();
   toast('Bilet 1.5G generat cu '+picks.length+' selectii!', 'ok');
 }
@@ -938,9 +936,6 @@ function generateMixTicket(){
     profit: 0,
     criteria: 'Bilet Mix (Cele mai sigure selectii din toate pietele)'
   };
-  TRACKING.unshift(ticket);
-  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
-
   renderBilete();
   toast('Bilet Mix generat cu '+picks.length+' selectii sigure!', 'ok');
 }
@@ -1047,10 +1042,6 @@ function generateTicket(){
     status: 'pending',
     profit: 0
   };
-  TRACKING.unshift(ticket);
-  if(TRACKING.length > 100) TRACKING = TRACKING.slice(0,100);
-  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
-
   renderBilete();
   var combinedEV = picks.reduce(function(acc,m){
     var adjProb = m.bestBet ? m.bestBet.adjProb : m.adjProb;
@@ -1105,9 +1096,45 @@ function renderBilete(){
     '</div>';
   });
 
-  html += '</div>';
+  html += '<div style="margin-top:16px;text-align:center">'+
+    '<button onclick="placeCurrentTicket()" class="btn btn-green" style="padding:12px 24px;font-size:14px;width:100%;justify-content:center">'+
+      '<span>✅ PARIU PLASAT</span>'+
+    '</button>'+
+    '<div style="font-size:10px;color:var(--muted);margin-top:8px">Apasa acest buton pentru a inregistra biletul in Tracking</div>'+
+  '</div></div>';
 
   container.innerHTML = html;
+}
+
+function placeCurrentTicket(){
+  if(!BILETE || BILETE.picks.length === 0) return;
+  
+  var combinedProb = BILETE.picks.reduce(function(acc,m){
+    var adjProb = m.bestBet ? m.bestBet.adjProb : m.adjProb;
+    return acc * (adjProb / 100);
+  }, 1);
+  
+  var ticket = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('ro-RO'),
+    picks: BILETE.picks.map(function(m){
+      var b = m.bestBet || m;
+      return {home:m.home, away:m.away, bet:b.label, odds:b.odds, prob:b.adjProb, league:m.league};
+    }),
+    totalOdds: BILETE.totalOdds,
+    status: 'pending',
+    profit: 0,
+    criteria: BILETE.type === 'over15' ? 'Bilet 1.5G' : (BILETE.type === 'mix_combo' ? 'Bilet Mix' : 'Bilet Sigur')
+  };
+  
+  TRACKING.unshift(ticket);
+  if(TRACKING.length > 100) TRACKING = TRACKING.slice(0,100);
+  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
+  toast('Bilet inregistrat in Tracking!', 'ok');
+  
+  // Reset current ticket to avoid double placement
+  BILETE = null;
+  renderBilete();
 }
 
 
@@ -1140,7 +1167,7 @@ function renderTracking(){
   }
 
   var html = '<table class="history-table"><thead><tr>'+
-    '<th>Data</th><th>Meciuri</th><th>Cota</th><th>Status</th><th>Profit</th><th>Actiuni</th>'+
+    '<th>Data</th><th>Meciuri</th><th>Cota</th><th>Status</th><th>Profit</th><th style="text-align:right">Actiuni</th>'+
   '</tr></thead><tbody>';
 
   TRACKING.forEach(function(t,i){
@@ -1154,13 +1181,14 @@ function renderTracking(){
     var detailId = 'ticket-detail-'+i;
     html += '<tr onclick="toggleTicketDetail('+i+')" style="cursor:pointer;transition:background .2s">'+
       '<td style="font-family:var(--mono);font-size:11px">'+t.date+'</td>'+
-      '<td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+matches+'">'+t.picks.length+' selectii</td>'+
+      '<td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+matches+'">'+t.picks.length+' selectii</td>'+
       '<td style="font-family:var(--mono)">'+t.totalOdds.toFixed(2)+'x</td>'+
       '<td>'+statusBadge+'</td>'+
       '<td>'+profitStr+'</td>'+
-      '<td style="display:flex;gap:4px" onclick="event.stopPropagation()">'+
-        '<button onclick="markTicket('+i+',\'win\')" style="background:rgba(34,197,94,.15);color:var(--grn);border:1px solid rgba(34,197,94,.3);border-radius:4px;padding:2px 6px;font-size:10px;cursor:pointer">WIN</button>'+
-        '<button onclick="markTicket('+i+',\'loss\')" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);border-radius:4px;padding:2px 6px;font-size:10px;cursor:pointer">LOSS</button>'+
+      '<td style="display:flex;gap:4px;justify-content:flex-end" onclick="event.stopPropagation()">'+
+        '<button onclick="markTicket('+i+',\'win\')" style="background:rgba(34,197,94,.15);color:var(--grn);border:1px solid rgba(34,197,94,.3);border-radius:4px;padding:4px 8px;font-size:10px;cursor:pointer;font-weight:700">W</button>'+
+        '<button onclick="markTicket('+i+',\'loss\')" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);border-radius:4px;padding:4px 8px;font-size:10px;cursor:pointer;font-weight:700">L</button>'+
+        '<button onclick="deleteTicket('+i+')" style="background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--brd2);border-radius:4px;padding:4px 8px;font-size:10px;cursor:pointer">🗑️</button>'+
       '</td>'+
     '</tr>'+
     '<tr id="'+detailId+'" style="display:none;background:rgba(59,130,246,.05)"><td colspan="6" style="padding:16px;border-top:1px solid var(--brd)">'+
@@ -1197,6 +1225,15 @@ function markTicket(idx, status){
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
   renderTracking();
   toast('Bilet marcat ca '+status.toUpperCase(), 'ok');
+}
+
+function deleteTicket(idx){
+  if(confirm('Stergi acest bilet din istoric?')){
+    TRACKING.splice(idx, 1);
+    localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
+    renderTracking();
+    toast('Bilet sters', 'ok');
+  }
 }
 
 function clearHistory(){
