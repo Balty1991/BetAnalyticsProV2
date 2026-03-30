@@ -133,7 +133,11 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 .track-stat{background:var(--panel);border:1px solid var(--brd);border-radius:12px;padding:16px;text-align:center}
 .track-num{font-size:26px;font-weight:800;font-family:var(--mono)}
 .track-lbl{font-size:11px;color:var(--muted);margin-top:4px}
-.history-table{width:100%;border-collapse:collapse;font-size:12px}
+  .history-table-wrapper{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--brd2) transparent}
+  .history-table-wrapper::-webkit-scrollbar{height:6px}
+  .history-table-wrapper::-webkit-scrollbar-track{background:transparent}
+  .history-table-wrapper::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:3px}
+  .history-table{width:100%;border-collapse:collapse;font-size:12px;min-width:700px}
 .history-table th{text-align:left;padding:8px 10px;color:var(--muted);border-bottom:1px solid var(--brd);font-weight:600;font-size:11px;text-transform:uppercase}
 .history-table td{padding:8px 10px;border-bottom:1px solid rgba(30,42,58,.5)}
 .history-table tr:hover td{background:rgba(255,255,255,.02)}
@@ -241,11 +245,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 
   <!-- ===== DASHBOARD ===== -->
   <div class="tab-content active" id="tab-dashboard">
-    <div class="welcome-box">
-      <div class="welcome-text" id="welcome-text">Se incarca datele...</div>
-      <button class="btn btn-primary" onclick="doRefresh()">🔄 Reimprospateaza</button>
-    </div>
-
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-num" id="st-total" style="color:var(--acc)">—</div><div class="stat-lbl">Meciuri</div></div>
       <div class="stat-card"><div class="stat-num" id="st-safe" style="color:var(--grn)">—</div><div class="stat-lbl">🟢 Safe</div></div>
@@ -1166,13 +1165,15 @@ function renderTracking(){
     return;
   }
 
-  var html = '<table class="history-table"><thead><tr>'+
+  var html = '<div class="history-table-wrapper"><table class="history-table"><thead><tr>'+
     '<th>Data</th><th>Meciuri</th><th>Cota</th><th>Status</th><th>Profit</th><th style="text-align:right">Actiuni</th>'+
   '</tr></thead><tbody>';
 
   TRACKING.forEach(function(t,i){
     var statusBadge = t.status==='win'?'<span class="badge-win">WIN</span>':
                       t.status==='loss'?'<span class="badge-loss">LOSS</span>':
+                      t.status==='co'?'<span style="background:rgba(245,158,11,.15);color:var(--yel);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">CASH OUT</span>':
+                      t.status==='anulat'?'<span style="background:rgba(100,116,139,.15);color:var(--muted);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">ANULAT</span>':
                       '<span class="badge-pending">PENDING</span>';
     var profitStr = t.profit>0?'<span style="color:var(--grn)">+'+fmtPct(t.profit)+'</span>':
                     t.profit<0?'<span style="color:var(--red)">'+fmtPct(t.profit)+'</span>':
@@ -1185,10 +1186,12 @@ function renderTracking(){
       '<td style="font-family:var(--mono)">'+t.totalOdds.toFixed(2)+'x</td>'+
       '<td>'+statusBadge+'</td>'+
       '<td>'+profitStr+'</td>'+
-      '<td style="display:flex;gap:4px;justify-content:flex-end" onclick="event.stopPropagation()">'+
-        '<button onclick="markTicket('+i+',\'win\')" style="background:rgba(34,197,94,.15);color:var(--grn);border:1px solid rgba(34,197,94,.3);border-radius:4px;padding:4px 8px;font-size:10px;cursor:pointer;font-weight:700">W</button>'+
-        '<button onclick="markTicket('+i+',\'loss\')" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);border-radius:4px;padding:4px 8px;font-size:10px;cursor:pointer;font-weight:700">L</button>'+
-        '<button onclick="deleteTicket('+i+')" style="background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--brd2);border-radius:4px;padding:4px 8px;font-size:10px;cursor:pointer">🗑️</button>'+
+      '<td style="display:flex;gap:2px;justify-content:flex-end;flex-wrap:wrap" onclick="event.stopPropagation()">'+
+        '<button onclick="markTicket('+i+',\'win\')" style="background:rgba(34,197,94,.15);color:var(--grn);border:1px solid rgba(34,197,94,.3);border-radius:4px;padding:3px 6px;font-size:9px;cursor:pointer;font-weight:700" title="Win">W</button>'+
+        '<button onclick="markTicket('+i+',\'loss\')" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);border-radius:4px;padding:3px 6px;font-size:9px;cursor:pointer;font-weight:700" title="Loss">L</button>'+
+        '<button onclick="markTicket('+i+',\'co\')" style="background:rgba(245,158,11,.15);color:var(--yel);border:1px solid rgba(245,158,11,.3);border-radius:4px;padding:3px 6px;font-size:9px;cursor:pointer;font-weight:700" title="Cash Out">CO</button>'+
+        '<button onclick="markTicket('+i+',\'anulat\')" style="background:rgba(100,116,139,.15);color:var(--muted);border:1px solid rgba(100,116,139,.3);border-radius:4px;padding:3px 6px;font-size:9px;cursor:pointer;font-weight:700" title="Anulat">X</button>'+
+        '<button onclick="deleteTicket('+i+')" style="background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--brd2);border-radius:4px;padding:3px 6px;font-size:9px;cursor:pointer" title="Delete">🗑️</button>'+
       '</td>'+
     '</tr>'+
     '<tr id="'+detailId+'" style="display:none;background:rgba(59,130,246,.05)"><td colspan="6" style="padding:16px;border-top:1px solid var(--brd)">'+
@@ -1214,7 +1217,7 @@ function renderTracking(){
     '</td></tr>';
   });
 
-  html += '</tbody></table>';
+  html += '</tbody></table></div>';
   container.innerHTML = html;
 }
 
@@ -1222,9 +1225,12 @@ function markTicket(idx, status){
   TRACKING[idx].status = status;
   if(status==='win') TRACKING[idx].profit = (TRACKING[idx].totalOdds - 1) * 100;
   else if(status==='loss') TRACKING[idx].profit = -100;
+  else if(status==='co') TRACKING[idx].profit = 0;
+  else if(status==='anulat') TRACKING[idx].profit = 0;
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
   renderTracking();
-  toast('Bilet marcat ca '+status.toUpperCase(), 'ok');
+  var statusText = status==='win'?'WIN':status==='loss'?'LOSS':status==='co'?'CASH OUT':'ANULAT';
+  toast('Bilet marcat ca '+statusText, 'ok');
 }
 
 function deleteTicket(idx){
@@ -1296,10 +1302,6 @@ function renderAll(){
   $('st-safe').textContent = safe;
   $('st-value').textContent = value;
   $('st-eligible').textContent = eligible;
-
-  $('welcome-text').innerHTML = 'Am analizat <span class="hl">'+total+'</span> meciuri. '+
-    '<span class="hl">'+eligible+'</span> trec filtrele stricte (Prob>80% + Value>5% + Conf>45). '+
-    '<span class="hl">'+safe+'</span> meciuri SAFE.';
 
   var now = new Date();
   var timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
