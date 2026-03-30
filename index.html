@@ -768,12 +768,22 @@ function generateTicket(){
   // Use tiered approach: try strict first, fall back to realistic minimum.
   // All tiers still require POSITIVE EV (value > 0) — mathematical integrity preserved.
 
-  // Tier 1 — Best quality: adjProb>=65, value>=5%, conf>=55
+  // Tier 0 - User requested: adjProb > 80%, value > 5%, conf > 65
+  // NOTE: adjProb > 80% is likely unreachable based on API data analysis.
   var eligible = ALL_MATCHES.filter(function(m){
     if(!m.bestBet) return false;
     var b = m.bestBet;
-    return b.adjProb >= 65 && b.value >= 0.05 && m.confidence >= 55 && b.odds >= 1.20;
+    return b.adjProb > 80 && b.value > 0.05 && m.confidence > 65 && b.odds >= 1.20;
   });
+
+  // Tier 1 — Best quality: adjProb>=65, value>=5%, conf>=55
+  if(eligible.length < 2){
+    eligible = ALL_MATCHES.filter(function(m){
+      if(!m.bestBet) return false;
+      var b = m.bestBet;
+      return b.adjProb >= 65 && b.value >= 0.05 && m.confidence >= 55 && b.odds >= 1.20;
+    });
+  }
 
   // Tier 2 — Good quality: adjProb>=60, value>=3%, conf>=45
   if(eligible.length < 2){
