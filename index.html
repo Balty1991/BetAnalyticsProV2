@@ -930,9 +930,19 @@ function renderBilete(){
   container.innerHTML = html;
 }
 
+
+function toggleTicketDetail(idx){
+  var detailId = 'ticket-detail-'+idx;
+  var detail = $(detailId);
+  if(detail){
+    detail.style.display = detail.style.display === 'none' ? 'table-row' : 'none';
+  }
+}
+
 // ============================================================
 // TRACKING — SPEC Section 8
 // ============================================================
+
 function renderTracking(){
   var total = TRACKING.length;
   var wins = TRACKING.filter(function(t){ return t.status==='win'; }).length;
