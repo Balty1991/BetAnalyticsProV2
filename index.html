@@ -1007,11 +1007,6 @@ function renderBilete(){
     '</div>';
   });
 
-  var combinedEV = picks.reduce(function(acc,m){
-    var adjProb = m.bestBet ? m.bestBet.adjProb : m.adjProb;
-    return acc * (adjProb / 100);
-  }, 1) * totalOdds;
-  html += '<div class="bilet-criteria">⚡ Criteriu: Adj.Prob >80% + Value >5% + Confidence >65 | Cota totala: '+totalOdds.toFixed(2)+'x | EV combinat: '+(combinedEV*100).toFixed(1)+'%</div>';
   html += '</div>';
 
   container.innerHTML = html;
