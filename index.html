@@ -774,22 +774,17 @@ function generateOver15Ticket(){
     var over15Bet = m.allBets.find(function(b){ return b.type === 'over15'; });
     if(!over15Bet || !over15Bet.odds || over15Bet.odds < 1.10) return null;
     
-    // High Probability Logic: Prioritize adjProb and xG (form)
-    // score = adjProb (70%) + xG signal (30%)
-    var xgSignal = Math.min(100, (m.xgTotal / 3.5) * 100);
-    var safetyScore = (over15Bet.adjProb * 0.7) + (xgSignal * 0.3);
-
     return {
       match: m,
       adjProb: over15Bet.adjProb,
       value: over15Bet.value,
       odds: over15Bet.odds,
-      score: safetyScore
+      label: over15Bet.label
     };
-  }).filter(function(x){ return x !== null && x.adjProb >= 30; });
+  }).filter(function(x){ return x !== null && x.adjProb >= 25; });
 
-  // Sort by safety score (descending)
-  over15Matches.sort(function(a,b){ return b.score - a.score; });
+  // Sort by probability descending
+  over15Matches.sort(function(a,b){ return b.adjProb - a.adjProb; });
 
   var picks = [];
   var totalOdds = 1;
@@ -838,13 +833,13 @@ function generateOver15Ticket(){
     totalOdds: totalOdds,
     status: 'pending',
     profit: 0,
-    criteria: 'Bilet 1.5G (Prioritate Probabilitate & Forma)'
+    criteria: 'Bilet 1.5G (5-10 selectii sigure)'
   };
   TRACKING.unshift(ticket);
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
   
   renderBilete();
-  toast('Bilet 1.5G generat cu '+picks.length+' selectii sigure!', 'ok');
+  toast('Bilet 1.5G generat cu '+picks.length+' selectii!', 'ok');
 }
 
 function generateDoubleChanceTicket(){
