@@ -736,11 +736,15 @@ function renderTopPicks(){
 // ML RECOMMENDATIONS
 // ============================================================
 function renderML(){
-  // Top 10 +1.5 sorted by probability
+  // Top 10 +1.5 sorted by probability (descending) and then by date (most recent first)
   var mlMatches = ALL_MATCHES.map(function(m){
     var over15Bet = m.allBets.find(function(b){ return b.type === 'over15'; });
     return { match: m, prob: over15Bet ? over15Bet.adjProb : 0 };
-  }).sort(function(a,b){ return b.prob - a.prob; }).slice(0,10);
+  }).filter(function(item){ return item.prob > 0; })
+    .sort(function(a,b){ 
+      if(b.prob !== a.prob) return b.prob - a.prob;
+      return new Date(b.match.date) - new Date(a.match.date);
+    }).slice(0,10);
 
   var grid = $('ml-grid');
   if(mlMatches.length === 0){
@@ -1009,17 +1013,6 @@ function renderBilete(){
   }, 1) * totalOdds;
   html += '<div class="bilet-criteria">⚡ Criteriu: Adj.Prob >80% + Value >5% + Confidence >65 | Cota totala: '+totalOdds.toFixed(2)+'x | EV combinat: '+(combinedEV*100).toFixed(1)+'%</div>';
   html += '</div>';
-
-  // Also show all eligible matches
-  var eligible = ALL_MATCHES.filter(passesSelectionFilter);
-  eligible.sort(function(a,b){ return b.smartScore-a.smartScore; });
-
-  if(eligible.length > 0){
-    html += '<div class="sec-hdr" style="margin-top:20px"><div class="sec-title">✅ Toate Selectiile Eligibile <span class="sec-badge">'+eligible.length+' meciuri</span></div></div>';
-    html += '<div class="matches-grid">';
-    eligible.forEach(function(m){ html += renderMatchCard(m); });
-    html += '</div>';
-  }
 
   container.innerHTML = html;
 }
