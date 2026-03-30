@@ -654,7 +654,8 @@ function renderMatches(){
     if(sortBy==='prob') return (b.bestBet?b.bestBet.adjProb:0)-(a.bestBet?a.bestBet.adjProb:0);
     if(sortBy==='conf') return b.confidence-a.confidence;
     if(sortBy==='date') return new Date(a.date)-new Date(b.date);
-    return b.smartScore-a.smartScore;
+    if(sortBy==='score') return b.smartScore-a.smartScore;
+    return 0;
   });
 
   $('filter-count').textContent = filtered.length + ' meciuri';
