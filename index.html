@@ -759,10 +759,10 @@ function renderTopPicks(){
       '<div class="tp-league">'+m.league+' • '+m.dateLabel+' '+m.timeLabel+'</div>'+
       '<div class="tp-metrics">'+
         '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--grn)">'+valStr+'</div><div class="tp-metric-lbl">Value</div></div>'+
-        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--acc)">'+fmtPct(b.adjProb)+'</div><div class="tp-metric-lbl">Adj.Prob</div></div>'+
+        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--acc)">'+fmtPct(b.adjProb)+'</div><div class="tp-metric-lbl">Șansă Reală</div></div>'+
         '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--pur)">'+m.smartScore+'</div><div class="tp-metric-lbl">Notă Pariu</div></div>'+
       '</div>'+
-      '<div class="tp-rec">🎯 '+b.label+' @ '+b.odds+' | Prob: '+fmtPct(b.prob)+'</div>'+
+      '<div class="tp-rec">🎯 '+b.label+' @ '+b.odds+' | Șansă Stat: '+fmtPct(b.prob)+'</div>'+
     '</div>';
   });
   grid.innerHTML = html;
