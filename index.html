@@ -276,11 +276,16 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 
   <!-- ===== BILETE ===== -->
   <div class="tab-content" id="tab-bilete">
-    <div class="gen-btn-wrap">
-      <button class="btn btn-green" style="font-size:14px;padding:12px 24px" onclick="generateTicket()">
-        🎯 Genereaza Bilet Sigur (2-3 meciuri)
-      </button>
-      <div style="font-size:11px;color:var(--muted);margin-top:8px">Criteriu: prob >80% + value >5% + confidence >65</div>
+    <div class="gen-btn-wrap" style="display:flex;flex-direction:column;gap:12px;align-items:center;margin-bottom:30px">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+        <button class="btn btn-green" style="font-size:14px;padding:12px 24px" onclick="generateTicket()">
+          🎯 Genereaza Bilet Sigur (2-3 meciuri)
+        </button>
+        <button class="btn btn-primary" style="font-size:14px;padding:12px 24px;background:linear-gradient(135deg,var(--acc),var(--cyan))" onclick="generateOver15Ticket()">
+          🔥 Genereaza Bilet 1.5G (5-10 meciuri)
+        </button>
+      </div>
+      <div style="font-size:11px;color:var(--muted)">Criteriu: Selectii sigure cu probabilitate ridicata de peste 1.5 goluri</div>
     </div>
     <div id="bilete-container"></div>
   </div>
@@ -762,6 +767,84 @@ function renderML(){
 // ============================================================
 // BILET AUTOMAT — SPEC Section 7
 // ============================================================
+function generateOver15Ticket(){
+  // Filter for Over 1.5G bets specifically
+  var over15Matches = ALL_MATCHES.map(function(m){
+    var prob = m.prob_over_15;
+    var odds = m.event.odds_over_15;
+    if(!prob || !odds || odds < 1.10) return null;
+    
+    var adjProb = calcAdjustedProb(prob, m.confidence);
+    var value = calcValue(adjProb, odds);
+    
+    return {
+      match: m,
+      adjProb: adjProb,
+      value: value,
+      odds: odds,
+      score: adjProb * 0.7 + (value > 0 ? value * 100 * 0.3 : 0)
+    };
+  }).filter(function(x){ return x !== null && x.adjProb >= 50; });
+
+  // Sort by safety (adjProb) and score
+  over15Matches.sort(function(a,b){ return b.score - a.score; });
+
+  var picks = [];
+  var totalOdds = 1;
+  
+  // Take 5-10 matches, prioritizing safety
+  for(var i=0; i<over15Matches.length; i++){
+    var item = over15Matches[i];
+    picks.push({
+      home: item.match.home,
+      away: item.match.away,
+      league: item.match.league,
+      dateLabel: item.match.dateLabel,
+      timeLabel: item.match.timeLabel,
+      bestBet: {
+        label: 'Over 1.5G',
+        odds: item.odds,
+        adjProb: item.adjProb,
+        value: item.value
+      }
+    });
+    totalOdds *= item.odds;
+    if(picks.length >= 10) break;
+  }
+
+  if(picks.length < 5){
+    BILETE = {
+      picks: [],
+      totalOdds: 1,
+      generatedAt: new Date().toISOString(),
+      error: 'Nu am gasit destule meciuri sigure (minim 5) pentru biletul de 1.5G. Incearca mai tarziu.'
+    };
+    renderBilete();
+    toast('Prea putine meciuri sigure gasite', 'warn');
+    return;
+  }
+
+  BILETE = {picks: picks, totalOdds: totalOdds, generatedAt: new Date().toISOString(), type: 'over15'};
+  
+  // Save to tracking
+  var ticket = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('ro-RO'),
+    picks: picks.map(function(p){
+      return {home:p.home, away:p.away, bet:p.bestBet.label, odds:p.bestBet.odds, prob:p.bestBet.adjProb};
+    }),
+    totalOdds: totalOdds,
+    status: 'pending',
+    profit: 0,
+    criteria: 'Bilet 1.5G (5-10 selectii sigure)'
+  };
+  TRACKING.unshift(ticket);
+  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
+  
+  renderBilete();
+  toast('Bilet 1.5G generat cu '+picks.length+' selectii!', 'ok');
+}
+
 function generateTicket(){
   // THRESHOLDS calibrated to real Bzzoiro API data:
   // adjProb max in API is ~75%, mean ~24%, so 80% is unreachable.
@@ -890,9 +973,10 @@ function renderBilete(){
   var totalOdds = BILETE.totalOdds;
   var combinedProb = picks.reduce(function(acc,m){ return acc*(m.bestBet.adjProb/100); },1)*100;
 
+  var title = BILETE.type === 'over15' ? '🔥 Bilet 1.5G' : '🎯 Bilet Sigur';
   var html = '<div class="bilet-card">'+
     '<div class="bilet-hdr">'+
-      '<div class="bilet-title">🎯 Bilet Sigur <span style="font-size:12px;color:var(--muted);font-weight:400">'+picks.length+' selectii</span></div>'+
+      '<div class="bilet-title">'+title+' <span style="font-size:12px;color:var(--muted);font-weight:400">'+picks.length+' selectii</span></div>'+
       '<div class="bilet-cota" style="color:var(--grn)">'+totalOdds.toFixed(2)+'x</div>'+
     '</div>'+
     '<div class="bilet-meta">Probabilitate combinata: <strong style="color:var(--acc)">'+fmtPct(combinedProb)+'</strong> • Generat: '+new Date(BILETE.generatedAt).toLocaleTimeString('ro-RO')+'</div>';
