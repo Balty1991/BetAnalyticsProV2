@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-  <title>BetAnalytics Pro v6 — Strategic Betting Engine</title>
+  <title>BetAnalytics Pro v7 — Profit Engine</title>
   <meta name="description" content="Sistem automat avansat de analiza si generare pronosticuri fotbal cu AI"/>
   <meta name="theme-color" content="#0a0e17"/>
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/33/33736.png"/>
@@ -174,9 +174,9 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 <body>
 
 <div class="loader" id="loader">
-  <div style="font-size:40px">&#x26BD;</div>
+  <div style="font-size:40px">⚽</div>
   <div class="loader-title" id="ldr-title">Se analizeaza meciurile</div>
-  <div class="loader-sub" id="ldr-sub">BSD API - Value Engine - ML + Poisson</div>
+  <div class="loader-sub" id="ldr-sub">Filtrare agresivă — doar VALUE BETS reale</div>
   <div class="loader-bar"><div class="loader-fill" id="ldr-fill" style="width:0%"></div></div>
 </div>
 
@@ -185,10 +185,10 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 <header class="header">
   <div class="header-inner">
     <div style="display:flex;align-items:center;gap:10px">
-      <span style="font-size:22px">&#x26BD;</span>
+      <span style="font-size:22px">⚽</span>
       <div>
         <div class="logo-title">BetAnalytics Pro</div>
-        <div class="logo-sub">Strategic Engine v6.0 - ML + Poisson + Value</div>
+        <div class="logo-sub">Profit Engine v7 — Filtrare Agresivă + Value Bets</div>
       </div>
     </div>
     <div class="header-right">
@@ -197,15 +197,15 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
         <span id="sb-txt">Se incarca...</span>
         <span id="sb-time"></span>
       </div>
-      <button class="btn btn-primary" id="btn-refresh" onclick="doRefresh()">&#x1F504; Reimprospateaza</button>
+      <button class="btn btn-primary" id="btn-refresh" onclick="doRefresh()">🔄 Reimprospateaza</button>
     </div>
   </div>
 </header>
 
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('dashboard',this)">&#x1F4CA; Dashboard</button>
-  <button class="tab" onclick="switchTab('tickets',this)">&#x1F3AB; Bilete</button>
-  <button class="tab" onclick="switchTab('bankroll',this)">&#x1F4B0; Bankroll</button>
+  <button class="tab active" onclick="switchTab('dashboard',this)">📊 Dashboard</button>
+  <button class="tab" onclick="switchTab('tickets',this)">🎫 Bilete</button>
+  <button class="tab" onclick="switchTab('bankroll',this)">💰 Bankroll</button>
 </div>
 
 <div class="main">
@@ -213,44 +213,44 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
   <div class="tab-content active" id="tab-dashboard">
     <div class="welcome" id="welcome-banner" style="display:none">
       <div>
-        <h2>&#x1F3AF; BetAnalytics Pro</h2>
+        <h2>🎯 BetAnalytics Pro</h2>
         <p id="welcome-text">Se analizeaza meciurile...</p>
       </div>
-      <button class="btn btn-outline" onclick="doRefresh()">&#x1F504; Reimprospateaza</button>
+      <button class="btn btn-outline" onclick="doRefresh()">🔄 Reimprospateaza</button>
     </div>
     <div class="stats-row" id="stats-row" style="display:none">
       <div class="stat-card"><div class="stat-val" id="stat-total" style="color:var(--acc)">0</div><div class="stat-lbl">Meciuri</div></div>
-      <div class="stat-card"><div class="stat-val" id="stat-elite" style="color:#ffd700">0</div><div class="stat-lbl">&#x2B50; Elite</div></div>
-      <div class="stat-card"><div class="stat-val" id="stat-value" style="color:var(--val)">0</div><div class="stat-lbl">&#x1F525; Value</div></div>
-      <div class="stat-card"><div class="stat-val" id="stat-visible" style="color:var(--grn)">0</div><div class="stat-lbl">&#x2705; Eligibile</div></div>
+      <div class="stat-card"><div class="stat-val" id="stat-elite" style="color:#ffd700">0</div><div class="stat-lbl">⭐ Elite</div></div>
+      <div class="stat-card"><div class="stat-val" id="stat-value" style="color:var(--val)">0</div><div class="stat-lbl">🔥 Value</div></div>
+      <div class="stat-card"><div class="stat-val" id="stat-visible" style="color:var(--grn)">0</div><div class="stat-lbl">✅ Eligibile</div></div>
     </div>
     <div id="top5-section" style="display:none">
       <div class="top-picks-wrap">
         <div class="top-picks-header">
-          <div class="top-picks-title">&#x2B50; Top 5 Picks <span style="font-size:13px;color:var(--muted);font-weight:400">- Cele mai bune meciuri ale zilei</span></div>
-          <span class="elite-badge">&#x2B50; ELITE</span>
+          <div class="top-picks-title">⭐ Top 5 Picks <span style="font-size:13px;color:var(--muted);font-weight:400">- Cele mai bune meciuri ale zilei</span></div>
+          <span class="elite-badge">⭐ ELITE</span>
         </div>
         <div class="cards-grid-5" id="top5-grid"></div>
       </div>
     </div>
     <div id="ml-section" style="display:none">
-      <div class="sec-hdr">&#x1F916; ML Recommendations - CatBoost</div>
+      <div class="sec-hdr">🤖 ML Recommendations - CatBoost</div>
       <div class="ml-wrap" id="ml-list"></div>
     </div>
     <div id="matches-section">
-      <div class="sec-hdr">&#x1F4CB; Toate Meciurile <span id="matches-count-lbl" style="font-size:10px;color:var(--muted);font-weight:400;margin-left:8px"></span></div>
+      <div class="sec-hdr">📋 Toate Meciurile <span id="matches-count-lbl" style="font-size:10px;color:var(--muted);font-weight:400;margin-left:8px"></span></div>
       <div class="filter-bar">
-        <button class="filter-btn active" onclick="setFilter('all',this)">&#x1F310; Toate</button>
-        <button class="filter-btn" onclick="setFilter('elite',this)">&#x2B50; Elite</button>
-        <button class="filter-btn" onclick="setFilter('value',this)">&#x1F525; Value</button>
-        <button class="filter-btn" onclick="setFilter('safe',this)">&#x1F6E1;&#xFE0F; Safe</button>
+        <button class="filter-btn active" onclick="setFilter('all',this)">🌐 Toate</button>
+        <button class="filter-btn" onclick="setFilter('elite',this)">⭐ Elite</button>
+        <button class="filter-btn" onclick="setFilter('value',this)">🔥 Value</button>
+        <button class="filter-btn" onclick="setFilter('safe',this)">🛡️ Safe</button>
       </div>
       <div class="sort-bar" id="sort-bar" style="display:none">
         <span class="sort-lbl">Sorteaza:</span>
-        <button class="sort-btn active" onclick="setSort('date',this)">&#x1F4C5; Data</button>
-        <button class="sort-btn" onclick="setSort('ai',this)">&#x1F9E0; AI Score</button>
-        <button class="sort-btn" onclick="setSort('prob',this)">&#x1F4CA; Prob %</button>
-        <button class="sort-btn" onclick="setSort('value',this)">&#x1F525; Value</button>
+        <button class="sort-btn active" onclick="setSort('date',this)">📅 Data</button>
+        <button class="sort-btn" onclick="setSort('ai',this)">🧠 AI Score</button>
+        <button class="sort-btn" onclick="setSort('prob',this)">📊 Prob %</button>
+        <button class="sort-btn" onclick="setSort('value',this)">🔥 Value</button>
         <span class="sort-count" id="sort-count"></span>
       </div>
       <div id="matches-grid"></div>
@@ -259,13 +259,13 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 
   <div class="tab-content" id="tab-tickets">
     <div id="tickets-content">
-      <div class="empty"><div class="empty-ico">&#x1F3AB;</div><div class="empty-title">Se genereaza biletele...</div><div class="empty-sub">Reimprospateaza datele pentru a vedea biletele.</div></div>
+      <div class="empty"><div class="empty-ico">🎫</div><div class="empty-title">Se genereaza biletele...</div><div class="empty-sub">Reimprospateaza datele pentru a vedea biletele.</div></div>
     </div>
   </div>
 
   <div class="tab-content" id="tab-bankroll">
     <div class="bankroll-wrap">
-      <div class="sec-hdr">&#x1F4B0; Management Bankroll</div>
+      <div class="sec-hdr">💰 Management Bankroll</div>
       <div class="bankroll-input-row">
         <label style="font-size:13px;color:var(--muted)">Bankroll total (RON):</label>
         <input type="number" class="bankroll-input" id="bankroll-input" value="1000" min="10" step="10" oninput="updateBankroll()"/>
@@ -384,14 +384,17 @@ function calcValueBets(m){
 
 function calcAIScore(lh,la,lr,mlConf,prob15,prob25,probBTTS,bestValue){
   var xgTotal=lh+la;
-  var xgScore=Math.min(25,Math.max(0,(xgTotal-1.2)/(4.0-1.2)*25));
-  var probScore=Math.min(25,(prob15||0)/100*25);
-  var confScore=Math.min(20,(mlConf/100)*20);
-  var valueScore=bestValue>0.05?Math.min(15,bestValue*50):bestValue>0?5:0;
-  var leagueScore=Math.min(15,lrStab(lr)*15);
+  // Spec: Scor = (xG_total*0.4) + (forma goluri*0.3) + (consistenta*0.2) + (factor liga*0.1)
+  // Scaled to 0-100
+  var xgFactor=Math.min(40,Math.max(0,(xgTotal/5.0)*40)); // 0-40 pts
+  var formaFactor=Math.min(30,(prob15||0)/100*30); // 0-30 pts based on +1.5G prob
+  var consistFactor=Math.min(20,(mlConf/100)*20); // 0-20 pts based on ML confidence
+  var leagueFactor=Math.min(10,lrStab(lr)*10); // 0-10 pts based on league
+  // Bonuses
+  var valueBonus=bestValue>0.10?5:bestValue>0.05?3:0;
   var xgDiff=Math.abs(lh-la);
-  var volPenalty=xgDiff>1.5?-5:xgDiff>1.0?-2:0;
-  return Math.min(100,Math.max(0,Math.round(xgScore+probScore+confScore+valueScore+leagueScore+volPenalty)));
+  var volPenalty=xgDiff>2.0?-8:xgDiff>1.5?-4:0;
+  return Math.min(100,Math.max(0,Math.round(xgFactor+formaFactor+consistFactor+leagueFactor+valueBonus+volPenalty)));
 }
 function aiClass(s){return s>=78?'ai-elite':s>=65?'ai-safe':s>=50?'ai-medium':'ai-risk';}
 function aiLabel(s){return s>=78?'ELITE':s>=65?'SAFE':s>=50?'MED':'RISK';}
@@ -523,15 +526,33 @@ function buildBiletFromPicks(picks,tip){
   return{picks:picks,cota:+cota.toFixed(2),tip:tip};
 }
 function genBilete(allMatches){
+  // SPEC: 3-5 meciuri, cota totala 1.5-2.2, HIGH CONFIDENCE
+  // Bilet Zilnic: selectie agresiva - doar ELITE + STRONG cu value bet
   var lists=buildListeSeparate(allMatches);
   var elite=lists.elite, strong=lists.strong, normal=lists.normal;
+
+  // BILET SIGUR: 3 meciuri ELITE, cota target 1.5-1.8
   var safePicks=selectFromList(elite,3,new Set());
   var safeUsed=new Set(safePicks.map(function(c){return c.m.id;}));
   var biletSafe=buildBiletFromPicks(safePicks,'SAFE');
-  var balPool=strong.filter(function(c){return !safeUsed.has(c.m.id);}).concat(elite.filter(function(c){return !safeUsed.has(c.m.id);}).slice(0,1));
-  balPool.sort(function(a,b){if(a.tier==='STRONG'&&b.tier!=='STRONG') return -1;if(b.tier==='STRONG'&&a.tier!=='STRONG') return 1;return b.m.aiScore-a.m.aiScore;});
-  var balPicks=selectFromList(balPool,6,safeUsed);
-  var biletMediu=buildBiletFromPicks(balPicks,'MEDIU');
+
+  // BILET ZILNIC OPTIM: 4-5 meciuri STRONG+ELITE, cota target 1.8-2.2
+  var dailyPool=elite.filter(function(c){return !safeUsed.has(c.m.id);})
+    .concat(strong.filter(function(c){return !safeUsed.has(c.m.id);}));
+  dailyPool.sort(function(a,b){return b.m.aiScore-a.m.aiScore||b.p-a.p;});
+  // Select 4-5 picks targeting cota 1.8-2.2
+  var dailyPicks=[], dailyUsed=new Set(safeUsed);
+  for(var i=0;i<dailyPool.length;i++){
+    var c=dailyPool[i];
+    if(dailyUsed.has(c.m.id)) continue;
+    dailyPicks.push(c); dailyUsed.add(c.m.id);
+    var testCota=dailyPicks.reduce(function(acc,x){return acc*x.impliedOdd;},1);
+    if(dailyPicks.length>=4&&testCota>=1.7) break;
+    if(dailyPicks.length>=5) break;
+  }
+  var biletMediu=buildBiletFromPicks(dailyPicks,'ZILNIC');
+
+  // BILET RISC: 4 meciuri NORMAL, cota mai mare
   var riskPicks=selectFromList(normal,4,new Set());
   var biletRisc=buildBiletFromPicks(riskPicks,'RISC');
   return{biletSafe:biletSafe,biletMediu:biletMediu,biletRisc:biletRisc};
@@ -560,10 +581,10 @@ function renderCard(m,isTopPick){
   if(m.o25) oddsH.push('<div class="odd-chip"><span class="odd-lbl">O2.5</span>'+m.o25+'</div>');
   var oddsRow=oddsH.length?'<div class="card-odds">'+oddsH.join('')+'</div>':'';
   var badges=[];
-  if(tier==='ELITE') badges.push('<span class="badge badge-elite">&#x2B50; ELITE</span>');
-  else if(tier==='STRONG') badges.push('<span class="badge badge-strong">&#x1F4AA; STRONG</span>');
-  if(m.hasValue) badges.push('<span class="badge badge-value">&#x1F525; VALUE +'+(m.bestValue*100).toFixed(1)+'%</span>');
-  if(m.recommendations.length>0) badges.push('<span class="badge badge-ml">&#x1F916; '+m.recommendations.slice(0,2).join(' / ')+'</span>');
+  if(tier==='ELITE') badges.push('<span class="badge badge-elite">⭐ ELITE</span>');
+  else if(tier==='STRONG') badges.push('<span class="badge badge-strong">💪 STRONG</span>');
+  if(m.hasValue) badges.push('<span class="badge badge-value">🔥 VALUE +'+(m.bestValue*100).toFixed(1)+'%</span>');
+  if(m.recommendations.length>0) badges.push('<span class="badge badge-ml">🤖 '+m.recommendations.slice(0,2).join(' / ')+'</span>');
   var badgesHtml=badges.length?'<div class="card-badges">'+badges.join('')+'</div>':'';
   var detailId='detail-'+m.id;
   var detailRows='';
@@ -575,18 +596,18 @@ function renderCard(m,isTopPick){
   detailRows+='<div class="detail-row"><span>Oaspeti marcheaza</span><span class="detail-row-val" style="color:'+pC(m.pAscores)+'">'+pct(m.pAscores)+'</span></div>';
   var vbRows='';
   if(m.valueBets&&m.valueBets.length>0){
-    vbRows='<div class="detail-section"><div class="detail-title">&#x1F525; Value Bets</div>';
+    vbRows='<div class="detail-section"><div class="detail-title">🔥 Value Bets</div>';
     m.valueBets.slice(0,4).forEach(function(vb){
       vbRows+='<div class="detail-row"><span>'+vb.mkt+'</span><span class="detail-row-val" style="color:'+(vb.value>0.05?'var(--grn)':vb.value>=0?'var(--yel)':'var(--live)')+'">'+(vb.value>0?'+':'')+(vb.value*100).toFixed(1)+'%</span></div>';
     });
     vbRows+='</div>';
   }
   var detailHtml='<div class="card-detail" id="'+detailId+'">'
-    +'<div class="detail-section"><div class="detail-title">&#x26BD; Goluri Echipa (Poisson)</div>'+detailRows+'</div>'
-    +'<div class="detail-section"><div class="detail-title">&#x23F1; Half Time Under</div>'
+    +'<div class="detail-section"><div class="detail-title">⚽ Goluri Echipa (Poisson)</div>'+detailRows+'</div>'
+    +'<div class="detail-section"><div class="detail-title">⏱ Half Time Under</div>'
     +'<div class="detail-row"><span>-3.5 HT</span><span class="detail-row-val" style="color:'+pC(m.pHTU35)+'">'+pct(m.pHTU35)+'</span></div>'
     +'<div class="detail-row"><span>-2.5 HT</span><span class="detail-row-val" style="color:'+pC(m.pHTU25)+'">'+pct(m.pHTU25)+'</span></div></div>'
-    +'<div class="detail-section"><div class="detail-title">&#x1F4CA; Total Goluri</div>'
+    +'<div class="detail-section"><div class="detail-title">📊 Total Goluri</div>'
     +'<div class="detail-row"><span>+1.5 Goluri</span><span class="detail-row-val" style="color:'+pC(m.p15T)+'">'+pct(m.p15T)+'</span></div>'
     +(m.prob25>0?'<div class="detail-row"><span>+2.5 Goluri (ML)</span><span class="detail-row-val" style="color:'+pC(m.prob25/100)+'">'+m.prob25.toFixed(1)+'%</span></div>':'')
     +(m.probBTTS>0?'<div class="detail-row"><span>BTTS (ML)</span><span class="detail-row-val" style="color:'+pC(m.probBTTS/100)+'">'+m.probBTTS.toFixed(1)+'%</span></div>':'')
@@ -598,7 +619,7 @@ function renderCard(m,isTopPick){
     +'<div class="card-head">'
     +'<div class="card-league"><span>'+m.flag+'</span><span>'+m.liga+'</span><span class="lr-badge lr-'+m.ligaRating+'">'+m.ligaRating+'</span><span style="margin-left:auto;font-size:9px">'+m.matchType+'</span></div>'
     +'<div class="card-teams"><div class="card-team">'+imgTag(m.homeLogoUrl,20)+' <span>'+m.home+'</span></div><div class="card-vs">vs</div><div class="card-team away"><span>'+m.away+'</span> '+imgTag(m.awayLogoUrl,20)+'</div></div>'
-    +'<div class="card-meta"><span class="card-date">&#x1F4C5; '+m.dataShort+'</span><span class="card-time">&#x1F550; '+m.ora+'</span><span class="ai-badge '+aiCls+'">&#x1F9E0; '+aiLbl+' '+m.aiScore+'</span></div>'
+    +'<div class="card-meta"><span class="card-date">📅 '+m.dataShort+'</span><span class="card-time">🕐 '+m.ora+'</span><span class="ai-badge '+aiCls+'">🧠 '+aiLbl+' '+m.aiScore+'</span></div>'
     +'<div class="card-xg">\u03BB '+m.lh+'/'+m.la+' - xG '+(m.lh+m.la).toFixed(2)+' - conf '+m.mlConf.toFixed(0)+'% - top '+m.topScore+'</div>'
     +badgesHtml+oddsRow
     +'</div>'
@@ -631,7 +652,7 @@ function renderML(matches){
   document.getElementById('ml-section').style.display='block';
   var rows=withRecs.map(function(m){
     var tags=m.recommendations.map(function(r){return '<span class="ml-tag">'+r+'</span>';}).join('');
-    return '<div class="ml-row"><div style="flex:1;min-width:0"><div class="ml-match-name">'+m.home+' vs '+m.away+'</div><div class="ml-match-meta">'+m.flag+' '+m.liga+' - &#x1F4C5; '+m.dataShort+' - &#x1F550; '+m.ora+' - conf: '+m.mlConf.toFixed(0)+'%</div></div><div class="ml-tags">'+tags+'</div></div>';
+    return '<div class="ml-row"><div style="flex:1;min-width:0"><div class="ml-match-name">'+m.home+' vs '+m.away+'</div><div class="ml-match-meta">'+m.flag+' '+m.liga+' - 📅 '+m.dataShort+' - 🕐 '+m.ora+' - conf: '+m.mlConf.toFixed(0)+'%</div></div><div class="ml-tags">'+tags+'</div></div>';
   }).join('');
   document.getElementById('ml-list').innerHTML=rows;
 }
@@ -641,15 +662,18 @@ function renderMatches(){
   if(ACTIVE_FILTER==='elite') filtered=DATA.filter(function(m){return m.isElitePick||classifyMatch(m)==='ELITE';});
   else if(ACTIVE_FILTER==='value') filtered=DATA.filter(function(m){return m.hasValue;});
   else if(ACTIVE_FILTER==='safe') filtered=DATA.filter(function(m){return m.aiScore>=65&&(m.ligaRating==='A'||m.ligaRating==='S');});
+  // SPEC: Filtrare agresiva - calitate > cantitate
+  // Afisam meciuri care au cel putin un semnal bun
   var vis=filtered.filter(function(m){
-    if(m.p15T>=0.65) return true;
-    if(m.hasValue) return true;
-    if(m.pH14>=0.70||m.pA14>=0.70) return true;
-    if(m.pHTU25>=0.70||m.pHTU35>=0.70) return true;
-    if(m.probBTTS&&m.probBTTS>=60) return true;
-    if(m.prob25&&m.prob25>=60) return true;
-    if(m.aiScore>=60) return true;
-    if(m.isElitePick) return true;
+    var xgTotal=m.lh+m.la;
+    // Tier 1: ELITE - toate criteriile spec
+    if(xgTotal>=2.5&&m.p15T>=0.78&&m.aiScore>=75&&m.hasValue) return true;
+    // Tier 2: STRONG - xG bun + prob buna
+    if(xgTotal>=2.5&&m.p15T>=0.75&&m.aiScore>=65) return true;
+    // Tier 3: VALUE - value bet clar
+    if(m.hasValue&&m.bestValue>=0.08&&m.p15T>=0.70) return true;
+    // Tier 4: Safe - prob foarte mare
+    if(m.p15T>=0.80&&m.aiScore>=60) return true;
     return false;
   });
   document.getElementById('matches-count-lbl').textContent=vis.length+' meciuri analizate';
@@ -666,7 +690,7 @@ function renderMatches(){
   else sorted=vis.slice().sort(function(a,b){return a.sortKey.localeCompare(b.sortKey);});
   var html='';
   if(!sorted.length){
-    html='<div class="empty"><div class="empty-ico">&#x1F4ED;</div><div class="empty-title">Niciun meci eligibil</div><div class="empty-sub">Niciun meci nu atinge pragul de calitate pentru filtrul selectat.</div></div>';
+    html='<div class="empty"><div class="empty-ico">📭</div><div class="empty-title">Niciun meci eligibil</div><div class="empty-sub">Niciun meci nu atinge pragul de calitate pentru filtrul selectat.</div></div>';
   } else if(ACTIVE_SORT==='date'){
     var lastDate='', gridOpen=false;
     for(var i=0;i<sorted.length;i++){
@@ -675,7 +699,7 @@ function renderMatches(){
         if(gridOpen) html+='</div>';
         lastDate=m.dateKey;
         var cnt=sorted.filter(function(x){return x.dateKey===m.dateKey;}).length;
-        html+='<div class="date-sep"><div class="date-sep-lbl">&#x1F4C5; '+m.dataFull.charAt(0).toUpperCase()+m.dataFull.slice(1)+'</div><div class="date-sep-line"></div><div class="date-sep-count">'+cnt+' meciuri</div></div>';
+        html+='<div class="date-sep"><div class="date-sep-lbl">📅 '+m.dataFull.charAt(0).toUpperCase()+m.dataFull.slice(1)+'</div><div class="date-sep-line"></div><div class="date-sep-count">'+cnt+' meciuri</div></div>';
         html+='<div class="cards-grid">';
         gridOpen=true;
       }
@@ -690,13 +714,13 @@ function renderMatches(){
 
 function renderTickets(){
   if(!BILETE){
-    document.getElementById('tickets-content').innerHTML='<div class="empty"><div class="empty-ico">&#x1F3AB;</div><div class="empty-title">Se genereaza biletele...</div><div class="empty-sub">Reimprospateaza datele pentru a vedea biletele.</div></div>';
+    document.getElementById('tickets-content').innerHTML='<div class="empty"><div class="empty-ico">🎫</div><div class="empty-title">Se genereaza biletele...</div><div class="empty-sub">Reimprospateaza datele pentru a vedea biletele.</div></div>';
     return;
   }
   var html='';
-  html+=renderBilet(BILETE.biletSafe,{icon:'&#x1F6E1;&#xFE0F;',label:'Bilet Sigur',color:'var(--grn)',colorRgb:'34,197,94',desc:'ELITE - AI Score >70 + Prob >80% - Ligi A/S - Cele mai bune 3 din zi'});
-  html+=renderBilet(BILETE.biletMediu,{icon:'&#x2696;&#xFE0F;',label:'Bilet Mediu',color:'var(--acc)',colorRgb:'59,130,246',desc:'STRONG prioritizat - +1.5G, BTTS, +2.5G - Echilibru siguranta/cota'});
-  html+=renderBilet(BILETE.biletRisc,{icon:'&#x26A1;',label:'Bilet Risc',color:'var(--org)',colorRgb:'249,115,22',desc:'NORMAL - Prob 55-72% - Cota mai mare - Risc ridicat'});
+  html+=renderBilet(BILETE.biletSafe,{icon:'🛡️',label:'Bilet Sigur',color:'var(--grn)',colorRgb:'34,197,94',desc:'ELITE - AI Score >70 + Prob >80% - Ligi A/S - Cele mai bune 3 din zi'});
+  html+=renderBilet(BILETE.biletMediu,{icon:'🎯',label:'Bilet Zilnic Optim',color:'var(--acc)',colorRgb:'59,130,246',desc:'4-5 meciuri ELITE+STRONG - cota tinta 1.8-2.2 - HIGH CONFIDENCE'});
+  html+=renderBilet(BILETE.biletRisc,{icon:'⚡',label:'Bilet Risc',color:'var(--org)',colorRgb:'249,115,22',desc:'NORMAL - Prob 55-72% - Cota mai mare - Risc ridicat'});
   document.getElementById('tickets-content').innerHTML=html;
 }
 function renderBilet(b,cfg){
@@ -709,9 +733,9 @@ function renderBilet(b,cfg){
     var m=c.m;
     var tierColor=c.tier==='ELITE'?'#ffd700':c.tier==='STRONG'?'var(--acc)':'var(--muted)';
     var tierBg=c.tier==='ELITE'?'rgba(255,215,0,.12)':c.tier==='STRONG'?'rgba(59,130,246,.12)':'rgba(107,122,153,.1)';
-    return '<div class="pick"><div style="flex:1;min-width:0"><div class="pick-name">'+m.home+' vs '+m.away+'</div><div class="pick-meta">'+m.flag+' '+m.liga+' - '+c.mkt+'</div><div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap"><span style="font-family:var(--mono);font-size:8px;font-weight:800;padding:2px 6px;border-radius:4px;color:'+tierColor+';background:'+tierBg+';border:1px solid '+tierColor+'40">'+c.tier+'</span><span style="font-family:var(--mono);font-size:9px;color:var(--muted)">AI '+m.aiScore+'</span><span style="font-family:var(--mono);font-size:9px;color:var(--muted)">&#x1F4C5; '+m.dataShort+' - &#x1F550; '+m.ora+'</span></div></div><div class="pick-right"><div class="pick-pct" style="color:'+pC(c.p)+'">'+pct(c.p)+'</div><div class="pick-odd">'+c.impliedOdd.toFixed(2)+'x</div></div></div>';
+    return '<div class="pick"><div style="flex:1;min-width:0"><div class="pick-name">'+m.home+' vs '+m.away+'</div><div class="pick-meta">'+m.flag+' '+m.liga+' - '+c.mkt+'</div><div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap"><span style="font-family:var(--mono);font-size:8px;font-weight:800;padding:2px 6px;border-radius:4px;color:'+tierColor+';background:'+tierBg+';border:1px solid '+tierColor+'40">'+c.tier+'</span><span style="font-family:var(--mono);font-size:9px;color:var(--muted)">AI '+m.aiScore+'</span><span style="font-family:var(--mono);font-size:9px;color:var(--muted)">📅 '+m.dataShort+' - 🕐 '+m.ora+'</span></div></div><div class="pick-right"><div class="pick-pct" style="color:'+pC(c.p)+'">'+pct(c.p)+'</div><div class="pick-odd">'+c.impliedOdd.toFixed(2)+'x</div></div></div>';
   }).join('');
-  return '<div class="bilet" style="background:linear-gradient(135deg,rgba('+colorRgb+',.07),rgba('+colorRgb+',.02));border-color:rgba('+colorRgb+',.35)"><div class="bilet-head"><div><div class="bilet-title">'+icon+' '+label+' <span style="color:'+color+'">~'+b.cota+'x</span></div><div class="bilet-tag" style="color:'+color+';border-color:rgba('+colorRgb+',.35);background:rgba('+colorRgb+',.08)">'+b.picks.length+' SELECTII - '+b.tip+'</div></div><div><div class="bilet-cota-lbl">Cota estimata</div><div class="bilet-cota" style="color:'+cotaC+'">~'+b.cota+'x</div></div></div>'+picksH+'<div class="bilet-note">&#x26A1; Criterii: '+desc+'</div></div>';
+  return '<div class="bilet" style="background:linear-gradient(135deg,rgba('+colorRgb+',.07),rgba('+colorRgb+',.02));border-color:rgba('+colorRgb+',.35)"><div class="bilet-head"><div><div class="bilet-title">'+icon+' '+label+' <span style="color:'+color+'">~'+b.cota+'x</span></div><div class="bilet-tag" style="color:'+color+';border-color:rgba('+colorRgb+',.35);background:rgba('+colorRgb+',.08)">'+b.picks.length+' SELECTII - '+b.tip+'</div></div><div><div class="bilet-cota-lbl">Cota estimata</div><div class="bilet-cota" style="color:'+cotaC+'">~'+b.cota+'x</div></div></div>'+picksH+'<div class="bilet-note">⚡ Criterii: '+desc+'</div></div>';
 }
 
 function updateBankroll(){
@@ -723,16 +747,16 @@ function updateBankroll(){
   var medReturn=BILETE&&BILETE.biletMediu.picks.length?+(medium*BILETE.biletMediu.cota).toFixed(2):0;
   var riskReturn=BILETE&&BILETE.biletRisc.picks.length?+(risk*BILETE.biletRisc.cota).toFixed(2):0;
   document.getElementById('bankroll-grid').innerHTML=
-    '<div class="bk-card" style="border-color:rgba(34,197,94,.3)"><div class="bk-card-title" style="color:var(--grn)">&#x1F6E1;&#xFE0F; Bilet Sigur</div><div class="bk-row"><span>Miza recomandata (2%)</span><span class="bk-val" style="color:var(--grn)">'+safe+' RON</span></div><div class="bk-row"><span>Cota estimata</span><span class="bk-val">'+(BILETE?BILETE.biletSafe.cota+'x':'&#x2014;')+'</span></div><div class="bk-row"><span>Castig potential</span><span class="bk-val" style="color:var(--grn)">'+(safeReturn>0?safeReturn+' RON':'&#x2014;')+'</span></div><div class="bk-row"><span>Profit net</span><span class="bk-val" style="color:var(--grn)">'+(safeReturn>0?+(safeReturn-safe).toFixed(2)+' RON':'&#x2014;')+'</span></div></div>'
-    +'<div class="bk-card" style="border-color:rgba(59,130,246,.3)"><div class="bk-card-title" style="color:var(--acc)">&#x2696;&#xFE0F; Bilet Mediu</div><div class="bk-row"><span>Miza recomandata (5%)</span><span class="bk-val" style="color:var(--acc)">'+medium+' RON</span></div><div class="bk-row"><span>Cota estimata</span><span class="bk-val">'+(BILETE?BILETE.biletMediu.cota+'x':'&#x2014;')+'</span></div><div class="bk-row"><span>Castig potential</span><span class="bk-val" style="color:var(--acc)">'+(medReturn>0?medReturn+' RON':'&#x2014;')+'</span></div><div class="bk-row"><span>Profit net</span><span class="bk-val" style="color:var(--acc)">'+(medReturn>0?+(medReturn-medium).toFixed(2)+' RON':'&#x2014;')+'</span></div></div>'
-    +'<div class="bk-card" style="border-color:rgba(249,115,22,.3)"><div class="bk-card-title" style="color:var(--org)">&#x26A1; Bilet Risc</div><div class="bk-row"><span>Miza recomandata (10%)</span><span class="bk-val" style="color:var(--org)">'+risk+' RON</span></div><div class="bk-row"><span>Cota estimata</span><span class="bk-val">'+(BILETE?BILETE.biletRisc.cota+'x':'&#x2014;')+'</span></div><div class="bk-row"><span>Castig potential</span><span class="bk-val" style="color:var(--org)">'+(riskReturn>0?riskReturn+' RON':'&#x2014;')+'</span></div><div class="bk-row"><span>Profit net</span><span class="bk-val" style="color:var(--org)">'+(riskReturn>0?+(riskReturn-risk).toFixed(2)+' RON':'&#x2014;')+'</span></div></div>'
-    +'<div class="bk-card"><div class="bk-card-title">&#x1F4CA; Strategie Piramida</div><div class="bk-row"><span>Bankroll total</span><span class="bk-val">'+BANKROLL+' RON</span></div><div class="bk-row"><span>Rezerva (83%)</span><span class="bk-val">'+(BANKROLL*0.83).toFixed(2)+' RON</span></div><div class="bk-row"><span>Alocat bilete</span><span class="bk-val">'+(safe+medium+risk).toFixed(2)+' RON</span></div><div class="bk-row"><span>Risc maxim</span><span class="bk-val" style="color:var(--yel)">'+(safe+medium+risk).toFixed(2)+' RON ('+((safe+medium+risk)/BANKROLL*100).toFixed(1)+'%)</span></div></div>';
+    '<div class="bk-card" style="border-color:rgba(34,197,94,.3)"><div class="bk-card-title" style="color:var(--grn)">🛡️ Bilet Sigur</div><div class="bk-row"><span>Miza recomandata (2%)</span><span class="bk-val" style="color:var(--grn)">'+safe+' RON</span></div><div class="bk-row"><span>Cota estimata</span><span class="bk-val">'+(BILETE?BILETE.biletSafe.cota+'x':'—')+'</span></div><div class="bk-row"><span>Castig potential</span><span class="bk-val" style="color:var(--grn)">'+(safeReturn>0?safeReturn+' RON':'—')+'</span></div><div class="bk-row"><span>Profit net</span><span class="bk-val" style="color:var(--grn)">'+(safeReturn>0?+(safeReturn-safe).toFixed(2)+' RON':'—')+'</span></div></div>'
+    +'<div class="bk-card" style="border-color:rgba(59,130,246,.3)"><div class="bk-card-title" style="color:var(--acc)">⚖️ Bilet Mediu</div><div class="bk-row"><span>Miza recomandata (5%)</span><span class="bk-val" style="color:var(--acc)">'+medium+' RON</span></div><div class="bk-row"><span>Cota estimata</span><span class="bk-val">'+(BILETE?BILETE.biletMediu.cota+'x':'—')+'</span></div><div class="bk-row"><span>Castig potential</span><span class="bk-val" style="color:var(--acc)">'+(medReturn>0?medReturn+' RON':'—')+'</span></div><div class="bk-row"><span>Profit net</span><span class="bk-val" style="color:var(--acc)">'+(medReturn>0?+(medReturn-medium).toFixed(2)+' RON':'—')+'</span></div></div>'
+    +'<div class="bk-card" style="border-color:rgba(249,115,22,.3)"><div class="bk-card-title" style="color:var(--org)">⚡ Bilet Risc</div><div class="bk-row"><span>Miza recomandata (10%)</span><span class="bk-val" style="color:var(--org)">'+risk+' RON</span></div><div class="bk-row"><span>Cota estimata</span><span class="bk-val">'+(BILETE?BILETE.biletRisc.cota+'x':'—')+'</span></div><div class="bk-row"><span>Castig potential</span><span class="bk-val" style="color:var(--org)">'+(riskReturn>0?riskReturn+' RON':'—')+'</span></div><div class="bk-row"><span>Profit net</span><span class="bk-val" style="color:var(--org)">'+(riskReturn>0?+(riskReturn-risk).toFixed(2)+' RON':'—')+'</span></div></div>'
+    +'<div class="bk-card"><div class="bk-card-title">📊 Strategie Piramida</div><div class="bk-row"><span>Bankroll total</span><span class="bk-val">'+BANKROLL+' RON</span></div><div class="bk-row"><span>Rezerva (83%)</span><span class="bk-val">'+(BANKROLL*0.83).toFixed(2)+' RON</span></div><div class="bk-row"><span>Alocat bilete</span><span class="bk-val">'+(safe+medium+risk).toFixed(2)+' RON</span></div><div class="bk-row"><span>Risc maxim</span><span class="bk-val" style="color:var(--yel)">'+(safe+medium+risk).toFixed(2)+' RON ('+((safe+medium+risk)/BANKROLL*100).toFixed(1)+'%)</span></div></div>';
 }
 
 async function doRefresh(){
   var btn=document.getElementById('btn-refresh');
-  btn.disabled=true; btn.textContent='&#x23F3; Se incarca...';
-  showLdr('Se analizeaza meciurile','BSD API - Value Engine - ML + Poisson',0);
+  btn.disabled=true; btn.textContent='⏳ Se incarca...';
+  showLdr('Se analizeaza meciurile','Filtrare agresivă — doar VALUE BETS reale',0);
   try{
     setLdrPct(15,'Se descarca predictiile...');
     var preds=await fetchData();
@@ -741,7 +765,7 @@ async function doRefresh(){
     if(!preds.length){
       hideLdr();
       toast('Nu s-au gasit date. Verifica GitHub Actions.','err');
-      btn.disabled=false; btn.textContent='&#x1F504; Reimprospateaza';
+      btn.disabled=false; btn.textContent='🔄 Reimprospateaza';
       return;
     }
     var allMatches=preds.map(function(p){try{return processPrediction(p);}catch(e){return null;}}).filter(Boolean);
@@ -752,7 +776,14 @@ async function doRefresh(){
     setLdrPct(95,'Se randeaza interfata...');
     var eliteCnt=allMatches.filter(function(m){return m.isElitePick||classifyMatch(m)==='ELITE';}).length;
     var valueCnt=allMatches.filter(function(m){return m.hasValue;}).length;
-    var visCnt=allMatches.filter(function(m){return m.p15T>=0.65||m.hasValue||m.aiScore>=60||m.isElitePick;}).length;
+    // SPEC: eligible = xG>=2.5 + prob>=78% + score>=75 + value bet
+    var visCnt=allMatches.filter(function(m){
+      var xgTotal=m.lh+m.la;
+      return (xgTotal>=2.5&&m.p15T>=0.78&&m.aiScore>=75&&m.hasValue)||
+             (xgTotal>=2.5&&m.p15T>=0.75&&m.aiScore>=65)||
+             (m.hasValue&&m.bestValue>=0.08&&m.p15T>=0.70)||
+             (m.p15T>=0.80&&m.aiScore>=60);
+    }).length;
     document.getElementById('stat-total').textContent=allMatches.length;
     document.getElementById('stat-elite').textContent=eliteCnt;
     document.getElementById('stat-value').textContent=valueCnt;
@@ -760,7 +791,7 @@ async function doRefresh(){
     document.getElementById('stats-row').style.display='grid';
     var wb=document.getElementById('welcome-banner');
     wb.style.display='flex';
-    document.getElementById('welcome-text').innerHTML='Am analizat <span class="hl">'+allMatches.length+'</span> meciuri si am gasit <span class="hl">'+visCnt+'</span> selectii eligibile.';
+    document.getElementById('welcome-text').innerHTML='Am analizat <span class="hl">'+allMatches.length+'</span> meciuri. Dupa filtrare agresiva: <span class="hl">'+visCnt+'</span> meciuri eligibile (xG≥2.5 + Prob≥75% + Score≥65 + Value Bet).';
     var now=new Date().toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('sb-dot').className='sb-dot live';
     document.getElementById('sb-txt').textContent=allMatches.length+' meciuri - '+valueCnt+' value bets';
@@ -780,7 +811,7 @@ async function doRefresh(){
     console.error('Refresh error:',e);
     toast('Eroare la incarcare: '+e.message,'err');
   }
-  btn.disabled=false; btn.textContent='&#x1F504; Reimprospateaza';
+  btn.disabled=false; btn.textContent='🔄 Reimprospateaza';
 }
 
 document.addEventListener('DOMContentLoaded',function(){
