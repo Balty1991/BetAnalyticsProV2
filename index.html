@@ -284,8 +284,11 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
         <button class="btn btn-primary" style="font-size:14px;padding:12px 24px;background:linear-gradient(135deg,var(--acc),var(--cyan))" onclick="generateOver15Ticket()">
           🔥 Genereaza Bilet 1.5G (5-10 meciuri)
         </button>
+        <button class="btn btn-primary" style="font-size:14px;padding:12px 24px;background:linear-gradient(135deg,var(--pur),var(--red))" onclick="generateDoubleChanceTicket()">
+          🛡️ Genereaza Bilet 1X/X2 (5-10 meciuri)
+        </button>
       </div>
-      <div style="font-size:11px;color:var(--muted)">Criteriu: Selectii sigure cu probabilitate ridicata de peste 1.5 goluri</div>
+      <div style="font-size:11px;color:var(--muted)">Criteriu: Selectii sigure cu probabilitate ridicata de 1X sau X2</div>
     </div>
     <div id="bilete-container"></div>
   </div>
@@ -840,6 +843,93 @@ function generateOver15Ticket(){
   
   renderBilete();
   toast('Bilet 1.5G generat cu '+picks.length+' selectii!', 'ok');
+}
+
+function generateDoubleChanceTicket(){
+  // Filter for 1X or X2 bets specifically
+  var dcMatches = ALL_MATCHES.map(function(m){
+    // Find 1X and X2 bets
+    var homeBet = m.allBets.find(function(b){ return b.type === 'home'; }); // 1X
+    var awayBet = m.allBets.find(function(b){ return b.type === 'away'; }); // X2
+    
+    var bestDC = null;
+    if(homeBet && awayBet) {
+      bestDC = homeBet.adjProb >= awayBet.adjProb ? homeBet : awayBet;
+    } else if(homeBet) {
+      bestDC = homeBet;
+    } else if(awayBet) {
+      bestDC = awayBet;
+    }
+
+    if(!bestDC || !bestDC.odds || bestDC.odds < 1.10) return null;
+    
+    return {
+      match: m,
+      adjProb: bestDC.adjProb,
+      value: bestDC.value,
+      odds: bestDC.odds,
+      label: bestDC.label,
+      score: bestDC.adjProb * 0.7 + (bestDC.value > 0 ? bestDC.value * 100 * 0.3 : 0)
+    };
+  }).filter(function(x){ return x !== null && x.adjProb >= 25; });
+
+  // Sort by safety (adjProb) and score
+  dcMatches.sort(function(a,b){ return b.score - a.score; });
+
+  var picks = [];
+  var totalOdds = 1;
+  
+  // Take 5-10 matches, prioritizing safety
+  for(var i=0; i<dcMatches.length; i++){
+    var item = dcMatches[i];
+    picks.push({
+      home: item.match.home,
+      away: item.match.away,
+      league: item.match.league,
+      dateLabel: item.match.dateLabel,
+      timeLabel: item.match.timeLabel,
+      bestBet: {
+        label: item.label,
+        odds: item.odds,
+        adjProb: item.adjProb,
+        value: item.value
+      }
+    });
+    totalOdds *= item.odds;
+    if(picks.length >= 10) break;
+  }
+
+  if(picks.length < 3){
+    BILETE = {
+      picks: [],
+      totalOdds: 1,
+      generatedAt: new Date().toISOString(),
+      error: 'Nu am gasit destule meciuri sigure pentru biletul de 1X/X2. Incearca mai tarziu cand oferta este mai bogata.'
+    };
+    renderBilete();
+    toast('Prea putine meciuri sigure gasite', 'warn');
+    return;
+  }
+
+  BILETE = {picks: picks, totalOdds: totalOdds, generatedAt: new Date().toISOString(), type: 'dc_combo'};
+  
+  // Save to tracking
+  var ticket = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('ro-RO'),
+    picks: picks.map(function(p){
+      return {home:p.home, away:p.away, bet:p.bestBet.label, odds:p.bestBet.odds, prob:p.bestBet.adjProb};
+    }),
+    totalOdds: totalOdds,
+    status: 'pending',
+    profit: 0,
+    criteria: 'Bilet 1X/X2 (5-10 selectii sigure)'
+  };
+  TRACKING.unshift(ticket);
+  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
+
+  renderBilete();
+  toast('Bilet Combo 1X/X2 generat cu '+picks.length+' selectii!', 'ok');
 }
 
 function generateTicket(){
