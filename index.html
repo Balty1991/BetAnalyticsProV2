@@ -560,9 +560,9 @@ function analyzeMatch(raw){
   });
 
   var mlPicks = [];
-  if(raw.over_15_recommend) mlPicks.push('Over 1.5G');
-  if(raw.over_25_recommend) mlPicks.push('Over 2.5G');
-  if(raw.btts_recommend) mlPicks.push('BTTS');
+  if(raw.over_15_recommend || raw.prob_over_15 > 75) mlPicks.push('Over 1.5G');
+  if(raw.over_25_recommend || raw.prob_over_25 > 65) mlPicks.push('Over 2.5G');
+  if(raw.btts_recommend || raw.prob_btts_yes > 60) mlPicks.push('BTTS');
   if(raw.winner_recommend) mlPicks.push(raw.predicted_result==='H'?'1':'2');
 
   return {
