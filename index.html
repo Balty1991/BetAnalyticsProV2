@@ -566,10 +566,11 @@ function analyzeMatch(raw){
 
 function passesSelectionFilter(m){ 
   if(!m.bestBet) return false;
-  // Filtrează meciurile care au trecut deja (mai vechi de 2 ore față de acum)
+  // Filtrează meciurile care au trecut deja (mai vechi de 15 minute față de acum)
   var matchTime = new Date(m.date).getTime();
   var now = new Date().getTime();
-  return matchTime > (now - 7200000); 
+  // Folosim o marjă de 15 minute pentru a permite meciurile care abia au început
+  return matchTime > (now - 900000); 
 }
 
 // ============================================================
@@ -602,10 +603,7 @@ function renderTopPicks(){
   var container = $('top-picks-grid');
   var top = ALL_MATCHES.filter(passesSelectionFilter)
     .sort(function(a,b){ 
-      // Prioritizează meciurile mai apropiate ca timp dacă scorurile sunt similare
-      if(Math.abs(b.smartScore - a.smartScore) < 5) {
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
-      }
+      // Sortăm strict după Smart Score pentru Top Picks, dar doar din cele viitoare
       return b.smartScore - a.smartScore; 
     })
     .slice(0,5);
@@ -829,6 +827,10 @@ function generateOver15Ticket(){
   eligible.sort(function(a,b){
     var bA = a.allBets.find(function(x){ return x.type==='over15'; });
     var bB = b.allBets.find(function(x){ return x.type==='over15'; });
+    // Sortăm după probabilitate, dar și după cât de recent este meciul
+    if(Math.abs(bB.adjProb - bA.adjProb) < 5) {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+    }
     return bB.adjProb - bA.adjProb;
   });
 
