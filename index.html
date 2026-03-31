@@ -714,12 +714,15 @@ function renderMatches(){
       var verdictClass = m.verdict;
       var verdictLabel = m.verdict === 'safe' ? '🟢 SAFE' : (m.verdict === 'moderate' ? '🟡 MODERATE' : '🔴 AVOID');
       
+      var hStr = m.xgHome >= 2.0 ? ' <span style="color:var(--grn);font-size:9px;font-weight:800">[STRONG]</span>' : (m.xgHome <= 1.0 ? ' <span style="color:var(--red);font-size:9px;font-weight:800">[WEAK]</span>' : '');
+      var aStr = m.xgAway >= 2.0 ? ' <span style="color:var(--grn);font-size:9px;font-weight:800">[STRONG]</span>' : (m.xgAway <= 1.0 ? ' <span style="color:var(--red);font-size:9px;font-weight:800">[WEAK]</span>' : '');
+
       return '<div class="match-card '+verdictClass+'">'+
         '<div class="mc-league">🌍 '+m.country+' • '+m.league+'</div>'+
         '<div class="mc-teams">'+
-          '<div class="mc-team">'+m.home+'</div>'+
+          '<div class="mc-team">'+m.home+hStr+'<div style="font-size:9px;color:var(--muted);font-weight:400">xG: '+m.xgHome.toFixed(2)+'</div></div>'+
           '<div class="mc-vs">VS</div>'+
-          '<div class="mc-team away">'+m.away+'</div>'+
+          '<div class="mc-team away">'+m.away+aStr+'<div style="font-size:9px;color:var(--muted);font-weight:400">xG: '+m.xgAway.toFixed(2)+'</div></div>'+
         '</div>'+
         '<div class="mc-time">🕒 '+m.timeLabel+' • Confidence: '+m.confidence.toFixed(0)+'%</div>'+
         '<div class="mc-verdict verdict-'+verdictClass+'">'+verdictLabel+'</div>'+
@@ -742,7 +745,11 @@ function renderMatches(){
     html += '</div></div>';
   });
 
-  container.innerHTML = html;
+  container.innerHTML = html + '<div style="margin-top:20px;padding:12px;background:var(--panel);border:1px solid var(--brd);border-radius:10px;font-size:11px;color:var(--muted);display:flex;gap:15px;justify-content:center;flex-wrap:wrap">'+
+    '<span><b style="color:var(--grn)">[STRONG]</b>: xG > 2.0 (Atac Puternic)</span>'+
+    '<span><b style="color:var(--red)">[WEAK]</b>: xG < 1.0 (Atac Slab)</span>'+
+    '<span><b>xG</b>: Goluri Asteptate / Meci</span>'+
+  '</div>';
 }
 
 // ============================================================
