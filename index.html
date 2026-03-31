@@ -721,7 +721,7 @@ function renderMatches(){
           '<div class="mc-vs">VS</div>'+
           '<div class="mc-team away">'+m.away+'</div>'+
         '</div>'+
-        '<div class="mc-time">🕒 '+m.timeLabel+' • Confidence: '+m.confidence+'%</div>'+
+        '<div class="mc-time">🕒 '+m.timeLabel+' • Confidence: '+m.confidence.toFixed(0)+'%</div>'+
         '<div class="mc-verdict verdict-'+verdictClass+'">'+verdictLabel+'</div>'+
         '<div class="mc-stats">'+
           '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--grn)">'+valStr+'</div><div class="mc-stat-lbl">Value</div></div>'+
@@ -735,7 +735,7 @@ function renderMatches(){
         '</div>'+
         '<div class="mc-conf-bar">'+
           '<div class="mc-conf-bar-bg"><div class="mc-conf-bar-fill" style="width:'+m.confidence+'%; background:linear-gradient(90deg,var(--acc),var(--pur))"></div></div>'+
-          '<div class="mc-conf-lbl">AI Confidence: '+m.confidence+'%</div>'+
+          '<div class="mc-conf-lbl">AI Confidence: '+m.confidence.toFixed(0)+'%</div>'+
         '</div>'+
       '</div>';
     }).join('');
