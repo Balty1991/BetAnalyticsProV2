@@ -270,6 +270,14 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
       <strong style="color:var(--acc)">📊 Ghid Interpretare Scoruri:</strong> Modelul AI este prudent. Scor <strong style="color:var(--yel)">30-40%</strong> = Semnal moderat | Scor <strong style="color:var(--grn)">40-50%</strong> = Semnal puternic | Scor <strong style="color:var(--grn)">>50%</strong> = Semnal foarte puternic. Orice scor peste 40% indica o incredere ridicata a AI-ului.
     </div>
     <div class="ml-grid" id="ml-grid"></div>
+
+    <div class="sec-hdr">
+      <div class="sec-title">🔥 ML +1.5G Recommendations <span class="sec-badge" style="background:rgba(34,197,94,0.15); border-color:rgba(34,197,94,0.3); color:var(--grn)">Over 1.5G</span></div>
+    </div>
+    <div style="margin-bottom:16px;padding:12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:11px;color:var(--muted)">
+      <strong style="color:var(--grn)">⚽ Strategie Goluri:</strong> Această secțiune filtrează automat doar meciurile unde modelul ML recomandă pronosticul <strong style="color:var(--txt)">Peste 1.5 Goluri</strong>. Sunt selectate meciurile cu cel mai mare potențial ofensiv conform analizei statistice.
+    </div>
+    <div class="ml-grid" id="ml-15-grid"></div>
   </div>
 
   <!-- ===== MECIURI ===== -->
@@ -654,7 +662,6 @@ function renderTopPicks(){
 function renderML(){
   var container = $('ml-grid');
   var ml = ALL_MATCHES.filter(function(m){ 
-    // Afișăm doar meciurile care nu au trecut încă (marjă de 15 min)
     var matchTime = new Date(m.date).getTime();
     var now = new Date().getTime();
     return m.hasMlRec && matchTime > (now - 900000); 
@@ -674,6 +681,41 @@ function renderML(){
       '<div style="font-size:9px;color:var(--muted);margin-bottom:8px">'+m.league+' • '+m.dateLabel+'</div>'+
       '<div class="ml-picks">'+
         m.mlPicks.map(function(p){ return '<span class="ml-pick">'+p+'</span>'; }).join('')+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function renderML15(){
+  var container = $('ml-15-grid');
+  var ml15 = ALL_MATCHES.filter(function(m){ 
+    var matchTime = new Date(m.date).getTime();
+    var now = new Date().getTime();
+    // Filtram meciurile viitoare care au "Over 1.5G" in lista de mlPicks
+    return m.hasMlRec && m.mlPicks.includes('Over 1.5G') && matchTime > (now - 900000); 
+  }).sort(function(a,b){ return b.confidence - a.confidence; });
+
+  if(ml15.length === 0){
+    container.innerHTML = '<div class="empty-state">Nicio recomandare +1.5G momentan.</div>';
+    return;
+  }
+
+  container.innerHTML = ml15.map(function(m){
+    var tXg = m.xgHome + m.xgAway;
+    return '<div class="ml-card" style="background:rgba(34,197,94,0.06); border-color:rgba(34,197,94,0.2)">'+
+      '<div class="ml-hdr">'+
+        '<div class="ml-teams">'+m.home+' vs '+m.away+'</div>'+
+        '<div class="ml-conf" style="color:var(--grn)">'+m.confidence.toFixed(0)+'%</div>'+
+      '</div>'+
+      '<div style="font-size:9px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between">'+
+        '<span>'+m.league+' • '+m.dateLabel+'</span>'+
+        '<span style="font-weight:700;color:var(--cyan)">Σ xG: '+tXg.toFixed(2)+'</span>'+
+      '</div>'+
+      '<div class="ml-picks">'+
+        '<span class="ml-pick" style="background:rgba(34,197,94,0.15); color:var(--grn)">🔥 Over 1.5G</span>'+
+        m.mlPicks.filter(p => p !== 'Over 1.5G').map(function(p){ 
+          return '<span class="ml-pick">'+p+'</span>'; 
+        }).join('')+
       '</div>'+
     '</div>';
   }).join('');
@@ -1209,6 +1251,7 @@ function renderAll(){
   
   renderTopPicks();
   renderML();
+  renderML15();
   renderMatches();
   renderBilete();
   renderTracking();
