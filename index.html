@@ -560,10 +560,18 @@ function analyzeMatch(raw){
   });
 
   var mlPicks = [];
-  if(raw.over_15_recommend || raw.prob_over_15 > 75) mlPicks.push('Over 1.5G');
-  if(raw.over_25_recommend || raw.prob_over_25 > 65) mlPicks.push('Over 2.5G');
-  if(raw.btts_recommend || raw.prob_btts_yes > 60) mlPicks.push('BTTS');
-  if(raw.winner_recommend) mlPicks.push(raw.predicted_result==='H'?'1':'2');
+  // Construim obiecte cu label si probabilitate pentru a gasi cea mai buna varianta
+  var candidates = [];
+  if(raw.over_15_recommend || raw.prob_over_15 > 75) candidates.push({label:'Over 1.5G', prob: raw.prob_over_15});
+  if(raw.over_25_recommend || raw.prob_over_25 > 65) candidates.push({label:'Over 2.5G', prob: raw.prob_over_25});
+  if(raw.btts_recommend || raw.prob_btts_yes > 60) candidates.push({label:'BTTS', prob: raw.prob_btts_yes});
+  if(raw.winner_recommend) candidates.push({label: (raw.predicted_result==='H'?'1':'2'), prob: raw.confidence});
+  
+  // Sortam dupa probabilitate descrescator
+  candidates.sort((a,b) => b.prob - a.prob);
+  
+  // mlPicks va contine acum obiecte {label, prob}
+  mlPicks = candidates;
 
   return {
     id: raw.id, home: e.home_team, away: e.away_team, league: e.league.name,
@@ -674,8 +682,12 @@ function renderML(){
 
   container.innerHTML = ml.map(function(m){
     // Excludem pronosticurile Over 1.5G din aceasta lista (pentru a fi doar in sectiunea dedicata)
-    var filteredPicks = m.mlPicks.filter(p => p !== 'Over 1.5G');
+    var filteredPicks = m.mlPicks.filter(p => p.label !== 'Over 1.5G');
     if(filteredPicks.length === 0) return '';
+
+    // Luam doar prima recomandare (cea cu probabilitatea cea mai mare)
+    var topPick = filteredPicks[0];
+    if(!topPick) return '';
 
     return '<div class="ml-card">'+
       '<div class="ml-hdr">'+
@@ -684,9 +696,12 @@ function renderML(){
       '</div>'+
       '<div style="font-size:9px;color:var(--muted);margin-bottom:8px">'+m.league+' • '+m.dateLabel+'</div>'+
       '<div class="ml-picks">'+
-        filteredPicks.map(function(p){ return '<span class="ml-pick">'+p+'</span>'; }).join('')+
+        '<span class="ml-pick" style="background:rgba(59,130,246,0.15); color:var(--acc); font-size:11px; padding:4px 10px">🎯 '+topPick.label+'</span>'+
       '</div>'+
-      '<div style="font-size:8px; color:var(--muted); margin-top:8px; text-align:right; font-style:italic">AI Confidence Score: '+m.confidence.toFixed(0)+'%</div>'+
+      '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">'+
+        '<div style="font-size:9px; color:var(--muted)">Probabilitate: <b>'+topPick.prob.toFixed(1)+'%</b></div>'+
+        '<div style="font-size:9px; color:var(--acc); font-weight:700">Confidence: '+m.confidence.toFixed(0)+'%</div>'+
+      '</div>'+
     '</div>';
   }).join('');
 }
@@ -697,7 +712,7 @@ function renderML15(){
     var matchTime = new Date(m.date).getTime();
     var now = new Date().getTime();
     // Filtram meciurile viitoare care au "Over 1.5G" in lista de mlPicks
-    return m.hasMlRec && m.mlPicks.includes('Over 1.5G') && matchTime > (now - 900000); 
+    return m.hasMlRec && m.mlPicks.some(p => p.label === 'Over 1.5G') && matchTime > (now - 900000); 
   }).sort(function(a,b){ return b.confidence - a.confidence; });
 
   if(ml15.length === 0){
@@ -707,6 +722,7 @@ function renderML15(){
 
   container.innerHTML = ml15.map(function(m){
     var tXg = m.xgHome + m.xgAway;
+    var o15 = m.mlPicks.find(p => p.label === 'Over 1.5G');
     return '<div class="ml-card" style="background:rgba(34,197,94,0.06); border-color:rgba(34,197,94,0.2)">'+
       '<div class="ml-hdr">'+
         '<div class="ml-teams">'+m.home+' vs '+m.away+'</div>'+
@@ -717,9 +733,12 @@ function renderML15(){
         '<span style="font-weight:700;color:var(--cyan)">Σ xG: '+tXg.toFixed(2)+'</span>'+
       '</div>'+
       '<div class="ml-picks">'+
-        '<span class="ml-pick" style="background:rgba(34,197,94,0.15); color:var(--grn)">🔥 Over 1.5G</span>'+
+        '<span class="ml-pick" style="background:rgba(34,197,94,0.15); color:var(--grn); font-size:11px; padding:4px 10px">🔥 Over 1.5G</span>'+
       '</div>'+
-      '<div style="font-size:8px; color:var(--muted); margin-top:8px; text-align:right; font-style:italic">AI Confidence Score: '+m.confidence.toFixed(0)+'%</div>'+
+      '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">'+
+        '<div style="font-size:9px; color:var(--muted)">Probabilitate: <b>'+o15.prob.toFixed(1)+'%</b></div>'+
+        '<div style="font-size:9px; color:var(--grn); font-weight:700">Confidence: '+m.confidence.toFixed(0)+'%</div>'+
+      '</div>'+
     '</div>';
   }).join('');
 }
