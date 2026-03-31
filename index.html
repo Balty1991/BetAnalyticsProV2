@@ -62,7 +62,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
   .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
   @media(max-width:600px){.stats-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}}
 .stat-card{background:var(--panel);border:1px solid var(--brd);border-radius:12px;padding:16px;text-align:center}
-.stat-num{font-size:28px;font-weight:800;font-family:var(--mono)}
+.stat-num{font-size:20px;font-weight:800;font-family:var(--mono)}
 .stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
 
 /* SECTION HEADER */
@@ -302,10 +302,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
   <!-- ===== DASHBOARD ===== -->
   <div class="tab-content active" id="tab-dashboard">
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-num" id="st-total" style="color:var(--acc)">—</div><div class="stat-lbl">Meciuri</div></div>
-      <div class="stat-card"><div class="stat-num" id="st-safe" style="color:var(--grn)">—</div><div class="stat-lbl">🟢 Safe</div></div>
-      <div class="stat-card"><div class="stat-num" id="st-value" style="color:var(--yel)">—</div><div class="stat-lbl">💰 Value Bets</div></div>
-      <div class="stat-card"><div class="stat-num" id="st-eligible" style="color:var(--val)">—</div><div class="stat-lbl">✅ Eligibile</div></div>
+        <div class="stat-card" style="padding: 10px; max-width: 150px; margin: 0 auto; grid-column: span 4;"><div class="stat-num" id="st-total" style="color:var(--blu); font-size: 20px;">—</div><div class="stat-lbl">📊 Meciuri</div></div>>
     </div>
 
     <!-- Top 5 Value Picks — collapsible -->
@@ -1489,14 +1486,14 @@ function renderAll(){
   var value = ALL_MATCHES.filter(function(m){ return m.bestBet && m.bestBet.value>=0.05; }).length;
   var eligible = ALL_MATCHES.filter(passesSelectionFilter).length;
 
-  $('st-total').textContent = total;
-  $('st-safe').textContent = safe;
-  $('st-value').textContent = value;
-  $('st-eligible').textContent = eligible;
+  if($('st-total')) $('st-total').textContent = total;
+  if($('st-safe')) $('st-safe').textContent = safe;
+  if($('st-value')) $('st-value').textContent = value;
+  if($('st-eligible')) $('st-eligible').textContent = eligible;
 
   var now = new Date();
   var timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  $('sb-text').textContent = total+' meciuri — '+safe+' safe — '+value+' value bets — ora '+timeStr;
+  $('sb-text').textContent = total+' meciuri — ora '+timeStr;
   
   renderTopPicks();
   renderTopSafe();
