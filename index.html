@@ -301,9 +301,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 
   <!-- ===== DASHBOARD ===== -->
   <div class="tab-content active" id="tab-dashboard">
-    <div class="stats-grid">
-        <div class="stat-card" style="padding: 10px; max-width: 150px; margin: 0 auto; grid-column: span 4;"><div class="stat-num" id="st-total" style="color:var(--blu); font-size: 20px;">—</div><div class="stat-lbl">📊 Meciuri</div></div>>
-    </div>
 
     <!-- Top 5 Value Picks — collapsible -->
     <div class="sec-hdr collapsible-header" id="top5-hdr" onclick="toggleSection('top5')" style="border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:10px 14px;background:rgba(168,85,247,.05);margin-bottom:0;cursor:pointer">
@@ -1493,7 +1490,7 @@ function renderAll(){
 
   var now = new Date();
   var timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  $('sb-text').textContent = total+' meciuri — ora '+timeStr;
+  $('sb-text').textContent = total+' meciuri — '+eligible+' eligibile — ora '+timeStr;
   
   renderTopPicks();
   renderTopSafe();
