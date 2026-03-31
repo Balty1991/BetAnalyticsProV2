@@ -757,6 +757,10 @@ function renderMatches(){
           '<div class="mc-rec-type">'+b.label+'</div>'+
           '<div class="mc-rec-val">Stat: '+fmtPct(b.prob)+'</div>'+
         '</div>'+
+        '<div style="margin-top:8px; padding:8px; background:rgba(255,255,255,0.03); border-radius:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--brd)">'+
+          '<div style="font-size:10px; color:var(--muted); font-weight:600">XG TOTAL MECI</div>'+
+          '<div style="font-size:14px; font-weight:800; color:var(--cyan); font-family:var(--mono)">'+tXg.toFixed(2)+'</div>'+
+        '</div>'+
         '<div class="mc-conf-bar">'+
           '<div class="mc-conf-bar-bg"><div class="mc-conf-bar-fill" style="width:'+m.confidence+'%; background:linear-gradient(90deg,var(--acc),var(--pur))"></div></div>'+
           '<div class="mc-conf-lbl">AI Confidence: '+m.confidence.toFixed(0)+'%</div>'+
