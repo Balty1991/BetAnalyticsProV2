@@ -627,8 +627,11 @@ function renderTopPicks(){
   var container = $('top-picks-grid');
   var top = ALL_MATCHES.filter(passesSelectionFilter)
     .sort(function(a,b){ 
-      // Sortăm strict după Smart Score pentru Top Picks, dar doar din cele viitoare
-      return b.smartScore - a.smartScore; 
+      // Algoritm Hibrid (H-Score): 60% Smart Score + 40% ML Confidence
+      // Aceasta asigura ca evenimentele selectate au atat valoare matematica cat si confirmare AI
+      var scoreA = (a.smartScore * 0.6) + (a.confidence * 0.4);
+      var scoreB = (b.smartScore * 0.6) + (b.confidence * 0.4);
+      return scoreB - scoreA; 
     })
     .slice(0,5);
   
@@ -647,6 +650,8 @@ function renderTopPicks(){
     var aXg = getXGClass(m.xgAway);
     var tXg = m.xgHome + m.xgAway;
 
+    var hScore = ((m.smartScore * 0.6) + (m.confidence * 0.4)).toFixed(1);
+
     return '<div class="top-pick-card">'+
       '<div class="tp-rank">#'+(i+1)+'</div>'+
       '<div class="tp-badge '+badgeClass+'">'+badgeText+'</div>'+
@@ -659,10 +664,10 @@ function renderTopPicks(){
       '<div class="tp-league">'+m.league+' • '+m.dateLabel+' '+m.timeLabel+'</div>'+
       '<div class="tp-metrics">'+
         '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--grn)">'+valStr+'</div><div class="tp-metric-lbl">Value</div></div>'+
-        '<div class="tp-metric"><div class="tp-metric-val">'+fmtPct(b.adjProb)+'</div><div class="tp-metric-lbl">Șansă Reală</div></div>'+
-        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--acc)">'+b.score+'</div><div class="tp-metric-lbl">Notă Pariu</div></div>'+
+        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--acc)">'+m.confidence.toFixed(0)+'%</div><div class="tp-metric-lbl">AI Conf.</div></div>'+
+        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--pur)">'+hScore+'</div><div class="tp-metric-lbl">H-Score</div></div>'+
       '</div>'+
-      '<div class="tp-rec">🎯 '+b.label+' @ '+b.odds.toFixed(2)+' | Șansă Stat: '+fmtPct(b.prob)+'</div>'+
+      '<div class="tp-rec" style="background:linear-gradient(90deg, rgba(59,130,246,0.1), rgba(168,85,247,0.1)); border:1px solid rgba(168,85,247,0.2)">🎯 '+b.label+' @ '+b.odds.toFixed(2)+' | Șansă: '+fmtPct(b.adjProb)+'</div>'+
     '</div>';
   }).join('');
 }
