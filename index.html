@@ -308,10 +308,14 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
       <div class="stat-card"><div class="stat-num" id="st-eligible" style="color:var(--val)">—</div><div class="stat-lbl">✅ Eligibile</div></div>
     </div>
 
-    <div class="sec-hdr">
-      <div class="sec-title">⭐ Top 5 Value Picks</div>
+    <!-- Top 5 Value Picks — collapsible -->
+    <div class="sec-hdr collapsible-header" id="top5-hdr" onclick="toggleSection('top5')" style="border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:10px 14px;background:rgba(168,85,247,.05);margin-bottom:0;cursor:pointer">
+      <div class="sec-title">⭐ Top 5 Value Picks <span class="collapse-count" id="top5-count">—</span></div>
+      <span class="collapse-toggle" id="top5-toggle" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.25);color:var(--pur)">▼</span>
     </div>
-    <div class="top-picks-grid" id="top-picks-grid"></div>
+    <div class="collapsible-body" id="top5-body">
+      <div class="top-picks-grid" id="top-picks-grid"></div>
+    </div>
 
     <!-- ML Recommendations — collapsible -->
     <div class="sec-hdr collapsible-header" id="ml-hdr" onclick="toggleSection('ml')" style="border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:10px 14px;background:rgba(59,130,246,.05);margin-bottom:0;cursor:pointer">
@@ -333,12 +337,70 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
     <div class="collapsible-body" id="ml15-body">
       <div style="margin-top:10px;margin-bottom:16px;padding:12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:11px;color:var(--muted)">
         <strong style="color:var(--grn)">⚽ Strategie Goluri:</strong> Această secțiune filtrează automat doar meciurile unde modelul ML recomandă pronosticul <strong style="color:var(--txt)">Peste 1.5 Goluri</strong>. Sunt selectate meciurile cu cel mai mare potențial ofensiv conform analizei statistice.
+      </div>      <div class="ml-grid" id="ml-15-grid"></div>
+    </div>
+
+    <!-- ML LEGEND -->
+    <div style="margin-top:32px;padding:20px;background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(168,85,247,.08));border:1px solid rgba(168,85,247,.2);border-radius:14px;display:flex;flex-direction:column;gap:16px">
+      <div style="font-size:14px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:8px">🎯 Cum Funcționează Pronosticurile ML</div>
+      
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+        <!-- Card 1: Modele ML -->
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--acc);margin-bottom:8px;display:flex;align-items:center;gap:6px">🤖 Modele ML Utilizate</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">
+            <strong style="color:var(--txt)">CatBoost</strong> - Model gradient boosting antrenat pe date istorice de meciuri de fotbal. Analizează <strong>150+ variabile</strong> statistice: formă echipă, xG, posesie, cartonașe, etc.
+          </div>
+        </div>
+        
+        <!-- Card 2: Tipuri Pronosticuri -->
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--grn);margin-bottom:8px;display:flex;align-items:center;gap:6px">⚽ Tipuri de Pronosticuri</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">
+            <strong style="color:var(--txt)">1X2</strong> (Victorie/Remiză/Înfrângere) • <strong style="color:var(--txt)">Over/Under</strong> (Goluri) • <strong style="color:var(--txt)">BTTS</strong> (Ambele echipe marchează) • <strong style="color:var(--txt)">+1.5G</strong> (Peste 1.5 goluri)
+          </div>
+        </div>
+        
+        <!-- Card 3: Confidence Score -->
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--yel);margin-bottom:8px;display:flex;align-items:center;gap:6px">📊 Confidence Score</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">
+            Procentul de încredere al modelului. <strong style="color:var(--grn)">40-50%</strong> = Semnal puternic | <strong style="color:var(--grn)">>50%</strong> = Semnal foarte puternic. Orice scor <strong style="color:var(--txt)">>40%</strong> indică o predicție de calitate.
+          </div>
+        </div>
+        
+        <!-- Card 4: Value Betting -->
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--val);margin-bottom:8px;display:flex;align-items:center;gap:6px">💰 Value Betting</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">
+            Compară probabilitatea reală (ML) cu cotele de pe piață. <strong style="color:var(--txt)">Value pozitiv</strong> = Cota mai mare decât ar trebui → Pariu profitabil pe termen lung.
+          </div>
+        </div>
+        
+        <!-- Card 5: Smart Score -->
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--pur);margin-bottom:8px;display:flex;align-items:center;gap:6px">🎯 Smart Score (H-Score)</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">
+            Algoritm hibrid: <strong style="color:var(--txt)">60% Smart Score + 40% ML Confidence</strong>. Asigură că pariurile au atât valoare matematică cât și confirmare AI pentru selecții de calitate.
+          </div>
+        </div>
+        
+        <!-- Card 6: Filtrare Automată -->
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(6,182,212,.2);border-radius:10px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:8px;display:flex;align-items:center;gap:6px">🔍 Filtrare Automată</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">
+            <strong style="color:var(--txt)">ML Recommendations</strong> - Pariuri cu cea mai bună probabilitate (excluzând Over 1.5G) | <strong style="color:var(--txt)">ML +1.5G</strong> - Doar meciuri cu potențial ofensiv ridicat.
+          </div>
+        </div>
       </div>
-      <div class="ml-grid" id="ml-15-grid"></div>
+      
+      <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:12px;font-size:10px;color:var(--muted);font-style:italic">
+        ℹ️ Disclaimer: Pronosticurile ML sunt doar recomandări bazate pe analiză statistică. Pariurile comportă risc. Pariază responsabil.
+      </div>
     </div>
   </div>
 
-  <!-- ===== MECIURI ===== -->
+  <!-- ===== MECIURI =====" -->
   <div class="tab-content" id="tab-meciuri">
     <div class="filter-bar">
       <button class="filter-btn active" onclick="setFilter('all',this)">🌐 Toate</button>
@@ -692,6 +754,8 @@ function renderTopPicks(){
       return scoreB - scoreA; 
     })
     .slice(0,5);
+  
+  updateSectionCount('top5', top.length);
   
   if(top.length === 0){
     container.innerHTML = '<div class="empty-state">Niciun pariu recomandat momentan.</div>';
@@ -1327,13 +1391,15 @@ function calcBankroll(){
 // ============================================================
 // COLLAPSIBLE SECTIONS
 // ============================================================
-// State: both sections start collapsed (false = closed)
-var SECTION_STATE = { ml: false, ml15: false };
+// State: all sections start collapsed (false = closed)
+var SECTION_STATE = { top5: false, ml: false, ml15: false };
 
 function toggleSection(id){
   SECTION_STATE[id] = !SECTION_STATE[id];
-  var body = $(id === 'ml' ? 'ml-body' : 'ml15-body');
-  var toggle = $(id === 'ml' ? 'ml-toggle' : 'ml15-toggle');
+  var bodyId = id === 'ml' ? 'ml-body' : (id === 'ml15' ? 'ml15-body' : 'top5-body');
+  var toggleId = id === 'ml' ? 'ml-toggle' : (id === 'ml15' ? 'ml15-toggle' : 'top5-toggle');
+  var body = $(bodyId);
+  var toggle = $(toggleId);
   if(SECTION_STATE[id]){
     body.classList.add('open');
     toggle.classList.add('open');
