@@ -145,6 +145,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 .badge-win{background:rgba(34,197,94,.15);color:var(--grn);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
 .badge-loss{background:rgba(239,68,68,.15);color:var(--red);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
 .badge-pending{background:rgba(245,158,11,.15);color:var(--yel);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.badge-co{background:rgba(245,158,11,.15);color:var(--yel);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
 
 /* BANKROLL TAB */
@@ -218,27 +219,45 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
   
   <!-- ===== DASHBOARD ===== -->
   <div class="tab-content active" id="tab-dashboard">
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-num" id="st-total">0</div>
-        <div class="stat-lbl">Total Meciuri</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="st-safe" style="color:var(--grn)">0</div>
-        <div class="stat-lbl">Safe Picks</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="st-value" style="color:var(--acc)">0</div>
-        <div class="stat-lbl">Value Bets</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="st-eligible" style="color:var(--pur)">0</div>
-        <div class="stat-lbl">Eligibile</div>
-      </div>
+    
+    <!-- TOP PICKS SECTION -->
+    <div class="collapsible-header" onclick="toggleSection('top5')">
+      <div class="collapsible-title">🔥 Top 5 Smart Picks <span class="sec-badge" id="top5-count">0 meciuri</span></div>
+      <div class="collapsible-toggle" id="top5-toggle">▼</div>
+    </div>
+    <div class="collapsible-body" id="top5-body">
+      <div class="matches-grid" id="top-picks-container"></div>
     </div>
 
-    <!-- INFO SECTION -->
-    <div style="background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:24px">
+    <!-- TOP SAFE SECTION -->
+    <div class="collapsible-header" onclick="toggleSection('topsafe')">
+      <div class="collapsible-title">🛡️ Top Safe Picks <span class="sec-badge" id="topsafe-count">0 meciuri</span></div>
+      <div class="collapsible-toggle" id="topsafe-toggle">▼</div>
+    </div>
+    <div class="collapsible-body" id="topsafe-body">
+      <div class="matches-grid" id="top-safe-container"></div>
+    </div>
+
+    <!-- ML RECOMMENDATIONS SECTION -->
+    <div class="collapsible-header" onclick="toggleSection('ml')">
+      <div class="collapsible-title">🤖 ML Recommendations <span class="sec-badge" id="ml-count">0 meciuri</span></div>
+      <div class="collapsible-toggle" id="ml-toggle">▼</div>
+    </div>
+    <div class="collapsible-body" id="ml-body">
+      <div class="matches-grid" id="ml-container"></div>
+    </div>
+
+    <!-- ML 1.5G RECOMMENDATIONS SECTION -->
+    <div class="collapsible-header" onclick="toggleSection('ml15')">
+      <div class="collapsible-title">⚽ ML Over 1.5G Picks <span class="sec-badge" id="ml15-count">0 meciuri</span></div>
+      <div class="collapsible-toggle" id="ml15-toggle">▼</div>
+    </div>
+    <div class="collapsible-body" id="ml15-body">
+      <div class="matches-grid" id="ml15-container"></div>
+    </div>
+
+    <!-- INFO SECTION (LEGENDA JOS) -->
+    <div style="background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-top:24px">
       <div style="font-size:14px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:8px">🎯 Cum Funcționează Pronosticurile ML</div>
       
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
@@ -294,42 +313,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- TOP PICKS SECTION -->
-    <div class="collapsible-header" onclick="toggleSection('top5')">
-      <div class="collapsible-title">🔥 Top 5 Smart Picks <span class="sec-badge" id="top5-count">0 meciuri</span></div>
-      <div class="collapsible-toggle" id="top5-toggle">▼</div>
-    </div>
-    <div class="collapsible-body" id="top5-body">
-      <div class="matches-grid" id="top-picks-container"></div>
-    </div>
-
-    <!-- TOP SAFE SECTION -->
-    <div class="collapsible-header" onclick="toggleSection('topsafe')">
-      <div class="collapsible-title">🛡️ Top Safe Picks <span class="sec-badge" id="topsafe-count">0 meciuri</span></div>
-      <div class="collapsible-toggle" id="topsafe-toggle">▼</div>
-    </div>
-    <div class="collapsible-body" id="topsafe-body">
-      <div class="matches-grid" id="top-safe-container"></div>
-    </div>
-
-    <!-- ML RECOMMENDATIONS SECTION -->
-    <div class="collapsible-header" onclick="toggleSection('ml')">
-      <div class="collapsible-title">🤖 ML Recommendations <span class="sec-badge" id="ml-count">0 meciuri</span></div>
-      <div class="collapsible-toggle" id="ml-toggle">▼</div>
-    </div>
-    <div class="collapsible-body" id="ml-body">
-      <div class="matches-grid" id="ml-container"></div>
-    </div>
-
-    <!-- ML 1.5G RECOMMENDATIONS SECTION -->
-    <div class="collapsible-header" onclick="toggleSection('ml15')">
-      <div class="collapsible-title">⚽ ML Over 1.5G Picks <span class="sec-badge" id="ml15-count">0 meciuri</span></div>
-      <div class="collapsible-toggle" id="ml15-toggle">▼</div>
-    </div>
-    <div class="collapsible-body" id="ml15-body">
-      <div class="matches-grid" id="ml15-container"></div>
     </div>
   </div>
 
@@ -869,6 +852,7 @@ function generateTicket(type){
       pickBet = m.allBets.find(x => x.type === 'over15');
     } else if(type.startsWith('ml_')) {
       var ml = m.mlPicks[0];
+      // Uniformizare probabilitate: folosim probabilitatea brută din ML (ml.prob)
       pickBet = {label: ml.label, odds: ml.odds, adjProb: ml.prob, value: 0};
     } else {
       pickBet = m.bestBet;
@@ -935,7 +919,6 @@ function renderBilete(){
 
   picks.forEach(function(m){
     var b = m.selectedBet;
-    var valStr = b.value >= 0 ? '+'+fmtPct(b.value*100) : fmtPct(b.value*100);
     var tXg = m.xgHome + m.xgAway;
 
     html += '<div class="bilet-row">'+
@@ -1061,7 +1044,7 @@ function renderTracking(){
   TRACKING.forEach(function(t,i){
     var statusBadge = t.status==='win'?'<span class="badge-win">WIN</span>':
                       t.status==='loss'?'<span class="badge-loss">LOSS</span>':
-                      t.status==='co'?'<span style="background:rgba(245,158,11,.15);color:var(--yel);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">CO</span>':
+                      t.status==='co'?'<span class="badge-co">CO</span>':
                       t.status==='anulat'?'<span style="background:rgba(100,116,139,.15);color:var(--muted);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">X</span>':
                       '<span class="badge-pending">PENDING</span>';
     var profitStr = t.profit>0?'<span style="color:var(--grn)">+'+t.profit.toFixed(2)+'</span>':
@@ -1082,6 +1065,7 @@ function renderTracking(){
       '<td style="display:flex;gap:2px;justify-content:flex-end" onclick="event.stopPropagation()">'+
         '<button onclick="markTicket('+i+',\'win\')" style="background:rgba(34,197,94,.15);color:var(--grn);border:1px solid rgba(34,197,94,.3);border-radius:4px;padding:3px 6px;font-size:9px;font-weight:700">W</button>'+
         '<button onclick="markTicket('+i+',\'loss\')" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);border-radius:4px;padding:3px 6px;font-size:9px;font-weight:700">L</button>'+
+        '<button onclick="markCashOut('+i+')" style="background:rgba(245,158,11,.15);color:var(--yel);border:1px solid rgba(245,158,11,.3);border-radius:4px;padding:3px 6px;font-size:9px;font-weight:700">CO</button>'+
         '<button onclick="deleteTicket('+i+')" style="background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--brd2);border-radius:4px;padding:3px 6px;font-size:9px">🗑️</button>'+
       '</td>'+
     '</tr>';
@@ -1128,6 +1112,23 @@ function markTicket(idx, status){
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
   renderTracking();
   toast('Bilet actualizat', 'ok');
+}
+
+function markCashOut(idx){
+  var t = TRACKING[idx];
+  var stake = t.stake || 100;
+  var amount = prompt("Introdu suma primită la Cash Out (RON):", stake);
+  if(amount === null) return;
+  var coAmount = parseFloat(amount);
+  if(isNaN(coAmount)) {
+    toast('Sumă invalidă', 'err');
+    return;
+  }
+  t.status = 'co';
+  t.profit = coAmount - stake;
+  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
+  renderTracking();
+  toast('Cash Out înregistrat', 'ok');
 }
 
 function deleteTicket(idx){
@@ -1226,11 +1227,6 @@ function renderAll(){
   var safe = ALL_MATCHES.filter(m => m.verdict==='safe').length;
   var value = ALL_MATCHES.filter(m => m.bestBet && m.bestBet.value>=0.05).length;
   var eligible = ALL_MATCHES.filter(passesSelectionFilter).length;
-
-  if($('st-total')) $('st-total').textContent = total;
-  if($('st-safe')) $('st-safe').textContent = safe;
-  if($('st-value')) $('st-value').textContent = value;
-  if($('st-eligible')) $('st-eligible').textContent = eligible;
 
   var now = new Date();
   var timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
