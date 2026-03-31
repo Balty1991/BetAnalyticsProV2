@@ -374,7 +374,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
       <div class="sec-title" style="margin-bottom:16px">💰 Management Bankroll</div>
       <div class="bk-input-row">
         <label style="font-size:13px;font-weight:600">Bankroll initial (RON):</label>
-        <input type="number" class="bk-input" id="bankroll-input" value="1000" min="10" step="50"/>
+        <input type="number" class="bk-input" id="bankroll-input" value="1000" min="10" step="50" onchange="calcBankroll()"/>
         <button class="btn btn-primary" onclick="calcBankroll()">Calculeaza</button>
       </div>
       
@@ -423,6 +423,7 @@ var ALL_MATCHES = [];
 var BILETE = null;
 var CURRENT_FILTER = 'all';
 var TRACKING = JSON.parse(localStorage.getItem('bet_tracking') || '[]');
+var BANKROLL_SETTINGS = JSON.parse(localStorage.getItem('bet_bankroll_settings') || '{"initial":1000,"safe":2,"medium":5,"risk":10}');
 
 // ============================================================
 // UTILS
@@ -1094,16 +1095,20 @@ function toggleTicketDetail(idx){
 // ============================================================
 function calcBankroll(){
   var initialBk = parseFloat($('bankroll-input').value) || 1000;
+  var pctSafe = parseFloat($('pct-safe').value) || 2;
+  var pctMedium = parseFloat($('pct-medium').value) || 5;
+  var pctRisk = parseFloat($('pct-risk').value) || 10;
+
+  // Save settings
+  BANKROLL_SETTINGS = { initial: initialBk, safe: pctSafe, medium: pctMedium, risk: pctRisk };
+  localStorage.setItem('bet_bankroll_settings', JSON.stringify(BANKROLL_SETTINGS));
+
   var totalProfit = TRACKING.reduce(function(acc,t){ return acc + t.profit; }, 0);
   var actualBk = initialBk + totalProfit;
 
   $('bk-actual-val').textContent = actualBk.toFixed(2) + ' RON';
   $('bk-profit-val').textContent = (totalProfit>=0?'+':'') + totalProfit.toFixed(2) + ' RON';
   $('bk-profit-val').style.color = totalProfit >= 0 ? 'var(--grn)' : 'var(--red)';
-
-  var pctSafe = parseFloat($('pct-safe').value) || 2;
-  var pctMedium = parseFloat($('pct-medium').value) || 5;
-  var pctRisk = parseFloat($('pct-risk').value) || 10;
   
   var safe = actualBk * (pctSafe / 100);
   var medium = actualBk * (pctMedium / 100);
@@ -1145,6 +1150,13 @@ function renderAll(){
 }
 
 window.addEventListener('DOMContentLoaded', function(){
+  // Load bankroll settings
+  if(BANKROLL_SETTINGS){
+    $('bankroll-input').value = BANKROLL_SETTINGS.initial || 1000;
+    $('pct-safe').value = BANKROLL_SETTINGS.safe || 2;
+    $('pct-medium').value = BANKROLL_SETTINGS.medium || 5;
+    $('pct-risk').value = BANKROLL_SETTINGS.risk || 10;
+  }
   doRefresh();
 });
 </script>
