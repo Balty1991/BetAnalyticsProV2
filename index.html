@@ -1376,6 +1376,17 @@ function renderTracking(){
         '<button onclick="saveOdds('+i+')" style="background:rgba(59,130,246,.3);color:var(--acc);border:1px solid rgba(59,130,246,.5);border-radius:4px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer">Salveaza Cota</button>'+
         '<button onclick="toggleOddsEdit('+i+')" style="background:transparent;color:var(--muted);border:1px solid var(--brd2);border-radius:4px;padding:6px 12px;font-size:11px;cursor:pointer">Anuleaza</button>'+
       '</div>'+
+    '</td></tr>'+
+    '<tr id="ticket-detail-'+i+'" style="display:none"><td colspan="8">'+
+      '<div style="padding:12px;background:rgba(255,255,255,0.02);border:1px solid var(--brd);border-radius:10px;margin:5px 0">'+
+        '<div style="font-weight:700;font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Selectii Bilet:</div>'+
+        t.picks.map(function(p){
+          return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:11px">'+
+            '<div><span style="font-weight:600">'+p.home+' vs '+p.away+'</span><br/><span style="color:var(--muted);font-size:10px">'+(p.league||'')+'</span></div>'+
+            '<div style="text-align:right"><span style="color:var(--acc);font-weight:700">'+p.bet+'</span> @ '+p.odds.toFixed(2)+'</div>'+
+          '</div>';
+        }).join('')+
+      '</div>'+
     '</td></tr>';
   });
   html += '</tbody></table></div>';
@@ -1471,7 +1482,8 @@ function exportHistory(){
 }
 
 function toggleTicketDetail(idx){
-  // Placeholder for detail view if needed
+  var detail = document.getElementById('ticket-detail-'+idx);
+  if(detail) detail.style.display = detail.style.display === 'none' ? 'table-row' : 'none';
 }
 
 // ============================================================
