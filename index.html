@@ -317,6 +317,18 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
       <div class="top-picks-grid" id="top-picks-grid"></div>
     </div>
 
+    <!-- Top Safe (Top 3) — collapsible -->
+    <div class="sec-hdr collapsible-header" id="topsafe-hdr" onclick="toggleSection('topsafe')" style="border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:10px 14px;background:rgba(34,197,94,.05);margin-bottom:0;margin-top:12px;cursor:pointer">
+      <div class="sec-title">🏆 Top Safe (Top 3) <span class="sec-badge" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.3);color:var(--grn)">ML Confidence</span> <span class="collapse-count" id="topsafe-count">—</span></div>
+      <span class="collapse-toggle" id="topsafe-toggle" style="background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.25);color:var(--grn)">▼</span>
+    </div>
+    <div class="collapsible-body" id="topsafe-body">
+      <div style="margin-top:10px;margin-bottom:16px;padding:12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:11px;color:var(--muted)">
+        <strong style="color:var(--grn)">🎯 Selectie ML Sigura:</strong> Aceasta sectiune afiseaza cele mai sigure 3 meciuri compatibile cu recomandarile ML, ordonate dupa cel mai mare indice de incredere AI. Sunt meciurile cu cea mai mare probabilitate de a fi corecte conform modelului CatBoost.
+      </div>
+      <div class="ml-grid" id="topsafe-grid"></div>
+    </div>
+
     <!-- ML Recommendations — collapsible -->
     <div class="sec-hdr collapsible-header" id="ml-hdr" onclick="toggleSection('ml')" style="border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:10px 14px;background:rgba(59,130,246,.05);margin-bottom:0;cursor:pointer">
       <div class="sec-title">🤖 ML Recommendations <span class="sec-badge">CatBoost</span> <span class="collapse-count" id="ml-count">—</span></div>
@@ -371,9 +383,13 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
         
         <!-- Card 4: Value Betting -->
         <div style="background:rgba(255,255,255,.03);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px">
-          <div style="font-size:12px;font-weight:700;color:var(--val);margin-bottom:8px;display:flex;align-items:center;gap:6px">💰 Value Betting</div>
+          <div style="font-size:12px;font-weight:700;color:var(--val);margin-bottom:8px;display:flex;align-items:center;gap:6px">💰 Analiza Value Betting</div>
           <div style="font-size:11px;color:var(--muted);line-height:1.6">
-            Compară probabilitatea reală (ML) cu cotele de pe piață. <strong style="color:var(--txt)">Value pozitiv</strong> = Cota mai mare decât ar trebui → Pariu profitabil pe termen lung.
+            <strong style="color:var(--txt)">Cum se Analizează Meciurile Value:</strong><br/>
+            1. <strong>Probabilitate ML</strong> - Modelul calculează șansa reală a unui rezultat (ex: 65%)<br/>
+            2. <strong>Cota de Piață</strong> - Cota ofertă de casele de pariuri (ex: 1.50)<br/>
+            3. <strong>Valoare Calculată</strong> - Dacă (Probabilitate × Cota) > 1.0 = <strong style="color:var(--grn)">VALUE POZITIV</strong> ✓<br/>
+            4. <strong>Profitabilitate</strong> - Pe termen lung, pariurile cu value pozitiv sunt profitabile. Exemplu: Dacă pariezi 100 RON la 1.50 cu 65% șansă, așteptat = 97.5 RON profit.
           </div>
         </div>
         
@@ -873,6 +889,52 @@ function renderML15(){
       '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">'+
         '<div style="font-size:9px; color:var(--muted)">Probabilitate: <b>'+o15.prob.toFixed(1)+'%</b></div>'+
         '<div style="font-size:9px; color:var(--grn); font-weight:700">Confidence: '+m.confidence.toFixed(0)+'%</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function renderTopSafe(){
+  var container = $('topsafe-grid');
+  var topSafe = ALL_MATCHES.filter(function(m){ 
+    var matchTime = new Date(m.date).getTime();
+    var now = new Date().getTime();
+    // Doar meciuri cu ML recommendations și viitoare
+    return m.hasMlRec && matchTime > (now - 900000); 
+  }).sort(function(a,b){ 
+    // Sortare după confidence descrescător (cel mai sigur ML)
+    return b.confidence - a.confidence; 
+  }).slice(0, 3); // Doar top 3
+  
+  updateSectionCount('topsafe', topSafe.length);
+  
+  if(topSafe.length === 0){
+    container.innerHTML = '<div class="empty-state">Nicio selectie ML sigura momentan.</div>';
+    return;
+  }
+  
+  container.innerHTML = topSafe.map(function(m, i){
+    var topPick = m.mlPicks[0]; // Cea mai bună recomandare
+    if(!topPick) return '';
+    var tXg = m.xgHome + m.xgAway;
+    var confColor = m.confidence >= 60 ? 'var(--grn)' : (m.confidence >= 50 ? 'var(--yel)' : 'var(--acc)');
+    
+    return '<div class="ml-card" style="background:rgba(34,197,94,0.08); border:2px solid rgba(34,197,94,0.3); position:relative">'+
+      '<div style="position:absolute;top:8px;right:8px;font-size:18px;font-weight:900;color:rgba(34,197,94,0.3)">#'+(i+1)+'</div>'+
+      '<div class="ml-hdr">'+
+        '<div class="ml-teams" style="font-weight:700;color:var(--txt)">'+m.home+' vs '+m.away+'</div>'+
+        '<div class="ml-conf" style="color:'+confColor+';font-size:13px;font-weight:700" title="ML Confidence Score">'+m.confidence.toFixed(0)+'%</div>'+
+      '</div>'+
+      '<div style="font-size:9px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between">'+
+        '<span>'+m.league+' • '+m.dateLabel+'</span>'+
+        '<span style="font-weight:700;color:var(--cyan)">Σ xG: '+tXg.toFixed(2)+'</span>'+
+      '</div>'+
+      '<div class="ml-picks">'+
+        '<span class="ml-pick" style="background:rgba(34,197,94,0.15); color:var(--grn); font-size:11px; padding:4px 10px;font-weight:700">✓ '+topPick.label+'</span>'+
+      '</div>'+
+      '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">'+
+        '<div style="font-size:9px; color:var(--muted)">Probabilitate: <b>'+topPick.prob.toFixed(1)+'%</b></div>'+
+        '<div style="font-size:9px; color:var(--grn); font-weight:700">Sigur: '+m.confidence.toFixed(0)+'%</div>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -1392,12 +1454,15 @@ function calcBankroll(){
 // COLLAPSIBLE SECTIONS
 // ============================================================
 // State: all sections start collapsed (false = closed)
-var SECTION_STATE = { top5: false, ml: false, ml15: false };
+var SECTION_STATE = { top5: false, topsafe: false, ml: false, ml15: false };
 
 function toggleSection(id){
   SECTION_STATE[id] = !SECTION_STATE[id];
-  var bodyId = id === 'ml' ? 'ml-body' : (id === 'ml15' ? 'ml15-body' : 'top5-body');
-  var toggleId = id === 'ml' ? 'ml-toggle' : (id === 'ml15' ? 'ml15-toggle' : 'top5-toggle');
+  var bodyId, toggleId;
+  if(id === 'ml') { bodyId = 'ml-body'; toggleId = 'ml-toggle'; }
+  else if(id === 'ml15') { bodyId = 'ml15-body'; toggleId = 'ml15-toggle'; }
+  else if(id === 'topsafe') { bodyId = 'topsafe-body'; toggleId = 'topsafe-toggle'; }
+  else { bodyId = 'top5-body'; toggleId = 'top5-toggle'; }
   var body = $(bodyId);
   var toggle = $(toggleId);
   if(SECTION_STATE[id]){
@@ -1410,7 +1475,8 @@ function toggleSection(id){
 }
 
 function updateSectionCount(id, count){
-  var el = $(id === 'ml' ? 'ml-count' : 'ml15-count');
+  var elId = id === 'ml' ? 'ml-count' : (id === 'ml15' ? 'ml15-count' : (id === 'topsafe' ? 'topsafe-count' : 'top5-count'));
+  var el = $(elId);
   if(el) el.textContent = count + ' meciuri';
 }
 
@@ -1433,6 +1499,7 @@ function renderAll(){
   $('sb-text').textContent = total+' meciuri — '+safe+' safe — '+value+' value bets — ora '+timeStr;
   
   renderTopPicks();
+  renderTopSafe();
   renderML();
   renderML15();
   renderMatches();
