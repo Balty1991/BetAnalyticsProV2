@@ -502,6 +502,14 @@ function calcSmartScore(adjProb, value, confidence){
   return Math.round(probScore + valueScore + confScore);
 }
 
+function getXGClass(val) {
+  if (val >= 2.5) return { label: 'ELITE', color: '#ff4d4d', bg: 'rgba(255,77,77,0.15)' };
+  if (val >= 2.0) return { label: 'STRONG', color: 'var(--grn)', bg: 'rgba(34,197,94,0.15)' };
+  if (val >= 1.4) return { label: 'GOOD', color: 'var(--cyan)', bg: 'rgba(6,182,212,0.15)' };
+  if (val >= 1.0) return { label: 'AVG', color: 'var(--yel)', bg: 'rgba(245,158,11,0.15)' };
+  return { label: 'WEAK', color: 'var(--red)', bg: 'rgba(239,68,68,0.15)' };
+}
+
 function getVerdict(adjProb, value, confidence){
   if(adjProb > 40 && value > 0.02) return 'safe';
   if(adjProb > 30) return 'moderate';
@@ -619,10 +627,19 @@ function renderTopPicks(){
     var badgeText = b.verdict === 'safe' ? '🟢 SAFE' : '🟡 MODERATE';
     var valStr = b.value >= 0 ? '+'+fmtPct(b.value*100) : fmtPct(b.value*100);
     
+    var hXg = getXGClass(m.xgHome);
+    var aXg = getXGClass(m.xgAway);
+    var tXg = m.xgHome + m.xgAway;
+
     return '<div class="top-pick-card">'+
       '<div class="tp-rank">#'+(i+1)+'</div>'+
       '<div class="tp-badge '+badgeClass+'">'+badgeText+'</div>'+
       '<div class="tp-teams">'+m.home+' vs '+m.away+'</div>'+
+      '<div style="font-size:10px; color:var(--muted); margin-bottom:8px; display:flex; justify-content:center; gap:10px">'+
+        '<span style="color:'+hXg.color+'">H: '+m.xgHome.toFixed(2)+'</span>'+
+        '<span>Σ '+tXg.toFixed(2)+'</span>'+
+        '<span style="color:'+aXg.color+'">A: '+m.xgAway.toFixed(2)+'</span>'+
+      '</div>'+
       '<div class="tp-league">'+m.league+' • '+m.dateLabel+' '+m.timeLabel+'</div>'+
       '<div class="tp-metrics">'+
         '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--grn)">'+valStr+'</div><div class="tp-metric-lbl">Value</div></div>'+
@@ -714,15 +731,19 @@ function renderMatches(){
       var verdictClass = m.verdict;
       var verdictLabel = m.verdict === 'safe' ? '🟢 SAFE' : (m.verdict === 'moderate' ? '🟡 MODERATE' : '🔴 AVOID');
       
-      var hStr = m.xgHome >= 2.0 ? ' <span style="color:var(--grn);font-size:9px;font-weight:800">[STRONG]</span>' : (m.xgHome <= 1.0 ? ' <span style="color:var(--red);font-size:9px;font-weight:800">[WEAK]</span>' : '');
-      var aStr = m.xgAway >= 2.0 ? ' <span style="color:var(--grn);font-size:9px;font-weight:800">[STRONG]</span>' : (m.xgAway <= 1.0 ? ' <span style="color:var(--red);font-size:9px;font-weight:800">[WEAK]</span>' : '');
+      var hXg = getXGClass(m.xgHome);
+      var aXg = getXGClass(m.xgAway);
+      var tXg = m.xgHome + m.xgAway;
+      
+      var hBadge = '<span style="font-size:8px; padding:1px 4px; border-radius:4px; margin-left:5px; background:'+hXg.bg+'; color:'+hXg.color+'; border:1px solid '+hXg.color+'44">'+hXg.label+'</span>';
+      var aBadge = '<span style="font-size:8px; padding:1px 4px; border-radius:4px; margin-right:5px; background:'+aXg.bg+'; color:'+aXg.color+'; border:1px solid '+aXg.color+'44">'+aXg.label+'</span>';
 
       return '<div class="match-card '+verdictClass+'">'+
         '<div class="mc-league">🌍 '+m.country+' • '+m.league+'</div>'+
         '<div class="mc-teams">'+
-          '<div class="mc-team">'+m.home+hStr+'<div style="font-size:9px;color:var(--muted);font-weight:400">xG: '+m.xgHome.toFixed(2)+'</div></div>'+
-          '<div class="mc-vs">VS</div>'+
-          '<div class="mc-team away">'+m.away+aStr+'<div style="font-size:9px;color:var(--muted);font-weight:400">xG: '+m.xgAway.toFixed(2)+'</div></div>'+
+          '<div class="mc-team">'+m.home+hBadge+'<div style="font-size:10px; color:'+hXg.color+'; font-weight:700; font-family:var(--mono)">xG: '+m.xgHome.toFixed(2)+'</div></div>'+
+          '<div class="mc-vs">VS<div style="font-size:8px; color:var(--muted); margin-top:2px">Σ '+tXg.toFixed(2)+'</div></div>'+
+          '<div class="mc-team away">'+aBadge+m.away+'<div style="font-size:10px; color:'+aXg.color+'; font-weight:700; font-family:var(--mono)">xG: '+m.xgAway.toFixed(2)+'</div></div>'+
         '</div>'+
         '<div class="mc-time">🕒 '+m.timeLabel+' • Confidence: '+m.confidence.toFixed(0)+'%</div>'+
         '<div class="mc-verdict verdict-'+verdictClass+'">'+verdictLabel+'</div>'+
@@ -745,10 +766,16 @@ function renderMatches(){
     html += '</div></div>';
   });
 
-  container.innerHTML = html + '<div style="margin-top:20px;padding:12px;background:var(--panel);border:1px solid var(--brd);border-radius:10px;font-size:11px;color:var(--muted);display:flex;gap:15px;justify-content:center;flex-wrap:wrap">'+
-    '<span><b style="color:var(--grn)">[STRONG]</b>: xG > 2.0 (Atac Puternic)</span>'+
-    '<span><b style="color:var(--red)">[WEAK]</b>: xG < 1.0 (Atac Slab)</span>'+
-    '<span><b>xG</b>: Goluri Asteptate / Meci</span>'+
+  container.innerHTML = html + '<div style="margin-top:20px;padding:16px;background:var(--panel);border:1px solid var(--brd);border-radius:12px;font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:10px;align-items:center">'+
+    '<div style="font-weight:700; color:var(--txt); margin-bottom:4px">Clasificare xG (Expected Goals)</div>'+
+    '<div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center">'+
+      '<span><b style="color:#ff4d4d">[ELITE]</b> > 2.50</span>'+
+      '<span><b style="color:var(--grn)">[STRONG]</b> > 2.00</span>'+
+      '<span><b style="color:var(--cyan)">[GOOD]</b> > 1.40</span>'+
+      '<span><b style="color:var(--yel)">[AVG]</b> > 1.00</span>'+
+      '<span><b style="color:var(--red)">[WEAK]</b> < 1.00</span>'+
+    '</div>'+
+    '<div style="font-size:10px; opacity:0.8">Σ xG reprezintă suma golurilor așteptate pentru ambele echipe (potențialul total de goluri al meciului).</div>'+
   '</div>';
 }
 
@@ -916,9 +943,18 @@ function renderBilete(){
   picks.forEach(function(m){
     var b = m.bestBet;
     var valStr = b.value >= 0 ? '+'+fmtPct(b.value*100) : fmtPct(b.value*100);
+    var hXg = getXGClass(m.xgHome);
+    var aXg = getXGClass(m.xgAway);
+    var tXg = m.xgHome + m.xgAway;
+
     html += '<div class="bilet-row">'+
       '<div class="bilet-match">'+
         '<div class="bilet-match-name">'+m.home+' vs '+m.away+'</div>'+
+        '<div style="font-size:9px; color:var(--muted); margin-bottom:2px">'+
+          '<span style="color:'+hXg.color+'">H: '+m.xgHome.toFixed(2)+'</span> | '+
+          '<span>Σ '+tXg.toFixed(2)+'</span> | '+
+          '<span style="color:'+aXg.color+'">A: '+m.xgAway.toFixed(2)+'</span>'+
+        '</div>'+
         '<div class="bilet-match-info">'+(m.league || 'Liga')+' • '+(m.dateLabel || '')+' '+(m.timeLabel || '')+'</div>'+
       '</div>'+
       '<div class="bilet-pick">'+
