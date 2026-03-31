@@ -673,15 +673,20 @@ function renderML(){
   }
 
   container.innerHTML = ml.map(function(m){
+    // Excludem pronosticurile Over 1.5G din aceasta lista (pentru a fi doar in sectiunea dedicata)
+    var filteredPicks = m.mlPicks.filter(p => p !== 'Over 1.5G');
+    if(filteredPicks.length === 0) return '';
+
     return '<div class="ml-card">'+
       '<div class="ml-hdr">'+
         '<div class="ml-teams">'+m.home+' vs '+m.away+'</div>'+
-        '<div class="ml-conf">'+m.confidence.toFixed(0)+'%</div>'+
+        '<div class="ml-conf" title="Scor de incredere general AI">'+m.confidence.toFixed(0)+'%</div>'+
       '</div>'+
       '<div style="font-size:9px;color:var(--muted);margin-bottom:8px">'+m.league+' • '+m.dateLabel+'</div>'+
       '<div class="ml-picks">'+
-        m.mlPicks.map(function(p){ return '<span class="ml-pick">'+p+'</span>'; }).join('')+
+        filteredPicks.map(function(p){ return '<span class="ml-pick">'+p+'</span>'; }).join('')+
       '</div>'+
+      '<div style="font-size:8px; color:var(--muted); margin-top:8px; text-align:right; font-style:italic">AI Confidence Score: '+m.confidence.toFixed(0)+'%</div>'+
     '</div>';
   }).join('');
 }
@@ -705,7 +710,7 @@ function renderML15(){
     return '<div class="ml-card" style="background:rgba(34,197,94,0.06); border-color:rgba(34,197,94,0.2)">'+
       '<div class="ml-hdr">'+
         '<div class="ml-teams">'+m.home+' vs '+m.away+'</div>'+
-        '<div class="ml-conf" style="color:var(--grn)">'+m.confidence.toFixed(0)+'%</div>'+
+        '<div class="ml-conf" style="color:var(--grn)" title="Scor de incredere general AI">'+m.confidence.toFixed(0)+'%</div>'+
       '</div>'+
       '<div style="font-size:9px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between">'+
         '<span>'+m.league+' • '+m.dateLabel+'</span>'+
@@ -713,10 +718,8 @@ function renderML15(){
       '</div>'+
       '<div class="ml-picks">'+
         '<span class="ml-pick" style="background:rgba(34,197,94,0.15); color:var(--grn)">🔥 Over 1.5G</span>'+
-        m.mlPicks.filter(p => p !== 'Over 1.5G').map(function(p){ 
-          return '<span class="ml-pick">'+p+'</span>'; 
-        }).join('')+
       '</div>'+
+      '<div style="font-size:8px; color:var(--muted); margin-top:8px; text-align:right; font-style:italic">AI Confidence Score: '+m.confidence.toFixed(0)+'%</div>'+
     '</div>';
   }).join('');
 }
