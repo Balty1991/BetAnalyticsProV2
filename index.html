@@ -141,213 +141,104 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
   .history-table{width:100%;border-collapse:collapse;font-size:12px;min-width:700px}
 .history-table th{text-align:left;padding:8px 10px;color:var(--muted);border-bottom:1px solid var(--brd);font-weight:600;font-size:11px;text-transform:uppercase}
 .history-table td{padding:8px 10px;border-bottom:1px solid rgba(30,42,58,.5)}
-.history-table tr:hover td{background:rgba(255,255,255,.02)}
+.history-table tr:hover td{background:rgba(255,255,255,0.02)}
 .badge-win{background:rgba(34,197,94,.15);color:var(--grn);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
 .badge-loss{background:rgba(239,68,68,.15);color:var(--red);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
 .badge-pending{background:rgba(245,158,11,.15);color:var(--yel);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
 
-/* BANKROLL */
-.bankroll-card{background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:16px}
-.bk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
-@media(max-width:600px){
-  .bk-grid{grid-template-columns:repeat(2,1fr)}
-  .bankroll-card{padding:16px}
-}
-@media(max-width:400px){
-  .bk-grid{grid-template-columns:1fr}
-}
-.bk-item{background:rgba(255,255,255,.03);border:1px solid var(--brd2);border-radius:10px;padding:12px;min-width:0;overflow:hidden}
-.bk-val{font-size:18px;font-weight:700;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bk-lbl{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase}
-.bk-label{font-size:11px;color:var(--muted);margin-bottom:4px}
-.bk-val{font-size:18px;font-weight:700;font-family:var(--mono)}
-.bk-sub{font-size:10px;color:var(--muted);margin-top:2px}
-.bk-input-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.bk-input{background:var(--bg2);border:1px solid var(--brd2);color:var(--txt);padding:8px 12px;border-radius:8px;font-size:14px;width:150px;font-family:var(--mono)}
+/* BANKROLL TAB */
+.bankroll-card{background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:24px}
+.bk-input-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.bk-input{background:var(--bg2);border:1px solid var(--brd2);color:var(--txt);padding:10px 14px;border-radius:10px;font-family:var(--mono);font-size:16px;width:150px}
+.bk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.bk-item{background:rgba(255,255,255,.03);border:1px solid var(--brd);border-radius:12px;padding:16px}
+.bk-label{font-size:11px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.bk-val{font-size:18px;font-weight:800;font-family:var(--mono)}
+.bk-sub{font-size:10px;color:var(--muted);margin-top:4px}
 
-/* WELCOME */
-.welcome-box{background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(168,85,247,.08));border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.welcome-text{font-size:13px;color:var(--muted)}
-.welcome-text .hl{color:var(--txt);font-weight:700}
-
-/* TOP PICKS */
-.top-picks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:24px}
-.top-pick-card{background:var(--panel);border:1px solid rgba(59,130,246,.3);border-radius:14px;padding:14px;position:relative;overflow:hidden}
-.top-pick-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--acc),var(--pur))}
-.tp-rank{position:absolute;top:10px;right:12px;font-size:20px;font-weight:900;color:rgba(255,255,255,.06);font-family:var(--mono)}
-.tp-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-bottom:8px}
-.tp-badge-safe{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--grn)}
-.tp-badge-mod{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--yel)}
-.tp-teams{font-size:14px;font-weight:700;margin-bottom:4px}
-.tp-league{font-size:10px;color:var(--muted);margin-bottom:10px}
-.tp-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
-.tp-metric{text-align:center;background:rgba(255,255,255,.04);border-radius:6px;padding:5px}
-.tp-metric-val{font-size:13px;font-weight:700;font-family:var(--mono)}
-.tp-metric-lbl{font-size:9px;color:var(--muted)}
-.tp-rec{font-size:11px;font-weight:600;color:var(--acc);background:rgba(59,130,246,.08);border-radius:6px;padding:5px 8px;text-align:center}
-
-/* ML SECTION */
-.ml-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:24px}
-.ml-card{background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:12px}
-.ml-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.ml-teams{font-size:13px;font-weight:600}
-.ml-conf{font-size:11px;font-family:var(--mono);color:var(--pur)}
-.ml-picks{display:flex;gap:6px;flex-wrap:wrap}
-.ml-pick{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(168,85,247,.15);color:var(--pur)}
+/* COLLAPSIBLE */
+.collapsible-header{background:var(--panel);border:1px solid var(--brd);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:10px;transition:all .2s}
+.collapsible-header:hover{border-color:var(--brd2);background:rgba(255,255,255,.02)}
+.collapsible-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px}
+.collapsible-toggle{font-size:12px;color:var(--muted);transition:transform .3s}
+.collapsible-toggle.open{transform:rotate(180deg)}
+.collapsible-body{max-height:0;overflow:hidden;transition:max-height .4s ease-out;margin-bottom:0}
+.collapsible-body.open{max-height:5000px;margin-bottom:20px}
 
 /* EXTRA FORM */
-.extra-form{background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:16px;margin-bottom:20px;display:none}
+.extra-form{display:none;background:var(--panel);border:1px solid var(--acc);border-radius:14px;padding:20px;margin-bottom:20px}
 .extra-form.show{display:block}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px}
-.form-group label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
-.form-input{width:100%;background:var(--bg2);border:1px solid var(--brd2);color:var(--txt);padding:8px;border-radius:6px;font-size:12px;font-family:var(--mono)}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+.form-group label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px}
+.form-input{width:100%;background:var(--bg2);border:1px solid var(--brd2);color:var(--txt);padding:8px 12px;border-radius:8px;font-size:13px}
 
-/* COLLAPSIBLE SECTIONS */
-.collapsible-header{
-  cursor:pointer;
-  user-select:none;
-  -webkit-user-select:none;
-}
-.collapsible-header:hover .sec-title{
-  color:var(--acc);
-}
-.collapse-toggle{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:24px;
-  height:24px;
-  border-radius:6px;
-  background:rgba(59,130,246,.12);
-  border:1px solid rgba(59,130,246,.25);
-  color:var(--acc);
-  font-size:12px;
-  font-weight:700;
-  transition:transform .3s ease, background .2s;
-  flex-shrink:0;
-  margin-left:auto;
-}
-.collapse-toggle.open{
-  transform:rotate(180deg);
-  background:rgba(59,130,246,.22);
-}
-.collapsible-body{
-  overflow:hidden;
-  transition:max-height .4s cubic-bezier(0.4,0,0.2,1), opacity .3s ease;
-  max-height:0;
-  opacity:0;
-}
-.collapsible-body.open{
-  max-height:4000px;
-  opacity:1;
-}
-.collapse-count{
-  font-size:10px;
-  color:var(--muted);
-  font-family:var(--mono);
-  background:rgba(255,255,255,.05);
-  border:1px solid var(--brd2);
-  padding:2px 7px;
-  border-radius:12px;
-  margin-left:6px;
-}
+/* TICKET DETAIL */
+.ticket-detail{background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;margin-top:8px;font-size:11px;border:1px solid var(--brd)}
+.ticket-detail-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.ticket-detail-row:last-child{border-bottom:none}
 
-/* RESPONSIVE */
-@media(max-width:768px){
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .matches-grid{grid-template-columns:1fr}
-  .top-picks-grid{grid-template-columns:1fr}
-}
 </style>
 </head>
 <body>
 
-<!-- LOADER -->
 <div class="loader" id="loader">
   <div class="loader-spin"></div>
-  <div class="loader-title">Se incarca datele...</div>
-  <div class="loader-sub" id="loader-sub">Conectare la API Bzzoiro</div>
+  <div class="loader-title">BetAnalytics Pro</div>
+  <div class="loader-sub" id="loader-sub">Analiză date statistice...</div>
 </div>
 
-<!-- TOAST -->
 <div class="toast-wrap" id="toast-wrap"></div>
 
-<!-- HEADER -->
-<div class="header">
+<header class="header">
   <div class="header-inner">
     <div class="logo">
-      <div class="logo-title">BetAnalytics Pro</div>
-      <div class="logo-sub">Value Bet Engine v9 — Bzzoiro API</div>
+      <span class="logo-title">BetAnalytics Pro v9</span>
+      <span class="logo-sub">Value Bet & ML Engine</span>
     </div>
     <div class="status-bar">
-      <div class="sb-dot live" id="sb-dot"></div>
-      <span id="sb-text">Se incarca...</span>
+      <div class="sb-dot live"></div>
+      <span id="sb-text">Sistem activ — Se încarcă datele...</span>
     </div>
-    <button class="btn btn-primary" id="btn-refresh" onclick="doRefresh()">🔄 Reimprospateaza</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="doRefresh()">🔄 Refresh</button>
+    </div>
   </div>
-</div>
+</header>
 
-<!-- TABS -->
-<div class="tabs">
+<nav class="tabs">
   <button class="tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
   <button class="tab" onclick="switchTab('meciuri')">⚽ Meciuri</button>
   <button class="tab" onclick="switchTab('bilete')">🎫 Bilete</button>
   <button class="tab" onclick="switchTab('tracking')">📈 Tracking</button>
   <button class="tab" onclick="switchTab('bankroll')">💰 Bankroll</button>
-</div>
+</nav>
 
 <div class="main">
-
+  
   <!-- ===== DASHBOARD ===== -->
   <div class="tab-content active" id="tab-dashboard">
-
-    <!-- Top 5 Value Picks — collapsible -->
-    <div class="sec-hdr collapsible-header" id="top5-hdr" onclick="toggleSection('top5')" style="border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:10px 14px;background:rgba(168,85,247,.05);margin-bottom:0;cursor:pointer">
-      <div class="sec-title">⭐ Top 5 Value Picks <span class="collapse-count" id="top5-count">—</span></div>
-      <span class="collapse-toggle" id="top5-toggle" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.25);color:var(--pur)">▼</span>
-    </div>
-    <div class="collapsible-body" id="top5-body">
-      <div class="top-picks-grid" id="top-picks-grid"></div>
-    </div>
-
-    <!-- Top Safe (Top 3) — collapsible -->
-    <div class="sec-hdr collapsible-header" id="topsafe-hdr" onclick="toggleSection('topsafe')" style="border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:10px 14px;background:rgba(34,197,94,.05);margin-bottom:0;margin-top:12px;cursor:pointer">
-      <div class="sec-title">🏆 Top Safe (Top 3) <span class="sec-badge" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.3);color:var(--grn)">ML Confidence</span> <span class="collapse-count" id="topsafe-count">—</span></div>
-      <span class="collapse-toggle" id="topsafe-toggle" style="background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.25);color:var(--grn)">▼</span>
-    </div>
-    <div class="collapsible-body" id="topsafe-body">
-      <div style="margin-top:10px;margin-bottom:16px;padding:12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:11px;color:var(--muted)">
-        <strong style="color:var(--grn)">🎯 Selectie ML Sigura:</strong> Aceasta sectiune afiseaza cele mai sigure 3 meciuri compatibile cu recomandarile ML, ordonate dupa cel mai mare indice de incredere AI. Sunt meciurile cu cea mai mare probabilitate de a fi corecte conform modelului CatBoost.
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num" id="st-total">0</div>
+        <div class="stat-lbl">Total Meciuri</div>
       </div>
-      <div class="ml-grid" id="topsafe-grid"></div>
-    </div>
-
-    <!-- ML Recommendations — collapsible -->
-    <div class="sec-hdr collapsible-header" id="ml-hdr" onclick="toggleSection('ml')" style="border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:10px 14px;background:rgba(59,130,246,.05);margin-bottom:0;cursor:pointer">
-      <div class="sec-title">🤖 ML Recommendations <span class="sec-badge">CatBoost</span> <span class="collapse-count" id="ml-count">—</span></div>
-      <span class="collapse-toggle" id="ml-toggle">▼</span>
-    </div>
-    <div class="collapsible-body" id="ml-body">
-      <div style="margin-top:10px;margin-bottom:16px;padding:12px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:8px;font-size:11px;color:var(--muted)">
-        <strong style="color:var(--acc)">📊 Ghid Interpretare Scoruri:</strong> Modelul AI este prudent. Scor <strong style="color:var(--yel)">30-40%</strong> = Semnal moderat | Scor <strong style="color:var(--grn)">40-50%</strong> = Semnal puternic | Scor <strong style="color:var(--grn)">>50%</strong> = Semnal foarte puternic. Orice scor peste 40% indica o incredere ridicata a AI-ului.
+      <div class="stat-card">
+        <div class="stat-num" id="st-safe" style="color:var(--grn)">0</div>
+        <div class="stat-lbl">Safe Picks</div>
       </div>
-      <div class="ml-grid" id="ml-grid"></div>
+      <div class="stat-card">
+        <div class="stat-num" id="st-value" style="color:var(--acc)">0</div>
+        <div class="stat-lbl">Value Bets</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="st-eligible" style="color:var(--pur)">0</div>
+        <div class="stat-lbl">Eligibile</div>
+      </div>
     </div>
 
-    <!-- ML +1.5G Recommendations — collapsible -->
-    <div class="sec-hdr collapsible-header" id="ml15-hdr" onclick="toggleSection('ml15')" style="border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:10px 14px;background:rgba(34,197,94,.05);margin-bottom:0;margin-top:12px;cursor:pointer">
-      <div class="sec-title">🔥 ML +1.5G Recommendations <span class="sec-badge" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.3);color:var(--grn)">Over 1.5G</span> <span class="collapse-count" id="ml15-count">—</span></div>
-      <span class="collapse-toggle" id="ml15-toggle" style="background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.25);color:var(--grn)">▼</span>
-    </div>
-    <div class="collapsible-body" id="ml15-body">
-      <div style="margin-top:10px;margin-bottom:16px;padding:12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:11px;color:var(--muted)">
-        <strong style="color:var(--grn)">⚽ Strategie Goluri:</strong> Această secțiune filtrează automat doar meciurile unde modelul ML recomandă pronosticul <strong style="color:var(--txt)">Peste 1.5 Goluri</strong>. Sunt selectate meciurile cu cel mai mare potențial ofensiv conform analizei statistice.
-      </div>      <div class="ml-grid" id="ml-15-grid"></div>
-    </div>
-
-    <!-- ML LEGEND -->
-    <div style="margin-top:32px;padding:20px;background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(168,85,247,.08));border:1px solid rgba(168,85,247,.2);border-radius:14px;display:flex;flex-direction:column;gap:16px">
+    <!-- INFO SECTION -->
+    <div style="background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:24px">
       <div style="font-size:14px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:8px">🎯 Cum Funcționează Pronosticurile ML</div>
       
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
@@ -399,102 +290,139 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
         <div style="background:rgba(255,255,255,.03);border:1px solid rgba(6,182,212,.2);border-radius:10px;padding:14px">
           <div style="font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:8px;display:flex;align-items:center;gap:6px">🔍 Filtrare Automată</div>
           <div style="font-size:11px;color:var(--muted);line-height:1.6">
-            <strong style="color:var(--txt)">ML Recommendations</strong> - Pariuri cu cea mai bună probabilitate (excluzând Over 1.5G) | <strong style="color:var(--txt)">ML +1.5G</strong> - Doar meciuri cu potențial ofensiv ridicat.
+            Sistemul elimină automat meciurile cu probabilitate scăzută sau fără valoare reală, oferind doar cele mai bune oportunități de pariere pentru ziua curentă.
           </div>
         </div>
       </div>
-      
-      <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:12px;font-size:10px;color:var(--muted);font-style:italic">
-        ℹ️ Disclaimer: Pronosticurile ML sunt doar recomandări bazate pe analiză statistică. Pariurile comportă risc. Pariază responsabil.
-      </div>
+    </div>
+
+    <!-- TOP PICKS SECTION -->
+    <div class="collapsible-header" onclick="toggleSection('top5')">
+      <div class="collapsible-title">🔥 Top 5 Smart Picks <span class="sec-badge" id="top5-count">0 meciuri</span></div>
+      <div class="collapsible-toggle" id="top5-toggle">▼</div>
+    </div>
+    <div class="collapsible-body" id="top5-body">
+      <div class="matches-grid" id="top-picks-container"></div>
+    </div>
+
+    <!-- TOP SAFE SECTION -->
+    <div class="collapsible-header" onclick="toggleSection('topsafe')">
+      <div class="collapsible-title">🛡️ Top Safe Picks <span class="sec-badge" id="topsafe-count">0 meciuri</span></div>
+      <div class="collapsible-toggle" id="topsafe-toggle">▼</div>
+    </div>
+    <div class="collapsible-body" id="topsafe-body">
+      <div class="matches-grid" id="top-safe-container"></div>
+    </div>
+
+    <!-- ML RECOMMENDATIONS SECTION -->
+    <div class="collapsible-header" onclick="toggleSection('ml')">
+      <div class="collapsible-title">🤖 ML Recommendations <span class="sec-badge" id="ml-count">0 meciuri</span></div>
+      <div class="collapsible-toggle" id="ml-toggle">▼</div>
+    </div>
+    <div class="collapsible-body" id="ml-body">
+      <div class="matches-grid" id="ml-container"></div>
+    </div>
+
+    <!-- ML 1.5G RECOMMENDATIONS SECTION -->
+    <div class="collapsible-header" onclick="toggleSection('ml15')">
+      <div class="collapsible-title">⚽ ML Over 1.5G Picks <span class="sec-badge" id="ml15-count">0 meciuri</span></div>
+      <div class="collapsible-toggle" id="ml15-toggle">▼</div>
+    </div>
+    <div class="collapsible-body" id="ml15-body">
+      <div class="matches-grid" id="ml15-container"></div>
     </div>
   </div>
 
-  <!-- ===== MECIURI =====" -->
+  <!-- ===== MECIURI ===== -->
   <div class="tab-content" id="tab-meciuri">
     <div class="filter-bar">
-      <button class="filter-btn active" onclick="setFilter('all',this)">🌐 Toate</button>
-      <button class="filter-btn" onclick="setFilter('safe',this)">🟢 Safe</button>
-      <button class="filter-btn" onclick="setFilter('moderate',this)">🟡 Moderate</button>
-      <button class="filter-btn" onclick="setFilter('value',this)">💰 Value</button>
-      <select class="sort-select" id="sort-select" onchange="renderMatches()">
-        <option value="score">🎯 Smart Score</option>
-        <option value="value">💰 Value %</option>
-        <option value="prob">📊 Probabilitate</option>
-        <option value="conf">🧠 Confidence</option>
-        <option value="date">📅 Data</option>
+      <button class="filter-btn active" onclick="setFilter('all', this)">Toate</button>
+      <button class="filter-btn" onclick="setFilter('safe', this)">Safe</button>
+      <button class="filter-btn" onclick="setFilter('value', this)">Value</button>
+      <button class="filter-btn" onclick="setFilter('over15', this)">1.5G</button>
+      <button class="filter-btn" onclick="setFilter('over25', this)">2.5G</button>
+      <button class="filter-btn" onclick="setFilter('btts', this)">BTTS</button>
+      
+      <select class="sort-select" onchange="setSort(this.value)">
+        <option value="time">Ora</option>
+        <option value="score">Smart Score</option>
+        <option value="prob">Probabilitate</option>
+        <option value="value">Value</option>
       </select>
-      <span class="filter-count" id="filter-count">0 meciuri</span>
+      
+      <div class="filter-count" id="filter-count">0 meciuri</div>
     </div>
+
     <div id="matches-container"></div>
   </div>
 
   <!-- ===== BILETE ===== -->
   <div class="tab-content" id="tab-bilete">
-    <div class="gen-btn-wrap" style="display:flex;flex-direction:column;gap:12px;align-items:center;margin-bottom:30px">
-      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-        <button class="btn btn-green" style="font-size:14px;padding:12px 24px" onclick="generateTicket()">
-          🎯 Genereaza Bilet Simplu (2-3 meciuri)
-        </button>
-        <button class="btn btn-primary" style="font-size:14px;padding:12px 24px;background:linear-gradient(135deg,var(--acc),var(--cyan))" onclick="generateOver15Ticket()">
-          🔥 Genereaza Bilet 1.5G (5-10 meciuri)
-        </button>
-        <button class="btn btn-primary" style="font-size:14px;padding:12px 24px;background:linear-gradient(135deg,var(--pur),var(--red))" onclick="generateMixTicket()">
-          🛡️ Genereaza Mix 5-10 Evenimente
-        </button>
-      </div>
-      <div style="font-size:11px;color:var(--muted)">Criteriu: Cele mai sigure selectii din toate pietele (1X, X2, +1.5G, BTTS)</div>
+    <div class="sec-hdr">
+      <div class="sec-title">🎫 Generare Bilete Automate</div>
     </div>
+    
+    <div style="margin-bottom: 20px;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--acc); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Analiză Poisson & Smart Score</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
+        <button class="btn btn-primary" onclick="generateTicket('simple')">🎯 Bilet Simplu</button>
+        <button class="btn btn-primary" onclick="generateTicket('over15')">🔥 Bilet 1.5G</button>
+        <button class="btn btn-primary" onclick="generateTicket('mix_combo')">🛡️ Bilet Mix</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 24px; padding-top: 16px; border-top: 1px solid var(--brd);">
+      <div style="font-size: 12px; font-weight: 700; color: var(--pur); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Analiză Machine Learning (ML)</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
+        <button class="btn btn-primary" style="background:linear-gradient(135deg, var(--pur), var(--cyan))" onclick="generateTicket('ml_simple')">🤖 ML Simplu</button>
+        <button class="btn btn-primary" style="background:linear-gradient(135deg, var(--pur), var(--cyan))" onclick="generateTicket('ml_over15')">🤖 ML 1.5G</button>
+        <button class="btn btn-primary" style="background:linear-gradient(135deg, var(--pur), var(--cyan))" onclick="generateTicket('ml_mix')">🤖 ML Mix</button>
+      </div>
+    </div>
+
     <div id="bilete-container"></div>
   </div>
 
   <!-- ===== TRACKING ===== -->
   <div class="tab-content" id="tab-tracking">
-    <div style="margin-bottom:12px;font-size:13px;font-weight:700;color:var(--acc)">📊 Statistici Bilete Generate</div>
     <div class="tracking-stats">
-      <div class="track-stat"><div class="track-num" id="tr-total" style="color:var(--acc)">0</div><div class="track-lbl">Bilete</div></div>
-      <div class="track-stat"><div class="track-num" id="tr-winrate" style="color:var(--grn)">0%</div><div class="track-lbl">Win Rate</div></div>
-      <div class="track-stat"><div class="track-num" id="tr-roi" style="color:var(--val)">0%</div><div class="track-lbl">ROI</div></div>
-      <div class="track-stat" style="display:none"><div class="track-num" id="tr-profit">0%</div></div>
-      <div class="track-stat" style="display:none"><div class="track-num" id="tr-yield">0%</div></div>
-      <div class="track-stat" style="display:none"><div class="track-num" id="tr-avgodds">0x</div></div>
-    </div>
-
-    <div style="margin-bottom:12px;font-size:13px;font-weight:700;color:var(--pur)">📊 Statistici Bilete Extra</div>
-    <div class="tracking-stats">
-      <div class="track-stat"><div class="track-num" id="tr-extra-total" style="color:var(--pur)">0</div><div class="track-lbl">Bilete</div></div>
-      <div class="track-stat"><div class="track-num" id="tr-extra-winrate" style="color:var(--grn)">0%</div><div class="track-lbl">Win Rate</div></div>
-      <div class="track-stat"><div class="track-num" id="tr-extra-roi" style="color:var(--val)">0%</div><div class="track-lbl">ROI</div></div>
-    </div>
-
-    <div class="sec-hdr">
-      <div class="sec-title">📋 Istoric Pariuri</div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-green" onclick="toggleExtraForm()" style="font-size:11px;padding:5px 10px">➕ Adauga Extra</button>
-        <button class="btn btn-primary" onclick="exportHistory()" style="font-size:11px;padding:5px 10px">📥 Export</button>
-        <button class="btn" style="background:rgba(239,68,68,.15);color:var(--red);font-size:11px;padding:5px 10px;border:1px solid rgba(239,68,68,.3)" onclick="clearHistory()">🗑️ Sterge</button>
+      <div class="track-stat">
+        <div class="track-num" id="tr-total">0</div>
+        <div class="track-lbl">Bilete Generate</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">Win Rate: <span id="tr-winrate">0%</span> | ROI: <span id="tr-roi">0%</span></div>
+      </div>
+      <div class="track-stat">
+        <div class="track-num" id="tr-extra-total">0</div>
+        <div class="track-lbl">Bilete Extra</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">Win Rate: <span id="tr-extra-winrate">0%</span> | ROI: <span id="tr-extra-roi">0%</span></div>
+      </div>
+      <div class="track-stat" style="display:flex;flex-direction:column;justify-content:center;gap:6px">
+        <button class="btn btn-green" onclick="toggleExtraForm()" style="width:100%;justify-content:center">+ Adauga Bilet</button>
+        <div style="display:flex;gap:4px">
+          <button class="btn" onclick="exportHistory()" style="flex:1;font-size:10px;background:var(--brd2)">Export CSV</button>
+          <button class="btn" onclick="clearHistory()" style="flex:1;font-size:10px;background:var(--red);color:#fff">Sterge Tot</button>
+        </div>
       </div>
     </div>
 
-    <!-- EXTRA FORM -->
     <div class="extra-form" id="extra-form">
-      <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--acc)">➕ Adauga Bilet Extra</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:16px">➕ Adaugă Bilet Manual</div>
       <div class="form-grid">
         <div class="form-group">
-          <label>Data</label>
-          <input type="date" id="ex-date" class="form-input">
+          <label>Data:</label>
+          <input type="date" class="form-input" id="ex-date"/>
         </div>
         <div class="form-group">
-          <label>Nr. Selectii</label>
-          <input type="number" id="ex-picks" class="form-input" value="1" min="1">
+          <label>Nr. Meciuri:</label>
+          <input type="number" class="form-input" id="ex-picks" value="3" min="1"/>
         </div>
         <div class="form-group">
-          <label>Cota Totala</label>
-          <input type="number" id="ex-odds" class="form-input" value="2.00" step="0.01" min="1.01">
+          <label>Cota Totala:</label>
+          <input type="number" class="form-input" id="ex-odds" value="2.00" step="0.01"/>
         </div>
         <div class="form-group">
-          <label>Miza (RON)</label>
-          <input type="number" id="ex-stake" class="form-input" value="100" step="1" min="1">
+          <label>Miza (RON):</label>
+          <input type="number" class="form-input" id="ex-stake" value="100"/>
         </div>
       </div>
       <div style="display:flex;gap:10px">
@@ -692,15 +620,19 @@ function analyzeMatch(raw){
   var mlPicks = [];
   // Construim obiecte cu label si probabilitate pentru a gasi cea mai buna varianta
   var candidates = [];
-  if(raw.over_15_recommend || raw.prob_over_15 > 75) candidates.push({label:'Over 1.5G', prob: raw.prob_over_15});
-  if(raw.over_25_recommend || raw.prob_over_25 > 65) candidates.push({label:'Over 2.5G', prob: raw.prob_over_25});
-  if(raw.btts_recommend || raw.prob_btts_yes > 60) candidates.push({label:'BTTS', prob: raw.prob_btts_yes});
-  if(raw.winner_recommend) candidates.push({label: (raw.predicted_result==='H'?'1':'2'), prob: raw.confidence});
+  if(raw.over_15_recommend || raw.prob_over_15 > 75) candidates.push({label:'Over 1.5G', prob: raw.prob_over_15, type: 'over15', odds: e.odds_over_15});
+  if(raw.over_25_recommend || raw.prob_over_25 > 65) candidates.push({label:'Over 2.5G', prob: raw.prob_over_25, type: 'over25', odds: e.odds_over_25});
+  if(raw.btts_recommend || raw.prob_btts_yes > 60) candidates.push({label:'BTTS', prob: raw.prob_btts_yes, type: 'btts', odds: e.odds_btts_yes});
+  if(raw.winner_recommend) {
+    var label = raw.predicted_result==='H'?'1':'2';
+    var odds = raw.predicted_result==='H'?e.odds_home:e.odds_away;
+    candidates.push({label: label, prob: raw.confidence, type: (raw.predicted_result==='H'?'home':'away'), odds: odds});
+  }
   
   // Sortam dupa probabilitate descrescator
   candidates.sort((a,b) => b.prob - a.prob);
   
-  // mlPicks va contine acum obiecte {label, prob}
+  // mlPicks va contine acum obiecte {label, prob, type, odds}
   mlPicks = candidates;
 
   return {
@@ -732,449 +664,247 @@ function passesSelectionFilter(m){
 // ============================================================
 function doRefresh(){
   showLoader('Incarcare date din API Bzzoiro...');
-  var base = document.location.pathname.replace(/\/[^\/]*$/, '');
-  var url = base + '/data/predictions.json?t=' + Date.now();
-  fetch(url)
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      var results = data.results || data;
-      ALL_MATCHES = results.map(analyzeMatch);
-      BILETE = null;
+  var base = document.location.hostname === 'localhost' || document.location.hostname === '127.0.0.1' ? '' : '/BetAnalyticsProV2';
+  fetch(base + '/data/predictions.json?t=' + Date.now())
+    .then(res => res.json())
+    .then(data => {
+      ALL_MATCHES = data.map(analyzeMatch);
       renderAll();
       hideLoader();
-      toast('Date actualizate: '+ALL_MATCHES.length+' meciuri', 'ok');
+      toast('Date actualizate!', 'ok');
     })
-    .catch(function(err){
+    .catch(err => {
+      console.error(err);
       hideLoader();
       toast('Eroare la incarcarea datelor', 'err');
     });
 }
 
 // ============================================================
-// RENDER DASHBOARD
+// RENDERING
 // ============================================================
 function renderTopPicks(){
-  var container = $('top-picks-grid');
-  var top = ALL_MATCHES.filter(passesSelectionFilter)
-    .sort(function(a,b){ 
-      // Algoritm Hibrid (H-Score): 60% Smart Score + 40% ML Confidence
-      // Aceasta asigura ca evenimentele selectate au atat valoare matematica cat si confirmare AI
-      var scoreA = (a.smartScore * 0.6) + (a.confidence * 0.4);
-      var scoreB = (b.smartScore * 0.6) + (b.confidence * 0.4);
-      return scoreB - scoreA; 
-    })
-    .slice(0,5);
+  var container = $('top-picks-container');
+  var picks = ALL_MATCHES.filter(passesSelectionFilter)
+    .sort((a,b) => b.smartScore - a.smartScore)
+    .slice(0, 5);
   
-  updateSectionCount('top5', top.length);
-  
-  if(top.length === 0){
-    container.innerHTML = '<div class="empty-state">Niciun pariu recomandat momentan.</div>';
+  updateSectionCount('top5', picks.length);
+  if(picks.length === 0){
+    container.innerHTML = '<div class="empty-state">Niciun pick inteligent momentan.</div>';
     return;
   }
-
-  container.innerHTML = top.map(function(m, i){
-    var b = m.bestBet;
-    var badgeClass = b.verdict === 'safe' ? 'tp-badge-safe' : 'tp-badge-mod';
-    var badgeText = b.verdict === 'safe' ? '🟢 SAFE' : '🟡 MODERATE';
-    var valStr = b.value >= 0 ? '+'+fmtPct(b.value*100) : fmtPct(b.value*100);
-    
-    var hXg = getXGClass(m.xgHome);
-    var aXg = getXGClass(m.xgAway);
-    var tXg = m.xgHome + m.xgAway;
-
-    var hScore = ((m.smartScore * 0.6) + (m.confidence * 0.4)).toFixed(1);
-
-    return '<div class="top-pick-card">'+
-      '<div class="tp-rank">#'+(i+1)+'</div>'+
-      '<div class="tp-badge '+badgeClass+'">'+badgeText+'</div>'+
-      '<div class="tp-teams">'+m.home+' vs '+m.away+'</div>'+
-      '<div style="font-size:10px; color:var(--muted); margin-bottom:8px; display:flex; justify-content:center; gap:10px">'+
-        '<span style="color:'+hXg.color+'">H: '+m.xgHome.toFixed(2)+'</span>'+
-        '<span>Σ '+tXg.toFixed(2)+'</span>'+
-        '<span style="color:'+aXg.color+'">A: '+m.xgAway.toFixed(2)+'</span>'+
-      '</div>'+
-      '<div class="tp-league">'+m.league+' • '+m.dateLabel+' '+m.timeLabel+'</div>'+
-      '<div class="tp-metrics">'+
-        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--grn)">'+valStr+'</div><div class="tp-metric-lbl">Value</div></div>'+
-        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--acc)">'+m.confidence.toFixed(0)+'%</div><div class="tp-metric-lbl">AI Conf.</div></div>'+
-        '<div class="tp-metric"><div class="tp-metric-val" style="color:var(--pur)">'+hScore+'</div><div class="tp-metric-lbl">H-Score</div></div>'+
-      '</div>'+
-      '<div class="tp-rec" style="background:linear-gradient(90deg, rgba(59,130,246,0.1), rgba(168,85,247,0.1)); border:1px solid rgba(168,85,247,0.2)">🎯 '+b.label+' @ '+b.odds.toFixed(2)+' | Șansă: '+fmtPct(b.adjProb)+'</div>'+
-    '</div>';
-  }).join('');
-}
-
-function renderML(){
-  var container = $('ml-grid');
-  var ml = ALL_MATCHES.filter(function(m){ 
-    var matchTime = new Date(m.date).getTime();
-    var now = new Date().getTime();
-    return m.hasMlRec && matchTime > (now - 900000); 
-  }).sort(function(a,b){ return b.confidence - a.confidence; });
-
-  // Filtram cele fara picks valide (fara Over 1.5G)
-  var validMl = ml.filter(function(m){
-    return m.mlPicks.filter(function(p){ return p.label !== 'Over 1.5G'; }).length > 0;
-  });
-  updateSectionCount('ml', validMl.length);
-
-  if(ml.length === 0){
-    container.innerHTML = '<div class="empty-state">Nicio recomandare ML momentan.</div>';
-    return;
-  }
-
-  container.innerHTML = ml.map(function(m){
-    // Excludem pronosticurile Over 1.5G din aceasta lista (pentru a fi doar in sectiunea dedicata)
-    var filteredPicks = m.mlPicks.filter(p => p.label !== 'Over 1.5G');
-    if(filteredPicks.length === 0) return '';
-
-    // Luam doar prima recomandare (cea cu probabilitatea cea mai mare)
-    var topPick = filteredPicks[0];
-    if(!topPick) return '';
-
-    return '<div class="ml-card">'+
-      '<div class="ml-hdr">'+
-        '<div class="ml-teams">'+m.home+' vs '+m.away+'</div>'+
-        '<div class="ml-conf" title="Scor de incredere general AI">'+m.confidence.toFixed(0)+'%</div>'+
-      '</div>'+
-      '<div style="font-size:9px;color:var(--muted);margin-bottom:8px">'+m.league+' • '+m.dateLabel+'</div>'+
-      '<div class="ml-picks">'+
-        '<span class="ml-pick" style="background:rgba(59,130,246,0.15); color:var(--acc); font-size:11px; padding:4px 10px">🎯 '+topPick.label+'</span>'+
-      '</div>'+
-      '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">'+
-        '<div style="font-size:9px; color:var(--muted)">Probabilitate: <b>'+topPick.prob.toFixed(1)+'%</b></div>'+
-        '<div style="font-size:9px; color:var(--acc); font-weight:700">Confidence: '+m.confidence.toFixed(0)+'%</div>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-}
-
-function renderML15(){
-  var container = $('ml-15-grid');
-  var ml15 = ALL_MATCHES.filter(function(m){ 
-    var matchTime = new Date(m.date).getTime();
-    var now = new Date().getTime();
-    // Filtram meciurile viitoare care au "Over 1.5G" in lista de mlPicks
-    return m.hasMlRec && m.mlPicks.some(p => p.label === 'Over 1.5G') && matchTime > (now - 900000); 
-  }).sort(function(a,b){ return b.confidence - a.confidence; });
-
-  updateSectionCount('ml15', ml15.length);
-
-  if(ml15.length === 0){
-    container.innerHTML = '<div class="empty-state">Nicio recomandare +1.5G momentan.</div>';
-    return;
-  }
-
-  container.innerHTML = ml15.map(function(m){
-    var tXg = m.xgHome + m.xgAway;
-    var o15 = m.mlPicks.find(p => p.label === 'Over 1.5G');
-    return '<div class="ml-card" style="background:rgba(34,197,94,0.06); border-color:rgba(34,197,94,0.2)">'+
-      '<div class="ml-hdr">'+
-        '<div class="ml-teams">'+m.home+' vs '+m.away+'</div>'+
-        '<div class="ml-conf" style="color:var(--grn)" title="Scor de incredere general AI">'+m.confidence.toFixed(0)+'%</div>'+
-      '</div>'+
-      '<div style="font-size:9px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between">'+
-        '<span>'+m.league+' • '+m.dateLabel+'</span>'+
-        '<span style="font-weight:700;color:var(--cyan)">Σ xG: '+tXg.toFixed(2)+'</span>'+
-      '</div>'+
-      '<div class="ml-picks">'+
-        '<span class="ml-pick" style="background:rgba(34,197,94,0.15); color:var(--grn); font-size:11px; padding:4px 10px">🔥 Over 1.5G</span>'+
-      '</div>'+
-      '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">'+
-        '<div style="font-size:9px; color:var(--muted)">Probabilitate: <b>'+o15.prob.toFixed(1)+'%</b></div>'+
-        '<div style="font-size:9px; color:var(--grn); font-weight:700">Confidence: '+m.confidence.toFixed(0)+'%</div>'+
-      '</div>'+
-    '</div>';
-  }).join('');
+  container.innerHTML = picks.map(renderMatchCard).join('');
 }
 
 function renderTopSafe(){
-  var container = $('topsafe-grid');
-  var topSafe = ALL_MATCHES.filter(function(m){ 
-    var matchTime = new Date(m.date).getTime();
-    var now = new Date().getTime();
-    // Doar meciuri cu ML recommendations și viitoare
-    return m.hasMlRec && matchTime > (now - 900000); 
-  }).sort(function(a,b){ 
-    // Sortare după confidence descrescător (cel mai sigur ML)
-    return b.confidence - a.confidence; 
-  }).slice(0, 3); // Doar top 3
+  var container = $('top-safe-container');
+  var picks = ALL_MATCHES.filter(m => passesSelectionFilter(m) && m.verdict === 'safe')
+    .sort((a,b) => b.bestBet.adjProb - a.bestBet.adjProb)
+    .slice(0, 5);
   
-  updateSectionCount('topsafe', topSafe.length);
-  
-  if(topSafe.length === 0){
-    container.innerHTML = '<div class="empty-state">Nicio selectie ML sigura momentan.</div>';
+  updateSectionCount('topsafe', picks.length);
+  if(picks.length === 0){
+    container.innerHTML = '<div class="empty-state">Niciun pick sigur momentan.</div>';
     return;
   }
-  
-  container.innerHTML = topSafe.map(function(m, i){
-    var topPick = m.mlPicks[0]; // Cea mai bună recomandare
-    if(!topPick) return '';
-    var tXg = m.xgHome + m.xgAway;
-    var confColor = m.confidence >= 60 ? 'var(--grn)' : (m.confidence >= 50 ? 'var(--yel)' : 'var(--acc)');
-    
-    return '<div class="ml-card" style="background:rgba(34,197,94,0.08); border:2px solid rgba(34,197,94,0.3); position:relative">'+
-      '<div style="position:absolute;top:8px;right:8px;font-size:18px;font-weight:900;color:rgba(34,197,94,0.3)">#'+(i+1)+'</div>'+
-      '<div class="ml-hdr">'+
-        '<div class="ml-teams" style="font-weight:700;color:var(--txt)">'+m.home+' vs '+m.away+'</div>'+
-        '<div class="ml-conf" style="color:'+confColor+';font-size:13px;font-weight:700" title="ML Confidence Score">'+m.confidence.toFixed(0)+'%</div>'+
-      '</div>'+
-      '<div style="font-size:9px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between">'+
-        '<span>'+m.league+' • '+m.dateLabel+'</span>'+
-        '<span style="font-weight:700;color:var(--cyan)">Σ xG: '+tXg.toFixed(2)+'</span>'+
-      '</div>'+
-      '<div class="ml-picks">'+
-        '<span class="ml-pick" style="background:rgba(34,197,94,0.15); color:var(--grn); font-size:11px; padding:4px 10px;font-weight:700">✓ '+topPick.label+'</span>'+
-      '</div>'+
-      '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">'+
-        '<div style="font-size:9px; color:var(--muted)">Probabilitate: <b>'+topPick.prob.toFixed(1)+'%</b></div>'+
-        '<div style="font-size:9px; color:var(--grn); font-weight:700">Sigur: '+m.confidence.toFixed(0)+'%</div>'+
-      '</div>'+
-    '</div>';
-  }).join('');
+  container.innerHTML = picks.map(renderMatchCard).join('');
 }
 
-// ============================================================
-// RENDER MATCHES
-// ============================================================
-function setFilter(f, btn){
-  CURRENT_FILTER = f;
-  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
-  renderMatches();
+function renderML(){
+  var container = $('ml-container');
+  var picks = ALL_MATCHES.filter(m => passesSelectionFilter(m) && m.hasMlRec)
+    .sort((a,b) => b.confidence - a.confidence)
+    .slice(0, 10);
+  
+  updateSectionCount('ml', picks.length);
+  if(picks.length === 0){
+    container.innerHTML = '<div class="empty-state">Nicio recomandare ML momentan.</div>';
+    return;
+  }
+  container.innerHTML = picks.map(renderMatchCard).join('');
+}
+
+function renderML15(){
+  var container = $('ml15-container');
+  var picks = ALL_MATCHES.filter(m => passesSelectionFilter(m) && m.probOver15 >= 75)
+    .sort((a,b) => b.probOver15 - a.probOver15)
+    .slice(0, 10);
+  
+  updateSectionCount('ml15', picks.length);
+  if(picks.length === 0){
+    container.innerHTML = '<div class="empty-state">Nicio recomandare 1.5G momentan.</div>';
+    return;
+  }
+  container.innerHTML = picks.map(renderMatchCard).join('');
 }
 
 function renderMatches(){
   var container = $('matches-container');
-  var sort = $('sort-select').value;
-  
-  var filtered = ALL_MATCHES.filter(function(m){
+  var filtered = ALL_MATCHES.filter(m => {
     if(CURRENT_FILTER === 'all') return true;
     if(CURRENT_FILTER === 'safe') return m.verdict === 'safe';
-    if(CURRENT_FILTER === 'moderate') return m.verdict === 'moderate';
     if(CURRENT_FILTER === 'value') return m.bestBet && m.bestBet.value >= 0.05;
+    if(CURRENT_FILTER === 'over15') return m.probOver15 >= 70;
+    if(CURRENT_FILTER === 'over25') return m.probOver25 >= 60;
+    if(CURRENT_FILTER === 'btts') return m.probBtts >= 60;
     return true;
   });
 
-  filtered.sort(function(a,b){
-    if(sort === 'score') return b.smartScore - a.smartScore;
-    if(sort === 'value') return (b.bestBet?b.bestBet.value:0) - (a.bestBet?a.bestBet.value:0);
-    if(sort === 'prob') return (b.bestBet?b.bestBet.adjProb:0) - (a.bestBet?a.bestBet.adjProb:0);
-    if(sort === 'conf') return b.confidence - a.confidence;
-    if(sort === 'date') return new Date(a.date) - new Date(b.date);
-    return 0;
-  });
-
   $('filter-count').textContent = filtered.length + ' meciuri';
-
   if(filtered.length === 0){
-    container.innerHTML = '<div class="empty-state">Niciun meci gasit pentru filtrele selectate.</div>';
+    container.innerHTML = '<div class="empty-state">Niciun meci găsit pentru acest filtru.</div>';
     return;
   }
 
   // Group by date
   var groups = {};
-  filtered.forEach(function(m){
-    if(!groups[m.dateLabel]) groups[m.dateLabel] = [];
-    groups[m.dateLabel].push(m);
+  filtered.forEach(m => {
+    if(!groups[m.dateKey]) groups[m.dateKey] = [];
+    groups[m.dateKey].push(m);
   });
 
   var html = '';
-  Object.keys(groups).forEach(function(date){
-    html += '<div class="date-group"><div class="date-label">📅 '+date+'</div><div class="matches-grid">';
-    html += groups[date].map(function(m){
-      var b = m.bestBet;
-      if(!b) return '';
-      var valStr = b.value >= 0 ? '+'+fmtPct(b.value*100) : fmtPct(b.value*100);
-      var verdictClass = m.verdict;
-      var verdictLabel = m.verdict === 'safe' ? '🟢 SAFE' : (m.verdict === 'moderate' ? '🟡 MODERATE' : '🔴 AVOID');
-      
-      var hXg = getXGClass(m.xgHome);
-      var aXg = getXGClass(m.xgAway);
-      var tXg = m.xgHome + m.xgAway;
-      
-      var hBadge = '<span style="font-size:8px; padding:1px 4px; border-radius:4px; margin-left:5px; background:'+hXg.bg+'; color:'+hXg.color+'; border:1px solid '+hXg.color+'44">'+hXg.label+'</span>';
-      var aBadge = '<span style="font-size:8px; padding:1px 4px; border-radius:4px; margin-right:5px; background:'+aXg.bg+'; color:'+aXg.color+'; border:1px solid '+aXg.color+'44">'+aXg.label+'</span>';
-
-      return '<div class="match-card '+verdictClass+'">'+
-        '<div class="mc-league">🌍 '+m.country+' • '+m.league+'</div>'+
-        '<div class="mc-teams">'+
-          '<div class="mc-team">'+m.home+hBadge+'<div style="font-size:10px; color:'+hXg.color+'; font-weight:700; font-family:var(--mono)">xG: '+m.xgHome.toFixed(2)+'</div></div>'+
-          '<div class="mc-vs">VS<div style="font-size:8px; color:var(--muted); margin-top:2px">Σ '+tXg.toFixed(2)+'</div></div>'+
-          '<div class="mc-team away">'+aBadge+m.away+'<div style="font-size:10px; color:'+aXg.color+'; font-weight:700; font-family:var(--mono)">xG: '+m.xgAway.toFixed(2)+'</div></div>'+
-        '</div>'+
-        '<div class="mc-time">🕒 '+m.timeLabel+' • Confidence: '+m.confidence.toFixed(0)+'%</div>'+
-        '<div class="mc-verdict verdict-'+verdictClass+'">'+verdictLabel+'</div>'+
-        '<div class="mc-stats">'+
-          '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--grn)">'+valStr+'</div><div class="mc-stat-lbl">Value</div></div>'+
-          '<div class="mc-stat"><div class="mc-stat-val">'+fmtPct(b.adjProb)+'</div><div class="mc-stat-lbl">Real Prob</div></div>'+
-          '<div class="mc-stat"><div class="mc-stat-val">'+b.odds.toFixed(2)+'</div><div class="mc-stat-lbl">Odds</div></div>'+
-          '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--acc)">'+m.smartScore+'</div><div class="mc-stat-lbl">Score</div></div>'+
-        '</div>'+
-        '<div class="mc-rec">'+
-          '<div class="mc-rec-type">'+b.label+'</div>'+
-          '<div class="mc-rec-val">Stat: '+fmtPct(b.prob)+'</div>'+
-        '</div>'+
-        '<div style="margin-top:8px; padding:8px; background:rgba(255,255,255,0.03); border-radius:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--brd)">'+
-          '<div style="font-size:10px; color:var(--muted); font-weight:600">XG TOTAL MECI</div>'+
-          '<div style="font-size:14px; font-weight:800; color:var(--cyan); font-family:var(--mono)">'+tXg.toFixed(2)+'</div>'+
-        '</div>'+
-        '<div class="mc-conf-bar">'+
-          '<div class="mc-conf-bar-bg"><div class="mc-conf-bar-fill" style="width:'+m.confidence+'%; background:linear-gradient(90deg,var(--acc),var(--pur))"></div></div>'+
-          '<div class="mc-conf-lbl">AI Confidence: '+m.confidence.toFixed(0)+'%</div>'+
-        '</div>'+
-      '</div>';
-    }).join('');
-    html += '</div></div>';
+  Object.keys(groups).sort().forEach(key => {
+    html += '<div class="date-group"><div class="date-label">📅 ' + groups[key][0].dateLabel + '</div>';
+    html += '<div class="matches-grid">' + groups[key].map(renderMatchCard).join('') + '</div></div>';
   });
+  container.innerHTML = html;
+}
 
-  container.innerHTML = html + '<div style="margin-top:20px;padding:16px;background:var(--panel);border:1px solid var(--brd);border-radius:12px;font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:10px;align-items:center">'+
-    '<div style="font-weight:700; color:var(--txt); margin-bottom:4px">Clasificare xG (Expected Goals)</div>'+
-    '<div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center">'+
-      '<span><b style="color:#ff4d4d">[ELITE]</b> > 2.50</span>'+
-      '<span><b style="color:var(--grn)">[STRONG]</b> > 2.00</span>'+
-      '<span><b style="color:var(--cyan)">[GOOD]</b> > 1.40</span>'+
-      '<span><b style="color:var(--yel)">[AVG]</b> > 1.00</span>'+
-      '<span><b style="color:var(--red)">[WEAK]</b> < 1.00</span>'+
+function renderMatchCard(m){
+  var b = m.bestBet;
+  if(!b) return '';
+  var verdictClass = b.verdict;
+  var verdictLabel = verdictClass.toUpperCase();
+  var valStr = b.value >= 0 ? '+'+fmtPct(b.value*100) : fmtPct(b.value*100);
+  var hXg = getXGClass(m.xgHome);
+  var aXg = getXGClass(m.xgAway);
+  var tXg = m.xgHome + m.xgAway;
+  
+  var hBadge = m.xgHome >= 2.0 ? ' <span style="color:#ff4d4d; font-size:9px; font-weight:900">[H-ELITE]</span>' : '';
+  var aBadge = m.xgAway >= 2.0 ? ' <span style="color:#ff4d4d; font-size:9px; font-weight:900">[A-ELITE]</span>' : '';
+
+  return '<div class="match-card '+verdictClass+'">'+
+    '<div class="mc-league">🌍 '+(m.country||'Intl')+' • '+(m.league||'Liga')+'</div>'+
+    '<div class="mc-teams">'+
+      '<div class="mc-team">'+m.home+hBadge+'<div style="font-size:10px; color:'+hXg.color+'; font-weight:700; font-family:var(--mono)">xG: '+m.xgHome.toFixed(2)+'</div></div>'+
+      '<div class="mc-vs">VS<div style="font-size:8px; color:var(--muted); margin-top:2px">Σ '+tXg.toFixed(2)+'</div></div>'+
+      '<div class="mc-team away">'+aBadge+m.away+'<div style="font-size:10px; color:'+aXg.color+'; font-weight:700; font-family:var(--mono)">xG: '+m.xgAway.toFixed(2)+'</div></div>'+
     '</div>'+
-    '<div style="font-size:10px; opacity:0.8">Σ xG reprezintă suma golurilor așteptate pentru ambele echipe (potențialul total de goluri al meciului).</div>'+
+    '<div class="mc-time">🕒 '+m.timeLabel+' • Confidence: '+m.confidence.toFixed(0)+'%</div>'+
+    '<div class="mc-verdict verdict-'+verdictClass+'">'+verdictLabel+'</div>'+
+    '<div class="mc-stats">'+
+      '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--grn)">'+valStr+'</div><div class="mc-stat-lbl">Value</div></div>'+
+      '<div class="mc-stat"><div class="mc-stat-val">'+fmtPct(b.adjProb)+'</div><div class="mc-stat-lbl">Real Prob</div></div>'+
+      '<div class="mc-stat"><div class="mc-stat-val">'+b.odds.toFixed(2)+'</div><div class="mc-stat-lbl">Odds</div></div>'+
+      '<div class="mc-stat"><div class="mc-stat-val" style="color:var(--acc)">'+m.smartScore+'</div><div class="mc-stat-lbl">Score</div></div>'+
+    '</div>'+
+    '<div class="mc-rec">'+
+      '<div class="mc-rec-type">'+b.label+'</div>'+
+      '<div class="mc-rec-val">Stat: '+fmtPct(b.prob)+'</div>'+
+    '</div>'+
+    '<div style="margin-top:8px; padding:8px; background:rgba(255,255,255,0.03); border-radius:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--brd)">'+
+      '<div style="font-size:10px; color:var(--muted); font-weight:600">XG TOTAL MECI</div>'+
+      '<div style="font-size:14px; font-weight:800; color:var(--cyan); font-family:var(--mono)">'+tXg.toFixed(2)+'</div>'+
+    '</div>'+
+    '<div class="mc-conf-bar">'+
+      '<div class="mc-conf-bar-bg"><div class="mc-conf-bar-fill" style="width:'+m.confidence+'%; background:linear-gradient(90deg,var(--acc),var(--pur))"></div></div>'+
+      '<div class="mc-conf-lbl">AI Confidence: '+m.confidence.toFixed(0)+'%</div>'+
+    '</div>'+
   '</div>';
 }
 
 // ============================================================
 // BILETE GENERATION
 // ============================================================
-function generateTicket(){
-  var eligible = ALL_MATCHES.filter(function(m){
-    if(!m.bestBet) return false;
-    var b = m.bestBet;
-    return b.adjProb >= 65 && b.value >= 0.05 && m.confidence >= 45 && b.odds >= 1.20;
-  });
-
-  if(eligible.length < 2){
-    eligible = ALL_MATCHES.filter(function(m){
-      if(!m.bestBet) return false;
-      var b = m.bestBet;
-      return b.adjProb >= 60 && b.value >= 0.03 && m.confidence >= 45 && b.odds >= 1.20;
-    });
-  }
-
-  if(eligible.length < 2){
-    eligible = ALL_MATCHES.filter(function(m){
-      if(!m.bestBet) return false;
-      var b = m.bestBet;
-      return b.adjProb >= 50 && b.value > 0 && m.confidence >= 35 && b.odds >= 1.20;
-    });
-  }
-
-  eligible.sort(function(a,b){ return b.smartScore-a.smartScore; });
-
+function generateTicket(type){
   var picks = [];
+  var usedMatchIds = new Set();
   var totalOdds = 1;
+  var eligible = [];
+  var criteriaLabel = "";
+
+  if(type === 'simple' || type === 'over15' || type === 'mix_combo') {
+    criteriaLabel = "Poisson & Smart Score";
+    eligible = ALL_MATCHES.filter(function(m){
+      if(!passesSelectionFilter(m)) return false;
+      var b = m.bestBet;
+      if(!b) return false;
+      
+      if(type === 'simple') return b.adjProb >= 60 && b.value >= 0.03 && m.confidence >= 45 && b.odds >= 1.20;
+      if(type === 'over15') {
+        var b15 = m.allBets.find(x => x.type === 'over15');
+        return b15 && b15.adjProb >= 45 && b15.odds >= 1.10;
+      }
+      if(type === 'mix_combo') return b.adjProb >= 45 && m.confidence >= 35;
+      return false;
+    });
+    
+    eligible.sort((a,b) => b.smartScore - a.smartScore);
+  } else {
+    criteriaLabel = "Machine Learning (ML)";
+    eligible = ALL_MATCHES.filter(function(m){
+      if(!passesSelectionFilter(m)) return false;
+      if(!m.hasMlRec) return false;
+      
+      if(type === 'ml_simple') return m.confidence >= 50 && m.mlPicks[0].prob >= 70;
+      if(type === 'ml_over15') return m.probOver15 >= 75;
+      if(type === 'ml_mix') return m.confidence >= 40;
+      return false;
+    });
+    
+    eligible.sort((a,b) => b.confidence - a.confidence);
+  }
+
+  var maxPicks = (type === 'over15' || type === 'ml_over15') ? 8 : (type === 'mix_combo' || type === 'ml_mix' ? 6 : 3);
+  var minPicks = (type === 'over15' || type === 'ml_over15') ? 5 : 2;
+
   for(var i=0; i<eligible.length; i++){
     var m = eligible[i];
-    var b = m.bestBet;
-    var testOdds = totalOdds * b.odds;
-    if(picks.length < 3 && testOdds <= 4.0){
-      picks.push(m);
-      totalOdds = testOdds;
+    if(usedMatchIds.has(m.id)) continue;
+    
+    var pickBet;
+    if(type === 'over15' || type === 'ml_over15') {
+      pickBet = m.allBets.find(x => x.type === 'over15');
+    } else if(type.startsWith('ml_')) {
+      var ml = m.mlPicks[0];
+      pickBet = {label: ml.label, odds: ml.odds, adjProb: ml.prob, value: 0};
+    } else {
+      pickBet = m.bestBet;
     }
-    if(picks.length >= 2 && totalOdds >= 1.4) break;
-    if(picks.length >= 3) break;
-  }
 
-  if(picks.length < 1){
-    BILETE = { picks: [], totalOdds: 1, generatedAt: new Date().toISOString(), error: 'Nu exista niciun pariu cu EV pozitiv in datele curente.' };
-    renderBilete();
-    toast('Niciun pariu cu EV pozitiv disponibil momentan', 'warn');
-    return;
-  }
-
-  var combinedProb = picks.reduce(function(acc,m){ return acc*(m.bestBet.adjProb/100); }, 1);
-  var combinedEV = combinedProb * totalOdds;
-  if(combinedEV < 1.0){
-    BILETE = { picks: [], totalOdds: totalOdds, generatedAt: new Date().toISOString(), error: 'Biletul generat are EV negativ (' + (combinedEV*100).toFixed(1) + '%).' };
-    renderBilete();
-    toast('Bilet respins: EV negativ', 'warn');
-    return;
-  }
-
-  BILETE = {picks: picks, totalOdds: totalOdds, generatedAt: new Date().toISOString(), type: 'simple'};
-  renderBilete();
-  toast('Bilet generat!', 'ok');
-}
-
-function generateOver15Ticket(){
-  // Tiered selection to ensure at least 5 matches
-  var eligible = ALL_MATCHES.filter(function(m){
-    if(!passesSelectionFilter(m)) return false;
-    var b = m.allBets.find(function(x){ return x.type==='over15'; });
-    return b && b.adjProb >= 50 && b.odds >= 1.10;
-  });
-
-  // If not enough high-prob matches, relax criteria
-  if(eligible.length < 5){
-    eligible = ALL_MATCHES.filter(function(m){
-      var b = m.allBets.find(function(x){ return x.type==='over15'; });
-      return b && b.adjProb >= 40 && b.odds >= 1.05;
-    });
-  }
-
-  eligible.sort(function(a,b){
-    var bA = a.allBets.find(function(x){ return x.type==='over15'; });
-    var bB = b.allBets.find(function(x){ return x.type==='over15'; });
-    // Sortăm după probabilitate, dar și după cât de recent este meciul
-    if(Math.abs(bB.adjProb - bA.adjProb) < 5) {
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
+    if(pickBet && pickBet.odds > 1) {
+      picks.push(Object.assign({}, m, {selectedBet: pickBet}));
+      usedMatchIds.add(m.id);
+      totalOdds *= pickBet.odds;
     }
-    return bB.adjProb - bA.adjProb;
-  });
-
-  // Take between 5 and 10 matches
-  var picksCount = Math.min(Math.max(eligible.length, 0), 10);
-  if(picksCount < 5){
-    toast('Nu s-au gasit minim 5 meciuri pentru bilet 1.5G', 'warn');
-    return;
+    
+    if(picks.length >= maxPicks) break;
   }
 
-  var picks = eligible.slice(0, picksCount);
-  var totalOdds = picks.reduce(function(acc,m){
-    return acc * m.allBets.find(function(x){ return x.type==='over15'; }).odds;
-  }, 1);
+  if(picks.length < minPicks){
+    BILETE = { picks: [], totalOdds: 1, error: 'Nu există suficiente meciuri pentru acest tip de bilet.' };
+    renderBilete();
+    toast('Meciuri insuficiente', 'warn');
+    return;
+  }
 
   BILETE = {
-    picks: picks.map(function(m){
-      var b = m.allBets.find(function(x){ return x.type==='over15'; });
-      return Object.assign({}, m, {bestBet: b});
-    }),
-    totalOdds: totalOdds,
-    generatedAt: new Date().toISOString(),
-    type: 'over15'
+    picks: picks, 
+    totalOdds: totalOdds, 
+    generatedAt: new Date().toISOString(), 
+    type: type,
+    analysis: criteriaLabel
   };
   renderBilete();
-  toast('Bilet 1.5G generat cu ' + picks.length + ' selectii!', 'ok');
-}
-
-function generateMixTicket(){
-  var eligible = ALL_MATCHES.filter(function(m){ return passesSelectionFilter(m) && m.bestBet.adjProb >= 45; });
-  eligible.sort(function(a,b){ return b.smartScore - a.smartScore; });
-  var picks = eligible.slice(0, 7);
-  var totalOdds = picks.reduce(function(acc,m){ return acc * m.bestBet.odds; }, 1);
-  
-  if(picks.length < 3){
-    toast('Prea putine meciuri pentru bilet Mix', 'warn');
-    return;
-  }
-
-  BILETE = { picks: picks, totalOdds: totalOdds, generatedAt: new Date().toISOString(), type: 'mix_combo' };
-  renderBilete();
-  toast('Bilet Mix generat!', 'ok');
+  toast('Bilet generat!', 'ok');
 }
 
 function renderBilete(){
   var container = $('bilete-container');
   if(!BILETE || BILETE.picks.length === 0){
-    var msg = (BILETE && BILETE.error) ? BILETE.error : 'Apasa butonul de mai sus pentru a genera un bilet simplu';
+    var msg = (BILETE && BILETE.error) ? BILETE.error : 'Apasă un buton de mai sus pentru a genera un bilet';
     var icon = (BILETE && BILETE.error) ? '⚠️' : '🎫';
     container.innerHTML = '<div class="empty-state"><div class="empty-icon">'+icon+'</div><div class="empty-text">'+msg+'</div></div>';
     return;
@@ -1182,53 +912,47 @@ function renderBilete(){
 
   var picks = BILETE.picks;
   var totalOdds = BILETE.totalOdds;
-  var combinedProb = picks.reduce(function(acc,m){
-    var adjProb = m.bestBet ? m.bestBet.adjProb : m.adjProb;
-    return acc * (adjProb / 100);
-  }, 1) * 100;
+  var combinedProb = picks.reduce((acc,m) => acc * (m.selectedBet.adjProb / 100), 1) * 100;
 
-  var title = BILETE.type === 'over15' ? '🔥 Bilet 1.5G' : (BILETE.type === 'mix_combo' ? '🛡️ Bilet Mix' : '🎯 Bilet Simplu');
+  var typeLabels = {
+    'simple': '🎯 Bilet Simplu', 'over15': '🔥 Bilet 1.5G', 'mix_combo': '🛡️ Bilet Mix',
+    'ml_simple': '🤖 ML Simplu', 'ml_over15': '🤖 ML 1.5G', 'ml_mix': '🤖 ML Mix'
+  };
+  var title = typeLabels[BILETE.type] || 'Bilet';
   
-  // Get stake from bankroll settings
   var bk = parseFloat($('bankroll-input').value) || 1000;
-  var pct = BILETE.type === 'simple' ? (parseFloat($('pct-safe').value) || 2) : 
-            (BILETE.type === 'over15' ? (parseFloat($('pct-medium').value) || 5) : (parseFloat($('pct-risk').value) || 10));
+  var pct = (BILETE.type.includes('simple')) ? (parseFloat($('pct-safe').value) || 2) : 
+            (BILETE.type.includes('over15') ? (parseFloat($('pct-medium').value) || 5) : (parseFloat($('pct-risk').value) || 10));
   var stake = bk * (pct / 100);
 
   var html = '<div class="bilet-card">'+
+    '<div style="font-size:10px; color:var(--muted); margin-bottom:4px; font-weight:700; text-transform:uppercase">Analiză: '+BILETE.analysis+'</div>'+
     '<div class="bilet-hdr">'+
-      '<div class="bilet-title">'+title+' <span style="font-size:12px;color:var(--muted);font-weight:400">'+picks.length+' selectii</span></div>'+
+      '<div class="bilet-title">'+title+' <span style="font-size:12px;color:var(--muted);font-weight:400">'+picks.length+' selecții</span></div>'+
       '<div class="bilet-cota" style="color:var(--grn)">'+totalOdds.toFixed(2)+'x</div>'+
     '</div>'+
-    '<div class="bilet-meta">Probabilitate: <strong style="color:var(--acc)">'+fmtPct(combinedProb)+'</strong> • Miza Recomandata: <strong style="color:var(--yel)">'+stake.toFixed(2)+' RON</strong></div>';
+    '<div class="bilet-meta">Probabilitate: <strong style="color:var(--acc)">'+fmtPct(combinedProb)+'</strong> • Miză Recomandată: <strong style="color:var(--yel)">'+stake.toFixed(2)+' RON</strong></div>';
 
   picks.forEach(function(m){
-    var b = m.bestBet;
+    var b = m.selectedBet;
     var valStr = b.value >= 0 ? '+'+fmtPct(b.value*100) : fmtPct(b.value*100);
-    var hXg = getXGClass(m.xgHome);
-    var aXg = getXGClass(m.xgAway);
     var tXg = m.xgHome + m.xgAway;
 
     html += '<div class="bilet-row">'+
       '<div class="bilet-match">'+
         '<div class="bilet-match-name">'+m.home+' vs '+m.away+'</div>'+
-        '<div style="font-size:9px; color:var(--muted); margin-bottom:2px">'+
-          '<span style="color:'+hXg.color+'">H: '+m.xgHome.toFixed(2)+'</span> | '+
-          '<span>Σ '+tXg.toFixed(2)+'</span> | '+
-          '<span style="color:'+aXg.color+'">A: '+m.xgAway.toFixed(2)+'</span>'+
-        '</div>'+
-        '<div class="bilet-match-info">'+(m.league || 'Liga')+' • '+(m.dateLabel || '')+' '+(m.timeLabel || '')+'</div>'+
+        '<div class="bilet-match-info">'+(m.league || 'Liga')+' • Σ xG: '+tXg.toFixed(2)+'</div>'+
       '</div>'+
       '<div class="bilet-pick">'+
         '<div class="bilet-pick-type">'+b.label+' @ '+b.odds.toFixed(2)+'</div>'+
-        '<div class="bilet-pick-prob">'+fmtPct(b.adjProb)+' Șansă Reală | Value: '+valStr+'</div>'+
+        '<div class="bilet-pick-prob">'+fmtPct(b.adjProb)+' Șansă</div>'+
       '</div>'+
     '</div>';
   });
 
-  html += '<div style="margin-top:16px;text-align:center">'+
-    '<button onclick="placeCurrentTicket('+stake+')" class="btn btn-green" style="padding:12px 24px;font-size:14px;width:100%;justify-content:center">'+
-      '<span>✅ PARIU PLASAT ('+stake.toFixed(2)+' RON)</span>'+
+  html += '<div style="margin-top:20px; display:flex; gap:10px">'+
+    '<button class="btn btn-green" onclick="placeCurrentTicket('+stake+')" style="flex:1;justify-content:center;padding:12px">'+
+      '<span>✅ SALVEAZĂ BILET</span>'+
     '</button>'+
   '</div></div>';
 
@@ -1241,7 +965,7 @@ function placeCurrentTicket(stake){
     id: Date.now(),
     date: new Date().toLocaleDateString('ro-RO'),
     picks: BILETE.picks.map(function(m){
-      var b = m.bestBet || m;
+      var b = m.selectedBet;
       return {home:m.home, away:m.away, bet:b.label, odds:b.odds, prob:b.adjProb, league:m.league};
     }),
     totalOdds: BILETE.totalOdds,
@@ -1249,11 +973,12 @@ function placeCurrentTicket(stake){
     status: 'pending',
     profit: 0,
     type: 'generated',
-    criteria: BILETE.type === 'over15' ? 'Bilet 1.5G' : (BILETE.type === 'mix_combo' ? 'Bilet Mix' : 'Bilet Simplu')
+    analysis: BILETE.analysis,
+    criteria: BILETE.type
   };
   TRACKING.unshift(ticket);
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
-  toast('Bilet inregistrat!', 'ok');
+  toast('Bilet înregistrat!', 'ok');
   BILETE = null;
   renderBilete();
 }
@@ -1275,7 +1000,7 @@ function addExtraTicket(){
   var stake = parseFloat($('ex-stake').value);
 
   if(!date || isNaN(picksCount) || isNaN(odds) || isNaN(stake)){
-    toast('Completeaza toate campurile corect', 'err');
+    toast('Completează toate câmpurile corect', 'err');
     return;
   }
 
@@ -1295,30 +1020,28 @@ function addExtraTicket(){
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
   renderTracking();
   toggleExtraForm();
-  toast('Bilet extra adaugat!', 'ok');
+  toast('Bilet extra adăugat!', 'ok');
 }
 
 function renderTracking(){
-  // Stats for Generated
-  var gen = TRACKING.filter(function(t){ return t.type !== 'extra'; });
+  var gen = TRACKING.filter(t => t.type !== 'extra');
   var genTotal = gen.length;
-  var genWins = gen.filter(function(t){ return t.status==='win'; }).length;
+  var genWins = gen.filter(t => t.status==='win').length;
   var genWinRate = genTotal > 0 ? (genWins/genTotal*100) : 0;
-  var genProfit = gen.reduce(function(acc,t){ return acc+t.profit; }, 0);
-  var genStakes = gen.reduce(function(acc,t){ return acc+(t.stake||100); }, 0);
+  var genProfit = gen.reduce((acc,t) => acc+t.profit, 0);
+  var genStakes = gen.reduce((acc,t) => acc+(t.stake||100), 0);
   var genRoi = genStakes > 0 ? ((genProfit / genStakes) * 100) : 0;
 
   $('tr-total').textContent = genTotal;
   $('tr-winrate').textContent = fmtPct(genWinRate);
   $('tr-roi').textContent = (genRoi>=0?'+':'')+genRoi.toFixed(2)+'%';
 
-  // Stats for Extra
-  var extra = TRACKING.filter(function(t){ return t.type === 'extra'; });
+  var extra = TRACKING.filter(t => t.type === 'extra');
   var exTotal = extra.length;
-  var exWins = extra.filter(function(t){ return t.status==='win'; }).length;
+  var exWins = extra.filter(t => t.status==='win').length;
   var exWinRate = exTotal > 0 ? (exWins/exTotal*100) : 0;
-  var exProfit = extra.reduce(function(acc,t){ return acc+t.profit; }, 0);
-  var exStakes = extra.reduce(function(acc,t){ return acc+(t.stake||100); }, 0);
+  var exProfit = extra.reduce((acc,t) => acc+t.profit, 0);
+  var exStakes = extra.reduce((acc,t) => acc+(t.stake||100), 0);
   var exRoi = exStakes > 0 ? ((exProfit / exStakes) * 100) : 0;
 
   $('tr-extra-total').textContent = exTotal;
@@ -1327,12 +1050,12 @@ function renderTracking(){
 
   var container = $('tracking-container');
   if(TRACKING.length === 0){
-    container.innerHTML = '<div class="empty-state">Niciun pariu inregistrat inca.</div>';
+    container.innerHTML = '<div class="empty-state">Niciun pariu înregistrat încă.</div>';
     return;
   }
 
   var html = '<div class="history-table-wrapper"><table class="history-table"><thead><tr>'+
-    '<th>Data</th><th>Tip</th><th>Meciuri</th><th>Cota</th><th>Miza</th><th>Status</th><th>Profit</th><th style="text-align:right">Actiuni</th>'+
+    '<th>Data</th><th>Tip</th><th>Meciuri</th><th>Cota</th><th>Miza</th><th>Status</th><th>Profit</th><th style="text-align:right">Acțiuni</th>'+
   '</tr></thead><tbody>';
 
   TRACKING.forEach(function(t,i){
@@ -1349,8 +1072,10 @@ function renderTracking(){
     html += '<tr onclick="toggleTicketDetail('+i+')" style="cursor:pointer">'+
       '<td style="font-family:var(--mono);font-size:11px">'+t.date+'</td>'+
       '<td>'+typeBadge+'</td>'+
-      '<td style="font-size:11px">'+t.picks.length+' selectii</td>'+
-      '<td style="font-family:var(--mono)">'+t.totalOdds.toFixed(2)+'x</td>'+
+      '<td style="font-size:11px">'+t.picks.length+' selecții</td>'+
+      '<td style="font-family:var(--mono)">'+
+        '<input type="number" value="'+t.totalOdds.toFixed(2)+'" step="0.01" style="width:50px; background:transparent; border:1px solid var(--brd); color:var(--txt); font-size:11px; border-radius:3px" onclick="event.stopPropagation()" onchange="updateTicketOdds('+i+', this.value)"/>x'+
+      '</td>'+
       '<td style="font-family:var(--mono)">'+(t.stake||100).toFixed(0)+'</td>'+
       '<td>'+statusBadge+'</td>'+
       '<td>'+profitStr+'</td>'+
@@ -1360,10 +1085,37 @@ function renderTracking(){
         '<button onclick="deleteTicket('+i+')" style="background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--brd2);border-radius:4px;padding:3px 6px;font-size:9px">🗑️</button>'+
       '</td>'+
     '</tr>';
+    
+    // Detail row
+    html += '<tr id="detail-'+i+'" style="display:none; background:rgba(255,255,255,0.02)">'+
+      '<td colspan="8" style="padding:10px">'+
+        '<div class="ticket-detail">'+
+          '<div style="font-weight:700; margin-bottom:6px; color:var(--acc)">Detalii Bilet ('+(t.analysis || 'Manual')+')</div>'+
+          t.picks.map(p => '<div class="ticket-detail-row"><span>'+p.home+' vs '+p.away+'</span><span>'+p.bet+' @ '+p.odds.toFixed(2)+'</span></div>').join('')+
+        '</div>'+
+      '</td>'+
+    '</tr>';
   });
   html += '</tbody></table></div>';
   container.innerHTML = html;
   calcBankroll();
+}
+
+function updateTicketOdds(idx, val){
+  var odds = parseFloat(val);
+  if(isNaN(odds) || odds < 1) return;
+  TRACKING[idx].totalOdds = odds;
+  // Recalculate profit if already marked
+  if(TRACKING[idx].status === 'win') {
+    TRACKING[idx].profit = (odds - 1) * TRACKING[idx].stake;
+  }
+  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
+  renderTracking();
+}
+
+function toggleTicketDetail(idx){
+  var el = $('detail-'+idx);
+  el.style.display = el.style.display === 'none' ? 'table-row' : 'none';
 }
 
 function markTicket(idx, status){
@@ -1379,7 +1131,7 @@ function markTicket(idx, status){
 }
 
 function deleteTicket(idx){
-  if(confirm('Stergi acest bilet?')){
+  if(confirm('Ștergi acest bilet?')){
     TRACKING.splice(idx, 1);
     localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
     renderTracking();
@@ -1387,7 +1139,7 @@ function deleteTicket(idx){
 }
 
 function clearHistory(){
-  if(confirm('Stergi tot istoricul?')){
+  if(confirm('Ștergi tot istoricul?')){
     TRACKING = [];
     localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
     renderTracking();
@@ -1406,10 +1158,6 @@ function exportHistory(){
   a.click();
 }
 
-function toggleTicketDetail(idx){
-  // Placeholder for detail view if needed
-}
-
 // ============================================================
 // BANKROLL
 // ============================================================
@@ -1423,7 +1171,7 @@ function calcBankroll(){
   BANKROLL_SETTINGS = { initial: initialBk, safe: pctSafe, medium: pctMedium, risk: pctRisk };
   localStorage.setItem('bet_bankroll_settings', JSON.stringify(BANKROLL_SETTINGS));
 
-  var totalProfit = TRACKING.reduce(function(acc,t){ return acc + t.profit; }, 0);
+  var totalProfit = TRACKING.reduce((acc,t) => acc + t.profit, 0);
   var actualBk = initialBk + totalProfit;
 
   $('bk-actual-val').textContent = actualBk.toFixed(2) + ' RON';
@@ -1434,20 +1182,16 @@ function calcBankroll(){
   var medium = actualBk * (pctMedium / 100);
   var risk = actualBk * (pctRisk / 100);
   var totalAlloc = pctSafe + pctMedium + pctRisk;
-  var reserve = actualBk * ((100 - totalAlloc) / 100);
 
   $('bk-grid').innerHTML =
     '<div class="bk-item"><div class="bk-label">🟢 Bilet Simplu ('+pctSafe.toFixed(1)+'%)</div><div class="bk-val" style="color:var(--grn)">'+safe.toFixed(2)+' RON</div><div class="bk-sub">Risc minim</div></div>'+
     '<div class="bk-item"><div class="bk-label">🟡 Bilet Zilnic ('+pctMedium.toFixed(1)+'%)</div><div class="bk-val" style="color:var(--yel)">'+medium.toFixed(2)+' RON</div><div class="bk-sub">Echilibrat</div></div>'+
     '<div class="bk-item"><div class="bk-label">🔴 Bilet Risc ('+pctRisk.toFixed(1)+'%)</div><div class="bk-val" style="color:var(--red)">'+risk.toFixed(2)+' RON</div><div class="bk-sub">Risc ridicat</div></div>';
-
-
 }
 
 // ============================================================
 // COLLAPSIBLE SECTIONS
 // ============================================================
-// State: all sections start collapsed (false = closed)
 var SECTION_STATE = { top5: false, topsafe: false, ml: false, ml15: false };
 
 function toggleSection(id){
@@ -1479,8 +1223,8 @@ function updateSectionCount(id, count){
 // ============================================================
 function renderAll(){
   var total = ALL_MATCHES.length;
-  var safe = ALL_MATCHES.filter(function(m){ return m.verdict==='safe'; }).length;
-  var value = ALL_MATCHES.filter(function(m){ return m.bestBet && m.bestBet.value>=0.05; }).length;
+  var safe = ALL_MATCHES.filter(m => m.verdict==='safe').length;
+  var value = ALL_MATCHES.filter(m => m.bestBet && m.bestBet.value>=0.05).length;
   var eligible = ALL_MATCHES.filter(passesSelectionFilter).length;
 
   if($('st-total')) $('st-total').textContent = total;
@@ -1502,7 +1246,6 @@ function renderAll(){
 }
 
 window.addEventListener('DOMContentLoaded', function(){
-  // Load bankroll settings
   if(BANKROLL_SETTINGS){
     $('bankroll-input').value = BANKROLL_SETTINGS.initial || 1000;
     $('pct-safe').value = BANKROLL_SETTINGS.safe || 2;
