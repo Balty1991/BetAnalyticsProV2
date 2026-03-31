@@ -145,6 +145,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 .badge-win{background:rgba(34,197,94,.15);color:var(--grn);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
 .badge-loss{background:rgba(239,68,68,.15);color:var(--red);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
 .badge-pending{background:rgba(245,158,11,.15);color:var(--yel);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.badge-co{background:rgba(168,85,247,.15);color:var(--pur);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
 
 /* BANKROLL */
@@ -1338,7 +1339,7 @@ function renderTracking(){
   TRACKING.forEach(function(t,i){
     var statusBadge = t.status==='win'?'<span class="badge-win">WIN</span>':
                       t.status==='loss'?'<span class="badge-loss">LOSS</span>':
-                      t.status==='co'?'<span style="background:rgba(245,158,11,.15);color:var(--yel);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">CO</span>':
+                      t.status==='co'?'<span class="badge-co">CO</span>':
                       t.status==='anulat'?'<span style="background:rgba(100,116,139,.15);color:var(--muted);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">X</span>':
                       '<span class="badge-pending">PENDING</span>';
     var profitStr = t.profit>0?'<span style="color:var(--grn)">+'+t.profit.toFixed(2)+'</span>':
@@ -1357,9 +1358,25 @@ function renderTracking(){
       '<td style="display:flex;gap:2px;justify-content:flex-end" onclick="event.stopPropagation()">'+
         '<button onclick="markTicket('+i+',\'win\')" style="background:rgba(34,197,94,.15);color:var(--grn);border:1px solid rgba(34,197,94,.3);border-radius:4px;padding:3px 6px;font-size:9px;font-weight:700">W</button>'+
         '<button onclick="markTicket('+i+',\'loss\')" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);border-radius:4px;padding:3px 6px;font-size:9px;font-weight:700">L</button>'+
+        '<button onclick="toggleCOForm('+i+')" style="background:rgba(168,85,247,.15);color:var(--pur);border:1px solid rgba(168,85,247,.3);border-radius:4px;padding:3px 6px;font-size:9px;font-weight:700">CO</button>'+
+        '<button onclick="toggleOddsEdit('+i+')" style="background:rgba(59,130,246,.15);color:var(--acc);border:1px solid rgba(59,130,246,.3);border-radius:4px;padding:3px 6px;font-size:9px;font-weight:700">✏️</button>'+
         '<button onclick="deleteTicket('+i+')" style="background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--brd2);border-radius:4px;padding:3px 6px;font-size:9px">🗑️</button>'+
       '</td>'+
-    '</tr>';
+    '</tr>'+
+    '<tr id="co-form-'+i+'" style="display:none"><td colspan="8">'+
+      '<div style="padding:10px;background:rgba(168,85,247,.08);border-radius:8px;display:flex;gap:8px;align-items:center">'+
+        '<input type="number" id="co-amount-'+i+'" placeholder="Suma retrasa (RON)" style="padding:6px 10px;background:var(--panel);border:1px solid var(--brd);color:var(--txt);border-radius:6px;flex:1;font-size:12px" />'+
+        '<button onclick="saveCO('+i+')" style="background:rgba(168,85,247,.3);color:var(--pur);border:1px solid rgba(168,85,247,.5);border-radius:4px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer">Confirma CO</button>'+
+        '<button onclick="toggleCOForm('+i+')" style="background:transparent;color:var(--muted);border:1px solid var(--brd2);border-radius:4px;padding:6px 12px;font-size:11px;cursor:pointer">Anuleaza</button>'+
+      '</div>'+
+    '</td></tr>'+
+    '<tr id="odds-form-'+i+'" style="display:none"><td colspan="8">'+
+      '<div style="padding:10px;background:rgba(59,130,246,.08);border-radius:8px;display:flex;gap:8px;align-items:center">'+
+        '<input type="number" id="odds-input-'+i+'" placeholder="Cota noua" step="0.01" style="padding:6px 10px;background:var(--panel);border:1px solid var(--brd);color:var(--txt);border-radius:6px;flex:1;font-size:12px" />'+
+        '<button onclick="saveOdds('+i+')" style="background:rgba(59,130,246,.3);color:var(--acc);border:1px solid rgba(59,130,246,.5);border-radius:4px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer">Salveaza Cota</button>'+
+        '<button onclick="toggleOddsEdit('+i+')" style="background:transparent;color:var(--muted);border:1px solid var(--brd2);border-radius:4px;padding:6px 12px;font-size:11px;cursor:pointer">Anuleaza</button>'+
+      '</div>'+
+    '</td></tr>';
   });
   html += '</tbody></table></div>';
   container.innerHTML = html;
@@ -1376,6 +1393,53 @@ function markTicket(idx, status){
   localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
   renderTracking();
   toast('Bilet actualizat', 'ok');
+}
+
+function toggleCOForm(idx){
+  var form = document.getElementById('co-form-'+idx);
+  if(form) form.style.display = form.style.display === 'none' ? 'table-row' : 'none';
+}
+
+function saveCO(idx){
+  var t = TRACKING[idx];
+  var amount = parseFloat(document.getElementById('co-amount-'+idx).value);
+  if(isNaN(amount) || amount < 0){
+    toast('Introdu o suma valida', 'err');
+    return;
+  }
+  t.status = 'co';
+  t.coAmount = amount;
+  t.profit = amount - (t.stake || 100);
+  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
+  renderTracking();
+  toast('Cash Out inregistrat: '+amount.toFixed(2)+' RON', 'ok');
+}
+
+function toggleOddsEdit(idx){
+  var form = document.getElementById('odds-form-'+idx);
+  if(form){
+    form.style.display = form.style.display === 'none' ? 'table-row' : 'none';
+    if(form.style.display !== 'none'){
+      document.getElementById('odds-input-'+idx).value = TRACKING[idx].totalOdds.toFixed(2);
+    }
+  }
+}
+
+function saveOdds(idx){
+  var t = TRACKING[idx];
+  var newOdds = parseFloat(document.getElementById('odds-input-'+idx).value);
+  if(isNaN(newOdds) || newOdds < 1.0){
+    toast('Introdu o cota valida (minim 1.0)', 'err');
+    return;
+  }
+  var oldOdds = t.totalOdds;
+  t.totalOdds = newOdds;
+  if(t.status === 'win'){
+    t.profit = (newOdds - 1) * (t.stake || 100);
+  }
+  localStorage.setItem('bet_tracking', JSON.stringify(TRACKING));
+  renderTracking();
+  toast('Cota actualizata: '+oldOdds.toFixed(2)+' → '+newOdds.toFixed(2), 'ok');
 }
 
 function deleteTicket(idx){
